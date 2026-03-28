@@ -39,11 +39,11 @@ html,body{height:100%;font-family:var(--body);background:var(--bg);color:var(--t
 #app.visible{display:flex;flex-direction:column}
 
 /* Topbar */
-.topbar{position:sticky;top:0;z-index:40;background:rgba(250,249,246,0.95);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar{position:sticky;top:0;z-index:40;background:rgba(250,249,246,0.95);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;min-height:0}
 
 /* Main content */
-#app-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
-main{flex:1;overflow-y:auto;padding-bottom:80px}
+#app-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+main{flex:1;overflow-y:auto;padding-bottom:80px;min-height:0}
 
 /* Bottom nav — mobile */
 .sidenav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(250,249,246,0.95);backdrop-filter:blur(16px);border-top:0.5px solid var(--border);display:flex;justify-content:space-around;padding:8px 4px 20px}
@@ -209,8 +209,8 @@ label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bot
     <p style="font-size:13px;color:var(--text3)">Acesse com as credenciais do seu restaurante</p>
   </div>
   <div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px">
-    <div><label>Restaurante</label><input type="text" id="lg-slug" placeholder="ex: quiosque" value="quiosque"/></div>
-    <div><label>Senha</label><input type="password" id="lg-pass" placeholder="••••••" value="1234"/></div>
+    <div><label>Restaurante</label><input type="text" id="lg-slug" placeholder="ex: quiosque" autocomplete="username"/></div>
+    <div><label>Senha</label><input type="password" id="lg-pass" placeholder="••••••" autocomplete="current-password"/></div>
     <div id="lg-err" style="font-size:12px;color:var(--red);display:none;text-align:center">Credenciais inválidas</div>
     <button class="btn-p" id="lg-btn" onclick="doLogin()">Entrar</button>
     <p style="font-size:11px;color:var(--text3);text-align:center">Demo: quiosque / 1234</p>
@@ -315,12 +315,7 @@ label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bot
         </div>
         <div class="card" style="margin-bottom:12px">
           <div class="section-lbl">Horários de pico</div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">12h – 14h</span><span style="font-size:11px;font-weight:700;color:var(--amber)">Alta</span></div><div class="peak-bar"><div class="peak-fill" style="width:85%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">19h – 21h</span><span style="font-size:11px;font-weight:700;color:var(--red)">Máxima</span></div><div class="peak-bar"><div class="peak-fill" style="width:100%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">08h – 10h</span><span style="font-size:11px;color:var(--text3)">Normal</span></div><div class="peak-bar"><div class="peak-fill" style="width:35%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">15h – 17h</span><span style="font-size:11px;color:var(--text3)">Baixa</span></div><div class="peak-bar"><div class="peak-fill" style="width:18%"></div></div></div>
-          </div>
+          <div id="s-peaks"></div>
         </div>
         <div class="card"><div class="section-lbl">Mais pedidos</div><div id="s-top"></div></div>
       </div>
@@ -654,6 +649,7 @@ function renderMenu(){
   const fil=menuFil==='todos'?menuItems:menuItems.filter(i=>i.category===menuFil);
   const sorted=[...fil].sort((a,b)=>(b.destaque?1:0)-(a.destaque?1:0));
   document.getElementById('m-count').textContent=menuItems.length+' itens';
+  if(!sorted.length){document.getElementById('menu-grid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 20px"><span class="ms" style="font-size:36px;color:var(--text3);display:block;margin-bottom:10px">menu_book</span><div class="hl" style="font-size:14px;font-weight:700;margin-bottom:4px">${menuItems.length?'Nenhum item nesta categoria':'Cardápio vazio'}</div><div style="font-size:12px;color:var(--text3)">${menuItems.length?'Selecione outra categoria':'Toque em + para adicionar o primeiro item'}</div></div>`;return;}
   document.getElementById('menu-grid').innerHTML=sorted.map(item=>{
     const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});
     const ad=typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]);
@@ -761,6 +757,14 @@ function renderStats(){
     <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border)"><div><div style="font-size:12px;font-weight:600">Carlos M.</div><div style="color:#F5A623;font-size:12px">★★★★★</div></div><div style="font-size:11px;color:var(--text3)">há 12min</div></div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border)"><div><div style="font-size:12px;font-weight:600">Ana B.</div><div style="color:#F5A623;font-size:12px">★★★★☆</div></div><div style="font-size:11px;color:var(--text3)">há 45min</div></div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><div><div style="font-size:12px;font-weight:600">Marcos V.</div><div style="color:#F5A623;font-size:12px">★★★★★</div></div><div style="font-size:11px;color:var(--text3)">há 1h</div></div>`;
+  // ── Horários de pico (calculado dos pedidos reais) ──
+  const allO=[...history,...orders];
+  const hc={};allO.forEach(o=>{if(!o.created_at)return;const h=new Date(o.created_at).getHours();const slot=Math.floor(h/2)*2;hc[slot]=(hc[slot]||0)+1;});
+  const peakSlots=Object.entries(hc).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const pkMx=peakSlots[0]?peakSlots[0][1]:1;
+  const pkLabels=['Baixa','Normal','Alta','Máxima'];const pkColors=['var(--text3)','var(--text3)','var(--amber)','var(--red)'];
+  document.getElementById('s-peaks').innerHTML=peakSlots.length?`<div style="display:flex;flex-direction:column;gap:10px">${peakSlots.map(([h,c])=>{const pct=Math.round(c/pkMx*100);const li=Math.min(Math.floor(pct/26),3);const h2=parseInt(h);return `<div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">${String(h2).padStart(2,'0')}h – ${String(h2+2).padStart(2,'0')}h</span><span style="font-size:11px;font-weight:700;color:${pkColors[li]}">${pkLabels[li]}</span></div><div class="peak-bar"><div class="peak-fill" style="width:${pct}%"></div></div></div>`;}).join('')}</div>`:`<div style="text-align:center;padding:14px;color:var(--text3);font-size:12px">Sem dados de pedidos ainda</div>`;
+
   const cnts={};[...history,...orders].forEach(o=>{if(o._items)o._items.forEach(i=>{cnts[i.name]=(cnts[i.name]||0)+i.quantity;});});
   const srt=Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,5);const mx=srt[0]?srt[0][1]:1;
   document.getElementById('s-top').innerHTML=srt.length?srt.map(([n,c],i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:${i<srt.length-1?'0.5px solid var(--border)':'none'}"><span class="hl" style="font-size:13px;font-weight:800;color:var(--text3);width:16px">${i+1}</span><div style="flex:1"><div style="font-size:12px;font-weight:600">${n}</div><div class="rank-bar"><div class="rank-fill" style="width:${Math.round(c/mx*100)}%"></div></div></div><span style="font-size:12px;color:var(--text2);font-weight:600">${c}x</span></div>`).join(''):`<div style="text-align:center;padding:14px;color:var(--text3);font-size:12px">Nenhum pedido ainda</div>`;}
