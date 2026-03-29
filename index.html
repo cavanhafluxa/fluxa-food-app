@@ -52,8 +52,8 @@ html,body{height:100%;font-family:var(--bd);color:var(--text);-webkit-font-smoot
 .nav-badge.show{display:flex}
 
 /* MAIN */
-#app-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
-main{flex:1;overflow-y:auto;padding-bottom:80px}
+#app-body{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;min-width:0}
+main{flex:1;overflow-y:auto;padding-bottom:80px;display:block}
 .tab{display:none;padding:16px}
 .tab.active{display:block}
 
@@ -82,9 +82,9 @@ main{flex:1;overflow-y:auto;padding-bottom:80px}
   .nav-item.active{background:var(--blue-l) !important}
   .nav-badge{top:50% !important;right:12px !important;transform:translateY(-50%) !important}
   #sidenav-logo{display:flex !important}
-  #app-body{flex:1 !important;flex-direction:column !important;overflow:hidden !important;min-width:0 !important}
-  .topbar{position:sticky !important;top:0 !important}
-  main{overflow-y:auto !important;padding-bottom:24px !important}
+  #app-body{flex:1 !important;display:flex !important;flex-direction:column !important;overflow:hidden !important;min-width:0 !important;min-height:0 !important}
+  .topbar{position:sticky !important;top:0 !important;flex-shrink:0 !important}
+  main{flex:1 !important;overflow-y:auto !important;padding-bottom:24px !important;display:block !important}
   .tab{padding:24px 28px !important}
   #menu-grid{grid-template-columns:repeat(3,1fr) !important}
   .metric-grid{grid-template-columns:repeat(4,1fr) !important}
