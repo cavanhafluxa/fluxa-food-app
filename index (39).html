@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Flüxa Kitchen</title>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#4A7FD4"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Kitchen"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+:root{
+  --bg:#FAF9F6;--bg2:#F4F3F0;--bg3:#EEECEA;--bg4:#E6E4E0;
+  --text:#1A1916;--text2:#6B6860;--text3:#A09E9A;
+  --blue:#4A7FD4;--blue-l:#EEF3FB;--blue-m:#B8CEF0;
+  --green:#2D9E6B;--green-l:#E8F7F0;
+  --amber:#D4860A;--amber-l:#FEF3E0;
+  --red:#D64040;--red-l:#FDEAEA;
+  --border:rgba(26,25,22,0.08);
+  --nav-w:220px;
+  --hl:'Plus Jakarta Sans',sans-serif;
+  --bd:'DM Sans',sans-serif;
+}
+html,body{height:100%;font-family:var(--bd);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.hl{font-family:var(--hl)}
+.ms{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;font-size:22px;line-height:1;flex-shrink:0}
+
+/* SCREENS */
+.screen{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.screen.on{display:flex}
+
+/* ══ APP RESTAURANTE ══ */
+#app{display:none}
+#app.on{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+
+/* mobile: coluna, sidenav embaixo */
+.sidenav{
+  order:2;
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(250,249,246,0.97);backdrop-filter:blur(16px);
+  border-top:0.5px solid var(--border);
+  display:flex;justify-content:space-around;
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+  flex-shrink:0;
+}
+#app-body{order:1;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+/* TOPBAR */
+.topbar{flex-shrink:0;position:sticky;top:0;z-index:40;background:rgba(250,249,246,0.97);backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+
+/* MAIN */
+main{flex:1;overflow-y:auto;padding-bottom:80px}
+.tab{display:none;padding:16px}
+.tab.active{display:block}
+
+/* NAV */
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 10px;border-radius:10px;position:relative;border:none;background:none;transition:all 0.15s}
+.nav-item .ms{font-size:22px;color:var(--text3)}
+.nav-item .nav-lbl{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);font-family:var(--hl)}
+.nav-item.active .ms,.nav-item.active .nav-lbl{color:var(--blue)}
+.nav-badge{position:absolute;top:2px;right:4px;background:var(--red);color:white;font-size:9px;font-weight:800;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:var(--hl)}
+.nav-badge.show{display:flex}
+#sidenav-logo{display:none;align-items:center;gap:8px;padding:14px 14px 10px;border-bottom:0.5px solid var(--border);margin-bottom:4px}
+
+/* ══ TABLET ≥ 768px ══ */
+@media(min-width:768px){
+  html,body{background:var(--bg3)}
+  #app.on{flex-direction:row !important}
+
+  .sidenav{
+    order:1 !important;
+    position:sticky !important;top:0 !important;
+    left:0 !important;right:auto !important;bottom:auto !important;
+    width:var(--nav-w) !important;height:100dvh !important;
+    flex-direction:column !important;
+    justify-content:flex-start !important;
+    align-items:stretch !important;
+    padding:0 10px 20px !important;
+    border-top:none !important;
+    border-right:0.5px solid var(--border) !important;
+    gap:2px !important;flex-shrink:0 !important;
+  }
+  #sidenav-logo{display:flex !important}
+  .nav-item{
+    flex-direction:row !important;gap:10px !important;
+    padding:10px 12px !important;border-radius:10px !important;
+    width:100% !important;justify-content:flex-start !important;
+  }
+  .nav-item .ms{font-size:18px !important}
+  .nav-item .nav-lbl{font-size:13px !important;text-transform:none !important;letter-spacing:0 !important;font-weight:500 !important}
+  .nav-item.active{background:var(--blue-l) !important}
+  .nav-item.active .ms{color:var(--blue) !important}
+  .nav-badge{top:50% !important;right:10px !important;transform:translateY(-50%) !important}
+
+  #app-body{order:2 !important;flex:1 !important;min-width:0 !important}
+  main{padding-bottom:24px !important}
+  .tab{padding:24px 28px !important}
+
+  #menu-grid{grid-template-columns:repeat(3,1fr) !important}
+  .metric-grid{grid-template-columns:repeat(4,1fr) !important}
+  .modal-overlay{left:var(--nav-w) !important}
+  .modal-sheet{max-width:540px !important;border-radius:20px !important;margin:auto !important;transform:scale(0.95) !important;opacity:0 !important;transition:all 0.25s cubic-bezier(0.32,0.72,0,1) !important;max-height:85dvh !important}
+  .modal-overlay.open{align-items:center !important}
+  .modal-overlay.open .modal-sheet{transform:scale(1) !important;opacity:1 !important;translateY:0 !important}
+  .fab{right:24px !important;bottom:24px !important}
+  #demo-btn{left:calc(var(--nav-w) + 12px) !important;bottom:24px !important}
+  #toast{left:calc(var(--nav-w) + 50%) !important;bottom:24px !important}
+  .drag-h{display:none !important}
+}
+@media(min-width:1200px){
+  :root{--nav-w:240px}
+  .tab{max-width:960px;margin:0 auto;padding:28px 32px !important}
+  #menu-grid{grid-template-columns:repeat(4,1fr) !important}
+}
+@media(hover:hover){
+  .nav-item:hover:not(.active){background:var(--bg3)}
+  .menu-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.1)}
+  .order-card:hover{box-shadow:0 4px 14px rgba(0,0,0,0.08)}
+}
+
+/* COMPONENTS */
+.card{background:white;border-radius:14px;padding:14px 16px;border:0.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.section-lbl{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);font-family:var(--hl);margin-bottom:8px}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.metric-card{background:var(--bg2);border-radius:12px;padding:12px;border-left:3px solid var(--blue-m)}
+.metric-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-family:var(--hl)}
+.metric-val{font-size:20px;font-weight:800;color:var(--text);font-family:var(--hl);line-height:1}
+.filter-pill{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:var(--hl);transition:all 0.15s;border:none;outline:none}
+.filter-pill.active{background:var(--blue);color:white}
+.filter-pill:not(.active){background:var(--bg3);color:var(--text2)}
+.scroll-x{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.scroll-x::-webkit-scrollbar{display:none}
+.hist-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.hist-row:last-child{border-bottom:none}
+.eli-toggle-row{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:14px;padding:14px 16px;border:0.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.04);margin-bottom:14px}
+.peak-bar{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden}
+.peak-fill{height:100%;border-radius:3px;background:var(--blue)}
+.rank-bar{height:3px;border-radius:2px;background:var(--bg3);margin-top:4px}
+.rank-fill{height:100%;border-radius:2px;background:var(--blue-m)}
+
+/* TOGGLE */
+.tog{width:44px;height:26px;border-radius:13px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none}
+.tog.on{background:var(--blue)}.tog.off{background:var(--bg4)}
+.tog-dot{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;transition:left 0.2s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+.tog.on .tog-dot{left:21px}.tog.off .tog-dot{left:3px}
+
+/* SWIPE */
+.swipe-wrap{position:relative;overflow:hidden;border-radius:14px;margin-bottom:10px;touch-action:pan-y}
+.swipe-bg{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;opacity:0;transition:opacity 0.05s}
+.swipe-bg.right{background:var(--green-l);justify-content:flex-start;padding-left:20px;gap:8px}
+.swipe-bg.left{background:var(--red-l);justify-content:flex-end;padding-right:20px;gap:8px}
+.swipe-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:scale(0.6);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1)}
+.swipe-bg.right .swipe-icon{background:var(--green)}.swipe-bg.left .swipe-icon{background:var(--red)}
+.swipe-lbl{font-size:12px;font-weight:800;font-family:var(--hl);opacity:0;transition:opacity 0.15s}
+.swipe-bg.right .swipe-lbl{color:var(--green)}.swipe-bg.left .swipe-lbl{color:var(--red)}
+.swipe-bg.on .swipe-icon{transform:scale(1)}.swipe-bg.on .swipe-lbl{opacity:1}
+.order-card{position:relative;background:white;border-radius:14px;padding:14px;display:flex;gap:12px;border:0.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.04);will-change:transform;cursor:pointer}
+.status-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--hl)}
+.timer{font-size:11px;font-weight:700;font-family:var(--hl);display:flex;align-items:center;gap:3px}
+.t-ok{color:var(--text3)}.t-warn{color:var(--amber)}.t-late{color:var(--red)}
+.hold-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;overflow:hidden;opacity:0;transition:opacity 0.1s}
+.hold-fill{height:100%;width:0%;background:var(--red);border-radius:2px}
+@keyframes flyR{to{transform:translateX(110%);opacity:0}}
+@keyframes flyL{to{transform:translateX(-110%);opacity:0}}
+.fly-r{animation:flyR 0.3s cubic-bezier(0.4,0,1,1) forwards}
+.fly-l{animation:flyL 0.3s cubic-bezier(0.4,0,1,1) forwards}
+
+/* MENU */
+#menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.menu-card{background:white;border-radius:12px;overflow:hidden;border:0.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.04);cursor:pointer;transition:transform 0.1s}
+.menu-card:active{transform:scale(0.98)}.menu-card.off{opacity:0.5;filter:grayscale(0.5)}
+.menu-img{width:100%;height:100px;background:var(--bg2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.menu-img img{width:100%;height:100%;object-fit:cover}
+.esg-chip{position:absolute;top:6px;left:6px;background:var(--red);color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;font-family:var(--hl)}
+.dest-chip{position:absolute;top:6px;right:6px;background:var(--amber);color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;font-family:var(--hl)}
+.esg-btn{font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;border:none;cursor:pointer;font-family:var(--hl);transition:all 0.15s}
+.esg-btn.esg{background:var(--red-l);color:var(--red)}.esg-btn.disp{background:var(--bg3);color:var(--text3)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.28);backdrop-filter:blur(4px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--bg);border-radius:24px 24px 0 0;width:100%;padding:20px 20px 40px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:90dvh;overflow-y:auto}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.drag-h{width:36px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 20px}
+.photo-up{width:100%;height:110px;border-radius:10px;border:1.5px dashed var(--bg4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:var(--bg2);position:relative;overflow:hidden}
+.photo-up img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-over{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
+.photo-up:hover .photo-over{opacity:1}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:var(--blue-l);color:var(--blue);font-size:11px;font-weight:600;margin:2px;font-family:var(--hl)}
+.tag-x{cursor:pointer;font-size:13px;line-height:1}
+.adic-chip{display:inline-block;padding:2px 6px;border-radius:4px;background:var(--amber-l);color:var(--amber);font-size:10px;font-weight:600;margin:2px;font-family:var(--hl)}
+.fab{position:fixed;bottom:80px;right:16px;width:50px;height:50px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(74,127,212,0.4);cursor:pointer;z-index:45;border:none;transition:transform 0.15s}
+.fab:active{transform:scale(0.92)}
+input,textarea,select{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;width:100%;outline:none;font-family:var(--bd);color:var(--text);resize:none;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--blue);background:white}
+label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px;font-family:var(--hl)}
+.btn-p{background:var(--blue);color:white;border:none;border-radius:12px;padding:13px;font-size:13px;font-weight:700;font-family:var(--hl);cursor:pointer;width:100%;transition:opacity 0.15s}
+.btn-p:active{opacity:0.85}
+.btn-s{background:var(--bg3);color:var(--text);border:none;border-radius:12px;padding:13px;font-size:13px;font-weight:700;font-family:var(--hl);cursor:pointer;width:100%}
+.btn-d{background:var(--red-l);color:var(--red);border:none;border-radius:12px;padding:13px;font-size:13px;font-weight:700;font-family:var(--hl);cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:36px;height:36px;border:3px solid var(--bg3);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pdot 1.5s ease infinite}
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:10px 18px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--hl);z-index:500;white-space:nowrap;opacity:0;transition:opacity 0.2s;pointer-events:none}
+#demo-btn{position:fixed;bottom:88px;left:14px;z-index:45;display:none}
+
+/* ══ FOUNDER ══ */
+#app-founder{display:none;min-height:100dvh;background:var(--bg3)}
+#app-founder.on{display:block}
+.f-header{background:white;border-bottom:0.5px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 1px 8px rgba(0,0,0,0.04)}
+.f-tabs{display:flex;gap:2px;background:var(--bg2);border-radius:12px;padding:3px}
+.f-tab{padding:7px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--text2);font-family:var(--hl);transition:all 0.15s;white-space:nowrap}
+.f-tab.active{background:white;color:var(--blue);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.f-content{max-width:1000px;margin:0 auto;padding:20px}
+.r-card{background:white;border-radius:16px;padding:16px;border:0.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:12px;transition:all 0.15s}
+.r-card:hover{box-shadow:0 4px 14px rgba(0,0,0,0.08)}
+.r-card.blocked{opacity:0.6;border-color:var(--red);background:var(--red-l)}
+.plan-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--hl)}
+.avatar-upload{width:80px;height:80px;border-radius:50%;background:var(--bg2);border:2px dashed var(--bg4);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-shrink:0}
+.avatar-upload img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.avatar-over{position:absolute;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;border-radius:50%}
+.avatar-upload:hover .avatar-over{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="screen on" id="s-loading">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <span class="ms" style="color:var(--blue);font-size:24px">local_fire_department</span>
+    <span class="hl" style="font-size:22px;font-weight:800;letter-spacing:-0.03em">Flüxa Kitchen</span>
+  </div>
+  <div class="spin"></div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen" id="s-login">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+      <span class="ms" style="color:var(--blue);font-size:26px">local_fire_department</span>
+      <span class="hl" style="font-size:24px;font-weight:800;letter-spacing:-0.03em">Flüxa Kitchen</span>
+    </div>
+    <p style="font-size:13px;color:var(--text3)">Acesse com as credenciais do seu restaurante</p>
+  </div>
+  <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px">
+    <div><label>Slug do restaurante</label><input type="text" id="lg-slug" placeholder="ex: quiosque" autocomplete="username"/></div>
+    <div><label>Senha</label><input type="password" id="lg-pass" placeholder="••••••" autocomplete="current-password"/></div>
+    <div id="lg-err" style="font-size:12px;color:var(--red);display:none;text-align:center;background:var(--red-l);padding:8px;border-radius:8px">Credenciais inválidas ou acesso bloqueado</div>
+    <button class="btn-p" id="lg-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- APP RESTAURANTE -->
+<div id="app">
+  <nav class="sidenav">
+    <div id="sidenav-logo">
+      <span class="ms" style="color:var(--blue);font-size:18px">local_fire_department</span>
+      <span class="hl" style="font-size:13px;font-weight:800;letter-spacing:-0.02em" id="sn-name">Kitchen</span>
+    </div>
+    <button class="nav-item active" id="nav-pedidos" onclick="go('pedidos')">
+      <span class="nav-badge" id="nav-badge">0</span>
+      <span class="ms">shopping_bag</span><span class="nav-lbl">Pedidos</span>
+    </button>
+    <button class="nav-item" id="nav-cardapio" onclick="go('cardapio')">
+      <span class="ms">menu_book</span><span class="nav-lbl">Cardápio</span>
+    </button>
+    <button class="nav-item" id="nav-elistats" onclick="go('elistats')">
+      <span class="ms">bar_chart</span><span class="nav-lbl">Eli Stats</span>
+    </button>
+    <button class="nav-item" id="nav-historico" onclick="go('historico')">
+      <span class="ms">history</span><span class="nav-lbl">Histórico</span>
+    </button>
+    <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
+      <span class="ms">person</span><span class="nav-lbl">Perfil</span>
+    </button>
+  </nav>
+
+  <div id="app-body">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="logo-avatar" style="width:28px;height:28px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+          <span class="ms" style="font-size:16px;color:var(--blue)">store</span>
+        </div>
+        <span class="hl" style="font-size:15px;font-weight:800;letter-spacing:-0.02em" id="tp-name">Kitchen</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="eli-badge" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--green-l);cursor:pointer" onclick="toggleEli()">
+          <span class="ldot" id="eli-dot"></span>
+          <span id="eli-txt" style="font-size:10px;font-weight:700;color:var(--green);font-family:var(--hl);letter-spacing:0.05em">ELI ON</span>
+        </div>
+        <button onclick="doLogout()" style="width:30px;height:30px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;cursor:pointer;border:0.5px solid var(--border)">
+          <span class="ms" style="font-size:16px;color:var(--blue)">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- PEDIDOS -->
+      <div id="tab-pedidos" class="tab active">
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="card" style="padding:12px 14px">
+            <div class="section-lbl" style="margin-bottom:4px">Ao vivo</div>
+            <div style="display:flex;align-items:baseline;gap:5px">
+              <span class="hl" style="font-size:26px;font-weight:800;color:var(--blue)" id="p-count">0</span>
+              <span style="font-size:12px;color:var(--text2)">ativos</span>
+            </div>
+          </div>
+          <div class="card" style="padding:12px 14px;text-align:center">
+            <div class="section-lbl" style="margin-bottom:4px">Média</div>
+            <span class="hl" style="font-size:20px;font-weight:800;color:var(--amber)" id="p-avg">—</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:12px">
+          <span class="ms" style="font-size:13px;color:var(--text3)">swipe_right_alt</span>
+          <span style="font-size:11px;color:var(--text3)">→ avança · Segure + ← cancela</span>
+        </div>
+        <div id="orders-wrap"></div>
+      </div>
+
+      <!-- CARDÁPIO -->
+      <div id="tab-cardapio" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Cardápio</h2>
+          <span style="font-size:12px;color:var(--text3)" id="m-count">0 itens</span>
+        </div>
+        <div class="scroll-x" style="display:flex;gap:7px;margin-bottom:14px;padding-bottom:2px" id="cat-pills"></div>
+        <div id="menu-grid"></div>
+      </div>
+
+      <!-- ELI STATS -->
+      <div id="tab-elistats" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Eli Stats</h2>
+          <div style="display:flex;gap:6px">
+            <button class="filter-pill active" onclick="fStats(this,'hoje')">Hoje</button>
+            <button class="filter-pill" onclick="fStats(this,'semana')">Semana</button>
+          </div>
+        </div>
+        <div class="eli-toggle-row">
+          <div>
+            <div class="hl" style="font-size:13px;font-weight:600">Eli Pedidos</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px" id="eli-lbl">Ativo — atendendo automaticamente</div>
+          </div>
+          <button class="tog on" id="eli-tog" onclick="toggleEli()"><div class="tog-dot"></div></button>
+        </div>
+        <div class="metric-grid" id="s-metrics"></div>
+        <div class="card" style="margin-bottom:12px"><div class="section-lbl">Avaliações recentes</div><div id="s-ratings"><p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhuma avaliação ainda</p></div></div>
+        <div class="card" style="margin-bottom:12px"><div class="section-lbl">Horários de pico</div><div id="s-peaks"><p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Sem dados suficientes</p></div></div>
+        <div class="card"><div class="section-lbl">Mais pedidos</div><div id="s-top"><p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhum pedido ainda</p></div></div>
+      </div>
+
+      <!-- HISTÓRICO -->
+      <div id="tab-historico" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Histórico</h2>
+          <button onclick="exportCSV()" style="display:flex;align-items:center;gap:4px;background:var(--bg3);border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:var(--blue);cursor:pointer;font-family:var(--hl)"><span class="ms" style="font-size:14px">download</span>CSV</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="background:var(--bg2);border-radius:12px;padding:12px"><div class="section-lbl" style="margin-bottom:4px">Total hoje</div><div class="hl" style="font-size:18px;font-weight:800;color:var(--blue)" id="h-total">R$ 0,00</div></div>
+          <div style="background:var(--bg2);border-radius:12px;padding:12px"><div class="section-lbl" style="margin-bottom:4px">Pedidos</div><div class="hl" style="font-size:18px;font-weight:800" id="h-count">0</div></div>
+        </div>
+        <div class="scroll-x" style="display:flex;gap:7px;margin-bottom:14px">
+          <button class="filter-pill active" onclick="fHist('todos',this)">Todos</button>
+          <button class="filter-pill" onclick="fHist('entregue',this)">Pagos</button>
+          <button class="filter-pill" onclick="fHist('cancelado',this)">Cancelados</button>
+        </div>
+        <div class="card" id="h-list"><div style="text-align:center;padding:28px;color:var(--text3)"><span class="ms" style="font-size:30px;display:block;margin-bottom:8px">receipt_long</span><div style="font-size:13px">Nenhum registro ainda</div></div></div>
+      </div>
+
+      <!-- PERFIL -->
+      <div id="tab-perfil" class="tab">
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Perfil do Restaurante</h2>
+        <div class="card" style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+            <div class="avatar-upload" id="perfil-avatar-btn" onclick="document.getElementById('perfil-photo-inp').click()">
+              <img id="perfil-avatar-img" src="" style="display:none"/>
+              <div class="avatar-over"><span class="ms" style="color:white;font-size:18px">photo_camera</span></div>
+              <span class="ms" style="color:var(--text3);font-size:28px" id="perfil-avatar-icon">store</span>
+            </div>
+            <div>
+              <div class="hl" style="font-size:16px;font-weight:800" id="perfil-nome-display">—</div>
+              <div style="font-size:12px;color:var(--text3)" id="perfil-slug-display">—</div>
+              <span id="perfil-plan-badge" class="plan-badge" style="margin-top:4px;background:var(--blue-l);color:var(--blue)">trial</span>
+            </div>
+          </div>
+          <input type="file" id="perfil-photo-inp" accept="image/*" style="display:none" onchange="uploadAvatarRestaurante(this)"/>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div><label>Nome do restaurante</label><input type="text" id="perfil-nome" placeholder="Nome visível para os clientes"/></div>
+            <div><label>Descrição</label><textarea id="perfil-desc" rows="2" placeholder="Especialidade, horário de funcionamento..."></textarea></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Telefone</label><input type="text" id="perfil-tel" placeholder="(47) 9xxxx-xxxx"/></div>
+              <div><label>Cidade</label><input type="text" id="perfil-city" placeholder="Blumenau, SC"/></div>
+            </div>
+            <div><label>WhatsApp (instância Eli)</label><input type="text" id="perfil-wp" placeholder="5547999999999"/></div>
+            <div><label>Nova senha (deixe em branco para não alterar)</label><input type="password" id="perfil-senha" placeholder="••••••"/></div>
+            <div>
+              <label>Link do cardápio digital</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="perfil-link" readonly style="font-size:11px;color:var(--blue);cursor:pointer" onclick="this.select();document.execCommand('copy');toast('Link copiado!')"/>
+                <button onclick="document.getElementById('perfil-link').select();document.execCommand('copy');toast('Copiado!')" style="padding:8px 12px;background:var(--blue-l);color:var(--blue);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--hl);white-space:nowrap">Copiar</button>
+              </div>
+              <p style="font-size:10px;color:var(--text3);margin-top:4px">Compartilhe com seus clientes</p>
+            </div>
+          </div>
+          <button class="btn-p" onclick="salvarPerfil()" style="margin-top:16px">Salvar alterações</button>
+        </div>
+        <button class="btn-d" onclick="doLogout()" style="width:100%">Sair da conta</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- PAINEL FOUNDER -->
+<div id="app-founder">
+  <div class="f-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="ms" style="color:var(--blue);font-size:20px">local_fire_department</span>
+      <div>
+        <div class="hl" style="font-size:15px;font-weight:800">Flüxa Admin</div>
+        <div style="font-size:11px;color:var(--text3)">Painel do Founder</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="f-tabs" id="founder-tabs">
+        <button class="f-tab active" onclick="fTab('visao-geral',this)">Visão Geral</button>
+        <button class="f-tab" onclick="fTab('restaurantes',this)">Restaurantes</button>
+        <button class="f-tab" onclick="fTab('financeiro',this)">Financeiro</button>
+      </div>
+      <button onclick="doLogout()" style="display:flex;align-items:center;gap:5px;background:var(--red-l);color:var(--red);border:none;border-radius:10px;padding:7px 12px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+        <span class="ms" style="font-size:15px">logout</span>Sair
+      </button>
+    </div>
+  </div>
+
+  <div class="f-content">
+    <!-- VISÃO GERAL -->
+    <div id="f-tab-visao-geral">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px" id="f-kpis"></div>
+      <h3 class="hl" style="font-size:15px;font-weight:700;margin-bottom:12px">Status dos restaurantes</h3>
+      <div id="f-status-cards"></div>
+    </div>
+
+    <!-- RESTAURANTES -->
+    <div id="f-tab-restaurantes" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3 class="hl" style="font-size:15px;font-weight:700">Restaurantes cadastrados</h3>
+        <button onclick="openNewRestaurant()" style="display:flex;align-items:center;gap:6px;background:var(--blue);color:white;border:none;border-radius:10px;padding:8px 14px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+          <span class="ms" style="font-size:16px;color:white">add</span>Novo
+        </button>
+      </div>
+      <div id="f-restaurant-list"></div>
+    </div>
+
+    <!-- FINANCEIRO -->
+    <div id="f-tab-financeiro" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px" id="f-fin-kpis"></div>
+      <h3 class="hl" style="font-size:15px;font-weight:700;margin-bottom:12px">Receita por restaurante (estimada)</h3>
+      <div id="f-fin-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAIS -->
+<div class="modal-overlay" id="mod-order" onclick="closeMod('mod-order',event)">
+  <div class="modal-sheet"><div class="drag-h"></div><div id="mod-order-body"></div></div>
+</div>
+
+<div class="modal-overlay" id="mod-item" onclick="closeMod('mod-item',event)">
+  <div class="modal-sheet">
+    <div class="drag-h"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h3 class="hl" style="font-size:17px;font-weight:800" id="mi-title">Novo item</h3>
+      <button onclick="closeMod('mod-item')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+    </div>
+    <div style="margin-bottom:12px">
+      <label>Foto</label>
+      <div class="photo-up" onclick="document.getElementById('fi-photo').click()">
+        <img id="fi-prev" src="" style="display:none"/>
+        <div class="photo-over"><span class="ms" style="color:white;font-size:20px">photo_camera</span></div>
+        <span class="ms" style="color:var(--text3);font-size:26px" id="fi-ph-icon">add_photo_alternate</span>
+        <span style="font-size:11px;color:var(--text3)" id="fi-ph-txt">Câmera ou galeria</span>
+      </div>
+      <input type="file" id="fi-photo" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div><label>Nome *</label><input type="text" id="fi-nome"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label>Preço (R$) *</label><input type="number" id="fi-preco" step="0.01" min="0"/></div>
+        <div><label>Categoria *</label><select id="fi-cat"><option value="lanches">Lanches</option><option value="bebidas">Bebidas</option><option value="sobremesas">Sobremesas</option><option value="entradas">Entradas</option><option value="pratos">Pratos</option></select></div>
+      </div>
+      <div><label>Descrição</label><textarea id="fi-desc" rows="2"></textarea></div>
+      <div>
+        <label style="margin-bottom:8px;display:block">Variações de preço</label>
+        <div style="display:flex;flex-direction:column;gap:7px" id="fi-sizes">
+          <div style="display:flex;align-items:center;gap:8px" id="sz-1">
+            <input type="text" id="sz-l-1" placeholder="Nome (ex: Médio)" style="flex:1"/>
+            <input type="number" id="sz-p-1" placeholder="R$" style="width:76px" step="0.01"/>
+            <button onclick="addSzRow()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label>Adicionais</label>
+        <div style="display:flex;gap:6px;margin-bottom:7px">
+          <input type="text" id="fi-adic" placeholder="Ex: Bacon extra..." style="flex:1" onkeydown="if(event.key==='Enter'){addAdic();event.preventDefault()}"/>
+          <button onclick="addAdic()" style="background:var(--blue);color:white;border:none;border-radius:10px;padding:8px 11px;cursor:pointer"><span class="ms" style="font-size:17px;color:white">add</span></button>
+        </div>
+        <div id="fi-adic-tags"></div>
+      </div>
+      <div>
+        <label>Alergênicos</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px" id="fi-alerg">
+          <button class="filter-pill" onclick="togAlerg('Glúten',this)">Glúten</button>
+          <button class="filter-pill" onclick="togAlerg('Lactose',this)">Lactose</button>
+          <button class="filter-pill" onclick="togAlerg('Ovo',this)">Ovo</button>
+          <button class="filter-pill" onclick="togAlerg('Amendoim',this)">Amendoim</button>
+          <button class="filter-pill" onclick="togAlerg('Frutos do mar',this)">Frutos do mar</button>
+          <button class="filter-pill" onclick="togAlerg('Soja',this)">Soja</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0">
+        <div><div class="hl" style="font-size:13px;font-weight:600">Destaque</div><div style="font-size:11px;color:var(--text3)">Aparece em primeiro</div></div>
+        <button class="tog off" id="fi-dest" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0">
+        <div><div class="hl" style="font-size:13px;font-weight:600">Esgotado hoje</div><div style="font-size:11px;color:var(--text3)">Reseta à meia-noite</div></div>
+        <button class="tog off" id="fi-esg" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:18px">
+      <button class="btn-s" onclick="closeMod('mod-item')" style="flex:1">Cancelar</button>
+      <button class="btn-p" onclick="saveItem()" style="flex:2" id="fi-save">Salvar</button>
+    </div>
+    <button class="btn-d" id="fi-del" style="width:100%;margin-top:8px;display:none" onclick="deleteItem()">Excluir item</button>
+  </div>
+</div>
+
+<!-- MODAL NOVO/EDITAR RESTAURANTE -->
+<div class="modal-overlay" id="mod-restaurant" onclick="closeMod('mod-restaurant',event)">
+  <div class="modal-sheet">
+    <div class="drag-h"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h3 class="hl" style="font-size:17px;font-weight:800" id="rest-title">Novo restaurante</h3>
+      <button onclick="closeMod('mod-restaurant')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+    </div>
+    <input type="hidden" id="rest-id"/>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div><label>Nome *</label><input type="text" id="rest-name"/></div>
+      <div><label>Slug (login) *</label><input type="text" id="rest-slug" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/></div>
+      <div><label>Senha *</label><input type="text" id="rest-pass"/></div>
+      <div><label>Telefone</label><input type="text" id="rest-phone"/></div>
+      <div><label>Cidade</label><input type="text" id="rest-city"/></div>
+      <div><label>WhatsApp</label><input type="text" id="rest-wp" placeholder="5547999999999"/></div>
+      <div>
+        <label>Plano</label>
+        <select id="rest-plan">
+          <option value="trial">Trial (30 dias)</option>
+          <option value="basico">Básico — R$ 2.500/mês</option>
+          <option value="pro">Pro — R$ 4.500/mês</option>
+        </select>
+      </div>
+      <div><label>Notas internas</label><textarea id="rest-notes" rows="2" placeholder="Observações sobre o cliente..."></textarea></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:0.5px solid var(--border);margin-top:4px">
+        <div>
+          <div class="hl" style="font-size:13px;font-weight:600">Acesso ativo</div>
+          <div style="font-size:11px;color:var(--text3)">Desative para bloquear login</div>
+        </div>
+        <button class="tog on" id="rest-active-tog" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn-s" onclick="closeMod('mod-restaurant')" style="flex:1">Cancelar</button>
+      <button class="btn-p" onclick="saveRestaurant()" style="flex:2" id="rest-save">Salvar</button>
+    </div>
+    <button class="btn-d" id="rest-del" style="width:100%;margin-top:8px;display:none" onclick="deleteRestaurant()">Excluir restaurante</button>
+  </div>
+</div>
+
+<button class="fab" id="fab" style="display:none" onclick="openNewItem()">
+  <span class="ms" style="color:white;font-size:24px">add</span>
+</button>
+<button id="demo-btn" onclick="simEli()" style="background:var(--amber);color:white;border:none;border-radius:12px;padding:8px 14px;font-size:11px;font-weight:700;font-family:var(--hl);cursor:pointer;box-shadow:0 3px 10px rgba(212,134,10,0.3)">+ Simular Eli</button>
+<div id="toast"></div>
+
+<script>
+const SB_URL='https://uzttjedryajsmngvpaqu.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6dHRqZWRyeWFqc21uZ3ZwYXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5OTIwMDIsImV4cCI6MjA4ODU2ODAwMn0.Z965K_V6FRceBL1jP7zMls4QVYbpjPP9JcoRHUkAwUg';
+const db=supabase.createClient(SB_URL,SB_KEY);
+
+let co=null,isFounder=false,eliOn=true,menuFil='todos',histFil='todos',editId=null;
+let adics=[],alergs=[],photo=null,szCount=1,rtSub=null,statsPeriod='hoje';
+let orders=[],history=[],menuItems=[];
+
+const SL={recebido:{bg:'var(--bg3)',c:'var(--text2)'},preparo:{bg:'var(--amber-l)',c:'var(--amber)'},pronto:{bg:'var(--green-l)',c:'var(--green)'},entregue:{bg:'var(--blue-l)',c:'var(--blue)'},cancelado:{bg:'var(--red-l)',c:'var(--red)'}};
+const SN={recebido:'Em preparo',preparo:'Pronto',pronto:'Entregar'};
+const SF=['recebido','preparo','pronto'];
+const SLB={recebido:'Recebido',preparo:'Em preparo',pronto:'Pronto',entregue:'Entregue',cancelado:'Cancelado'};
+const BC={recebido:'var(--bg4)',preparo:'var(--amber)',pronto:'var(--green)',entregue:'var(--blue)',cancelado:'var(--red)'};
+const CI={lanches:'lunch_dining',bebidas:'local_bar',sobremesas:'cake',entradas:'tapas',pratos:'dinner_dining'};
+const CL={lanches:'Lanches',bebidas:'Bebidas',sobremesas:'Sobremesas',entradas:'Entradas',pratos:'Pratos'};
+const PLANS={trial:{label:'Trial',bg:'var(--amber-l)',c:'var(--amber)'},basico:{label:'Básico',bg:'var(--blue-l)',c:'var(--blue)'},pro:{label:'Pro',bg:'var(--green-l)',c:'var(--green)'}};
+
+// AUTO-LOGIN via URL
+(async()=>{
+  await new Promise(r=>setTimeout(r,600));
+  const p=new URLSearchParams(window.location.search);
+  const sl=p.get('slug'),ps=p.get('pass');
+  if(sl&&ps){document.getElementById('lg-slug').value=sl;document.getElementById('lg-pass').value=ps;await doLogin();}
+  else{show('s-login');}
+})();
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('app-founder').classList.remove('on');
+  if(id==='app')document.getElementById('app').classList.add('on');
+  else if(id==='founder')document.getElementById('app-founder').classList.add('on');
+  else{const el=document.getElementById(id);if(el)el.classList.add('on');}
+}
+
+// ── LOGIN ──
+async function doLogin(){
+  const slug=document.getElementById('lg-slug').value.trim().toLowerCase();
+  const pass=document.getElementById('lg-pass').value.trim();
+  const btn=document.getElementById('lg-btn');
+  btn.textContent='Entrando...';btn.disabled=true;
+  show('s-loading');
+  const{data,error}=await db.from('food_companies').select('*').eq('slug',slug).single();
+  btn.textContent='Entrar';btn.disabled=false;
+  if(error||!data){show('s-login');document.getElementById('lg-err').style.display='block';return;}
+  if(data.password_hash!==pass&&data.founder_password!==pass){show('s-login');document.getElementById('lg-err').style.display='block';return;}
+  if(data.blocked&&!data.is_founder){show('s-login');document.getElementById('lg-err').style.display='block';document.getElementById('lg-err').textContent='Acesso bloqueado. Entre em contato com a Flüxa.';return;}
+  document.getElementById('lg-err').style.display='none';
+  co=data;isFounder=!!data.is_founder;
+  if(isFounder){show('founder');loadFounder();}
+  else{
+    show('app');
+    document.getElementById('tp-name').textContent=data.name;
+    document.getElementById('sn-name').textContent=data.name;
+    document.getElementById('demo-btn').style.display='block';
+    if(data.logo_url){
+      document.getElementById('logo-avatar').innerHTML=`<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+      document.getElementById('perfil-avatar-img').src=data.logo_url;
+      document.getElementById('perfil-avatar-img').style.display='block';
+      document.getElementById('perfil-avatar-icon').style.display='none';
+    }
+    preencherPerfil(data);
+    await loadOrders();await loadMenu();await renderStats();renderHist();startRT();startTick();
+  }
+}
+
+function doLogout(){
+  if(rtSub){db.removeChannel(rtSub);rtSub=null;}
+  co=null;isFounder=false;orders=[];history=[];menuItems=[];
+  document.getElementById('demo-btn').style.display='none';
+  show('s-login');
+}
+
+// ── REALTIME ──
+function startRT(){
+  rtSub=db.channel('food_rt_'+co.id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'food_orders',filter:'company_id=eq.'+co.id},async p=>{
+      const o=p.new;
+      const{data:it}=await db.from('food_order_items').select('*').eq('order_id',o.id);
+      o._items=it||[];orders.unshift(o);renderOrders();
+      if(!document.getElementById('nav-pedidos').classList.contains('active')){toast('🛍 Novo pedido de '+o.cliente_nome+'!');if(navigator.vibrate)navigator.vibrate([80,40,80]);}
+    }).subscribe();
+}
+
+// ── TABS ──
+function go(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
+  if(tab==='pedidos')renderOrders();
+  if(tab==='cardapio')loadMenu();
+  if(tab==='elistats')renderStats();
+  if(tab==='historico')renderHist();
+}
+
+// ── ELI ──
+function toggleEli(){
+  eliOn=!eliOn;
+  const badge=document.getElementById('eli-badge'),dot=document.getElementById('eli-dot'),txt=document.getElementById('eli-txt'),lbl=document.getElementById('eli-lbl'),tog=document.getElementById('eli-tog');
+  if(eliOn){badge.style.background='var(--green-l)';txt.style.color='var(--green)';txt.textContent='ELI ON';dot.style.background='var(--green)';dot.style.animation='pdot 1.5s ease infinite';if(lbl)lbl.textContent='Ativo — atendendo automaticamente';if(tog){tog.classList.add('on');tog.classList.remove('off');}}
+  else{badge.style.background='var(--red-l)';txt.style.color='var(--red)';txt.textContent='ELI OFF';dot.style.background='var(--red)';dot.style.animation='none';if(lbl)lbl.textContent='Desligado — atendimento manual';if(tog){tog.classList.remove('on');tog.classList.add('off');}}
+}
+
+// ── HELPERS ──
+const fmtP=n=>'R$ '+Number(n||0).toFixed(2).replace('.',',');
+function getTotal(o){if(o._items&&o._items.length)return o._items.reduce((a,i)=>a+Number(i.subtotal),0);return Number(o.total)||0;}
+function getTitle(o){if(o._items&&o._items.length){const f=o._items[0];return f.quantity+'x '+f.name+(f.tamanho_selecionado?' ('+f.tamanho_selecionado+')':'')+(o._items.length>1?' +'+(o._items.length-1)+' item(s)':'');}return 'Pedido';}
+function ini(name){return(name||'?').split(' ').map(n=>n[0]).slice(0,2).join('');}
+function fmtTime(d){return new Date(d).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+function fmtDate(d){const dd=new Date(d);return dd.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});}
+
+// ── ORDERS ──
+async function loadOrders(){
+  const{data}=await db.from('food_orders').select('*').eq('company_id',co.id).not('status','in','("entregue","cancelado")').order('created_at',{ascending:false});
+  if(data){for(const o of data){const{data:it}=await db.from('food_order_items').select('*').eq('order_id',o.id);o._items=it||[];}orders=data;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const{data:hist}=await db.from('food_orders').select('*').eq('company_id',co.id).in('status',['entregue','cancelado']).gte('created_at',today.toISOString()).order('created_at',{ascending:false});
+  if(hist){for(const o of hist){const{data:it}=await db.from('food_order_items').select('*').eq('order_id',o.id);o._items=it||[];}history=hist;}
+  renderOrders();renderHist();
+}
+
+function renderOrders(){
+  if(!co)return;
+  const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
+  document.getElementById('p-count').textContent=active.length;
+  const badge=document.getElementById('nav-badge');
+  badge.textContent=active.length;badge.classList.toggle('show',active.length>0);
+  document.getElementById('p-avg').textContent=active.length?Math.round(active.reduce((a,o)=>a+(o.timer_minutes||0),0)/active.length)+'m':'—';
+  const wrap=document.getElementById('orders-wrap');
+  if(!active.length){wrap.innerHTML=`<div style="text-align:center;padding:48px 20px"><div style="width:50px;height:50px;border-radius:50%;background:var(--green-l);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><span class="ms" style="font-size:24px;color:var(--green)">check_circle</span></div><div class="hl" style="font-size:15px;font-weight:700">Tudo em dia!</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Nenhum pedido ativo</div></div>`;return;}
+  wrap.innerHTML=active.map(o=>{
+    const sc=SL[o.status]||SL.recebido,bc=BC[o.status]||'var(--bg4)',nxt=SN[o.status]||'Entregar';
+    const tot=getTotal(o),ttl=getTitle(o),tim=o.timer_minutes||0;
+    const tc=tim>15?'t-late':tim>8?'t-warn':'t-ok',icon=tim>15?'warning':'schedule';
+    return `<div class="swipe-wrap" id="sw-${o.id}">
+      <div class="swipe-bg right" id="sb-r-${o.id}"><div class="swipe-icon"><span class="ms" style="color:white;font-size:17px">arrow_forward</span></div><span class="swipe-lbl">${nxt}</span></div>
+      <div class="swipe-bg left" id="sb-l-${o.id}"><span class="swipe-lbl">Cancelar</span><div class="swipe-icon"><span class="ms" style="color:white;font-size:17px">close</span></div></div>
+      <div class="order-card" id="oc-${o.id}" style="border-left:3px solid ${bc}" onclick="openOrder('${o.id}')">
+        <div style="width:50px;height:50px;border-radius:10px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)">
+          <span class="hl" style="font-size:14px;font-weight:800;color:var(--blue)">${ini(o.cliente_nome)}</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+            <span class="hl" style="font-size:13px;font-weight:700">${o.cliente_nome}</span>
+            <div class="timer ${tc}"><span class="ms" style="font-size:12px">${icon}</span>${tim}m</div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ttl}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="font-size:10px;color:var(--text3)">${o.order_number}</span>
+              <span class="status-pill" style="background:${sc.bg};color:${sc.c}">${SLB[o.status]}</span>
+            </div>
+            <span class="hl" style="font-size:12px;font-weight:700">${fmtP(tot)}</span>
+          </div>
+          ${o.obs?`<div style="margin-top:5px;font-size:10px;color:var(--amber);display:flex;align-items:center;gap:3px"><span class="ms" style="font-size:12px">info</span>${o.obs}</div>`:''}
+          <div class="hold-bar" id="hb-${o.id}"><div class="hold-fill" id="hf-${o.id}"></div></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  active.forEach(o=>attachSwipe(o.id));
+}
+
+function attachSwipe(id){
+  const wrap=document.getElementById('sw-'+id),card=document.getElementById('oc-'+id);
+  const r=document.getElementById('sb-r-'+id),l=document.getElementById('sb-l-'+id);
+  const hw=document.getElementById('hb-'+id),hf=document.getElementById('hf-'+id);
+  if(!wrap||!card)return;
+  const TH=80;let sx=0,cx=0,dr=false,ht=null,htr=false,hi=null;
+  const gx=e=>e.type.startsWith('touch')?e.touches[0].clientX:e.clientX;
+  function onS(e){if(e.type==='mousedown'&&e.target.closest('button'))return;sx=gx(e);cx=0;dr=true;htr=false;card.style.transition='none';ht=setTimeout(()=>{hw.style.opacity='1';hf.style.transition='width 0.6s linear';hf.style.width='100%';hi=setTimeout(()=>{htr=true;if(navigator.vibrate)navigator.vibrate(30);},600);},200);}
+  function onM(e){if(!dr)return;const x=gx(e)-sx;cx=x;if(Math.abs(x)>6)e.preventDefault();card.style.transform=`translateX(${x}px)`;const p=Math.min(Math.abs(x)/TH,1);if(x>0){r.style.opacity=String(p*.9+.1);l.style.opacity='0';r.classList.toggle('on',p>.6);l.classList.remove('on');}else if(x<0){l.style.opacity=String(p*.9+.1);r.style.opacity='0';l.classList.toggle('on',Math.abs(x)>TH*.6);r.classList.remove('on');}else{r.style.opacity='0';l.style.opacity='0';}}
+  function onE(){if(!dr)return;dr=false;clearTimeout(ht);clearTimeout(hi);hw.style.opacity='0';hf.style.transition='none';hf.style.width='0%';r.classList.remove('on');l.classList.remove('on');card.style.transition='transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)';if(cx<-TH&&htr){card.classList.add('fly-l');setTimeout(()=>cancelOrder(id),280);}else if(cx>TH){card.classList.add('fly-r');setTimeout(()=>advOrder(id),280);}else{card.style.transform='translateX(0)';r.style.opacity='0';l.style.opacity='0';}}
+  wrap.addEventListener('touchstart',onS,{passive:true});wrap.addEventListener('touchmove',onM,{passive:false});wrap.addEventListener('touchend',onE);
+  wrap.addEventListener('mousedown',onS);document.addEventListener('mousemove',onM);document.addEventListener('mouseup',onE);
+}
+
+async function advOrder(id){
+  const idx=orders.findIndex(o=>o.id===id);if(idx===-1)return;
+  const cur=orders[idx].status,ci=SF.indexOf(cur);
+  let ns;if(cur==='pronto')ns='entregue';else if(ci<SF.length-1)ns=SF[ci+1];else return;
+  orders[idx].status=ns;
+  await db.from('food_orders').update({status:ns,updated_at:new Date().toISOString()}).eq('id',id);
+  if(ns==='entregue'){const o=orders.splice(idx,1)[0];o.completed_at=new Date().toISOString();history.unshift(o);renderHist();}
+  renderOrders();
+}
+
+async function cancelOrder(id){
+  const idx=orders.findIndex(o=>o.id===id);if(idx===-1)return;
+  await db.from('food_orders').update({status:'cancelado',updated_at:new Date().toISOString()}).eq('id',id);
+  const o=orders.splice(idx,1)[0];o.status='cancelado';o.completed_at=new Date().toISOString();
+  history.unshift(o);renderOrders();renderHist();toast('Pedido cancelado');
+}
+
+function openOrder(id){
+  const o=orders.find(x=>x.id===id);if(!o)return;
+  const sc=SL[o.status]||SL.recebido,tot=getTotal(o);
+  const iHtml=o._items&&o._items.length?o._items.map(it=>{
+    const a=typeof it.adicionais_selecionados==='string'?JSON.parse(it.adicionais_selecionados||'[]'):(it.adicionais_selecionados||[]);
+    return `<div style="padding:7px 0;border-bottom:0.5px solid var(--border)"><div style="font-size:13px;font-weight:600">${it.quantity}x ${it.name}${it.tamanho_selecionado?' ('+it.tamanho_selecionado+')':''}</div>${a.length?`<div style="margin-top:3px">${a.map(x=>`<span class="adic-chip">+${x.nome||x}</span>`).join('')}</div>`:''}<div style="font-size:12px;color:var(--blue);margin-top:2px;font-weight:600">${fmtP(it.subtotal)}</div></div>`;
+  }).join(''):'<div style="font-size:13px;color:var(--text2)">—</div>';
+  document.getElementById('mod-order-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="width:46px;height:46px;border-radius:10px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border)"><span class="hl" style="font-size:13px;font-weight:800;color:var(--blue)">${ini(o.cliente_nome)}</span></div>
+      <div><div class="hl" style="font-size:15px;font-weight:800">${o.cliente_nome}</div><div style="font-size:12px;color:var(--text3)">${o.order_number} · ${o.timer_minutes||0}min atrás</div></div>
+    </div>
+    <div style="background:var(--bg2);border-radius:12px;padding:12px;margin-bottom:12px"><div class="section-lbl" style="margin-bottom:7px">Itens</div>${iHtml}</div>
+    ${o.obs?`<div style="background:var(--amber-l);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--amber);margin-bottom:12px;display:flex;gap:6px"><span class="ms" style="font-size:15px">info</span>${o.obs}</div>`:''}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span class="status-pill" style="background:${sc.bg};color:${sc.c};font-size:11px">${SLB[o.status]}</span>
+      <span class="hl" style="font-size:20px;font-weight:800">${fmtP(tot)}</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-d" style="flex:1" onclick="cancelOrder('${id}');closeMod('mod-order')">Cancelar</button>
+      <button class="btn-p" style="flex:2" onclick="advOrder('${id}');closeMod('mod-order')">${o.status==='pronto'?'✓ Entregar':'→ Avançar'}</button>
+    </div>`;
+  openMod('mod-order');
+}
+
+// ── MENU ──
+async function loadMenu(fil){
+  if(!co)return;if(fil!==undefined)menuFil=fil;
+  const{data}=await db.from('food_menu_items').select('*').eq('company_id',co.id).order('display_order');
+  if(data)menuItems=data;renderMenu();
+}
+
+function renderMenu(){
+  if(!co)return;
+  const cats=['todos',...new Set(menuItems.map(i=>i.category))];
+  document.getElementById('cat-pills').innerHTML=cats.map(c=>`<button class="filter-pill ${menuFil===c?'active':''}" onclick="loadMenu('${c}')">${c==='todos'?'Todos':CL[c]||c}</button>`).join('');
+  const fil=menuFil==='todos'?menuItems:menuItems.filter(i=>i.category===menuFil);
+  const sorted=[...fil].sort((a,b)=>(b.destaque?1:0)-(a.destaque?1:0));
+  document.getElementById('m-count').textContent=menuItems.length+' itens';
+  if(!sorted.length){document.getElementById('menu-grid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 20px"><span class="ms" style="font-size:36px;color:var(--text3);display:block;margin-bottom:10px">menu_book</span><div class="hl" style="font-size:14px;font-weight:700;margin-bottom:4px">Cardápio vazio</div><div style="font-size:12px;color:var(--text3)">Toque em + para adicionar</div></div>`;return;}
+  document.getElementById('menu-grid').innerHTML=sorted.map(item=>{
+    const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});
+    const ad=typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]);
+    return `<div class="menu-card ${!item.active?'off':''}" onclick="openEditItem('${item.id}')">
+      <div class="menu-img">${item.image_url?`<img src="${item.image_url}" alt="${item.name}"/>`:`<span class="ms" style="font-size:32px;color:var(--text3)">${CI[item.category]||'restaurant'}</span>`}${item.esgotado_hoje?'<div class="esg-chip">ESGOTADO</div>':''}${item.destaque?'<div class="dest-chip">★</div>':''}</div>
+      <div style="padding:9px">
+        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px">${item.name}</div>
+        <div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;min-height:13px">${item.description||''}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+          <span style="font-size:12px;font-weight:700;color:var(--blue)">${fmtP(item.price)}</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button class="esg-btn ${item.esgotado_hoje?'esg':'disp'}" onclick="togEsg('${item.id}',event)">${item.esgotado_hoje?'ESGOT.':'DISP.'}</button>
+            <button class="tog ${item.active?'on':'off'}" style="width:34px;height:18px" onclick="togAtivo('${item.id}',event)"><div class="tog-dot" style="width:14px;height:14px;top:2px;${item.active?'left:18px':'left:2px'}"></div></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function togEsg(id,e){e.stopPropagation();const it=menuItems.find(i=>i.id===id);if(!it)return;it.esgotado_hoje=!it.esgotado_hoje;await db.from('food_menu_items').update({esgotado_hoje:it.esgotado_hoje}).eq('id',id);renderMenu();}
+async function togAtivo(id,e){e.stopPropagation();const it=menuItems.find(i=>i.id===id);if(!it)return;it.active=!it.active;await db.from('food_menu_items').update({active:it.active}).eq('id',id);renderMenu();}
+
+function resetIM(){editId=null;adics=[];alergs=[];photo=null;szCount=1;document.getElementById('mi-title').textContent='Novo item';['fi-nome','fi-preco','fi-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('fi-cat').value='lanches';const prev=document.getElementById('fi-prev');prev.src='';prev.style.display='none';document.getElementById('fi-ph-icon').style.display='block';document.getElementById('fi-ph-txt').style.display='block';document.getElementById('fi-sizes').innerHTML=`<div style="display:flex;align-items:center;gap:8px" id="sz-1"><input type="text" id="sz-l-1" placeholder="Nome (ex: Médio)" style="flex:1"/><input type="number" id="sz-p-1" placeholder="R$" style="width:76px" step="0.01"/><button onclick="addSzRow()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button></div>`;document.getElementById('fi-adic-tags').innerHTML='';document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>p.classList.remove('active'));document.getElementById('fi-dest').className='tog off';document.getElementById('fi-esg').className='tog off';document.getElementById('fi-del').style.display='none';}
+function addSzRow(){szCount++;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+szCount;d.innerHTML=`<input type="text" id="sz-l-${szCount}" placeholder="Nome" style="flex:1"/><input type="number" id="sz-p-${szCount}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="document.getElementById('sz-${szCount}').remove()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--red);font-size:18px">remove_circle</span></button>`;document.getElementById('fi-sizes').appendChild(d);}
+function openNewItem(){resetIM();openMod('mod-item');}
+function openEditItem(id){resetIM();const item=menuItems.find(i=>i.id===id);if(!item)return;editId=id;document.getElementById('mi-title').textContent='Editar item';document.getElementById('fi-nome').value=item.name;document.getElementById('fi-preco').value=item.price;document.getElementById('fi-desc').value=item.description||'';document.getElementById('fi-cat').value=item.category;if(item.image_url){photo=item.image_url;document.getElementById('fi-prev').src=item.image_url;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';}const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});const szE=Object.entries(sz);if(szE.length){document.getElementById('fi-sizes').innerHTML='';szE.forEach(([l,p],i)=>{const n=i+1;szCount=n;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+n;d.innerHTML=`<input type="text" id="sz-l-${n}" value="${l}" placeholder="Nome" style="flex:1"/><input type="number" id="sz-p-${n}" value="${p}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="${n===1?'addSzRow()':'document.getElementById(\'sz-'+n+'\').remove()'}" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:${n===1?'var(--text3)':'var(--red)'};font-size:18px">${n===1?'add_circle':'remove_circle'}</span></button>`;document.getElementById('fi-sizes').appendChild(d);});}adics=[...(typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]))];renderAdicTags();alergs=[...(typeof item.alergenicos==='string'?JSON.parse(item.alergenicos||'[]'):(item.alergenicos||[]))];document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>{if(alergs.includes(p.textContent.trim()))p.classList.add('active');});document.getElementById('fi-dest').className='tog '+(item.destaque?'on':'off');document.getElementById('fi-esg').className='tog '+(item.esgotado_hoje?'on':'off');document.getElementById('fi-del').style.display='block';openMod('mod-item');}
+function handlePhoto(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{photo=e.target.result;document.getElementById('fi-prev').src=e.target.result;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';};r.readAsDataURL(f);}
+function addAdic(){const i=document.getElementById('fi-adic');const v=i.value.trim();if(!v)return;if(!adics.includes(v))adics.push(v);i.value='';renderAdicTags();}
+function renderAdicTags(){document.getElementById('fi-adic-tags').innerHTML=adics.map((a,i)=>`<span class="tag">${a}<span class="tag-x" onclick="remAdic(${i})">×</span></span>`).join('');}
+function remAdic(i){adics.splice(i,1);renderAdicTags();}
+function togAlerg(name,el){el.classList.toggle('active');if(alergs.includes(name))alergs=alergs.filter(a=>a!==name);else alergs.push(name);}
+
+async function saveItem(){
+  const nome=document.getElementById('fi-nome').value.trim(),preco=parseFloat(document.getElementById('fi-preco').value),cat=document.getElementById('fi-cat').value;
+  if(!nome||isNaN(preco)){toast('Preencha nome e preço');return;}
+  const btn=document.getElementById('fi-save');btn.textContent='Salvando...';btn.disabled=true;
+  const sz={};document.querySelectorAll('[id^="sz-"]:not([id^="sz-l"]):not([id^="sz-p"])').forEach(row=>{const n=row.id.replace('sz-','');const l=document.getElementById('sz-l-'+n);const p=document.getElementById('sz-p-'+n);if(l&&p&&l.value.trim()&&p.value)sz[l.value.trim()]=parseFloat(p.value);});
+  let imgUrl=photo;
+  if(photo&&photo.startsWith('data:')){try{const res=await fetch(photo);const blob=await res.blob();const ext=blob.type.split('/')[1]||'jpg';const fname=co.id+'/'+Date.now()+'.'+ext;const{data:up,error:ue}=await db.storage.from('food-images').upload(fname,blob,{upsert:true});if(!ue&&up){const{data:ud}=db.storage.from('food-images').getPublicUrl(fname);imgUrl=ud.publicUrl;}}catch{imgUrl=null;}}
+  const payload={company_id:co.id,name:nome,price:preco,category:cat,description:document.getElementById('fi-desc').value.trim(),sizes:sz,adicionais:adics,alergenicos:alergs,image_url:imgUrl,destaque:document.getElementById('fi-dest').classList.contains('on'),esgotado_hoje:document.getElementById('fi-esg').classList.contains('on'),updated_at:new Date().toISOString()};
+  let err;if(editId){({error:err}=await db.from('food_menu_items').update(payload).eq('id',editId));}else{payload.display_order=menuItems.length+1;({error:err}=await db.from('food_menu_items').insert(payload));}
+  btn.textContent='Salvar';btn.disabled=false;
+  if(err){toast('Erro: '+err.message);return;}
+  closeMod('mod-item');await loadMenu();toast(editId?'Item atualizado!':'Item adicionado!');
+}
+
+async function deleteItem(){if(!editId)return;await db.from('food_menu_items').delete().eq('id',editId);closeMod('mod-item');await loadMenu();toast('Item removido');}
+
+// ── STATS REAIS ──
+async function renderStats(){
+  if(!co)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const weekAgo=new Date(Date.now()-7*864e5);
+  const since=statsPeriod==='hoje'?today.toISOString():weekAgo.toISOString();
+  const{data:allO}=await db.from('food_orders').select('*,food_order_items(*)').eq('company_id',co.id).gte('created_at',since);
+  const pago=(allO||[]).filter(o=>o.status==='entregue');
+  const total=pago.reduce((a,o)=>a+Number(o.total||0),0);
+  const ticket=pago.length?total/pago.length:0;
+  const{data:reviews}=await db.from('food_reviews').select('*').eq('company_id',co.id).gte('created_at',since).order('created_at',{ascending:false}).limit(10);
+  const avgR=reviews&&reviews.length?reviews.reduce((a,r)=>a+r.rating,0)/reviews.length:0;
+  document.getElementById('s-metrics').innerHTML=`
+    <div class="metric-card"><div class="metric-lbl">Pedidos</div><div class="metric-val">${(allO||[]).length}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Faturamento</div><div class="metric-val" style="font-size:15px">${fmtP(total)}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Ticket médio</div><div class="metric-val" style="font-size:15px">${pago.length?fmtP(ticket):'—'}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Avaliação</div><div class="metric-val">${reviews&&reviews.length?avgR.toFixed(1):'—'}</div>${reviews&&reviews.length?`<div style="color:#F5A623;font-size:11px">${'★'.repeat(Math.round(avgR))}${'☆'.repeat(5-Math.round(avgR))}</div>`:''}</div>`;
+  document.getElementById('s-ratings').innerHTML=reviews&&reviews.length?reviews.map((rv,i)=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:${i<reviews.length-1?'0.5px solid var(--border)':'none'}"><div><div style="font-size:12px;font-weight:600">${rv.cliente_nome}</div><div style="color:#F5A623;font-size:12px">${'★'.repeat(rv.rating)}${'☆'.repeat(5-rv.rating)}</div>${rv.comment?`<div style="font-size:10px;color:var(--text2);margin-top:2px">${rv.comment}</div>`:''}</div><div style="font-size:11px;color:var(--text3)">${fmtTime(rv.created_at)}</div></div>`).join(''):'<p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhuma avaliação ainda</p>';
+  if(allO&&allO.length){
+    const hc={};allO.forEach(o=>{const h=Math.floor(new Date(o.created_at).getHours()/2)*2;hc[h]=(hc[h]||0)+1;});
+    const peaks=Object.entries(hc).sort((a,b)=>b[1]-a[1]).slice(0,4);const mx=peaks[0]?peaks[0][1]:1;
+    const pkL=['Baixa','Normal','Alta','Máxima'],pkC=['var(--text3)','var(--text3)','var(--amber)','var(--red)'];
+    document.getElementById('s-peaks').innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">${peaks.map(([h,c])=>{const pct=Math.round(c/mx*100);const li=Math.min(Math.floor(pct/26),3);const h2=parseInt(h);return `<div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">${String(h2).padStart(2,'0')}h–${String(h2+2).padStart(2,'0')}h</span><span style="font-size:11px;font-weight:700;color:${pkC[li]}">${pkL[li]}</span></div><div class="peak-bar"><div class="peak-fill" style="width:${pct}%"></div></div></div>`;}).join('')}</div>`;
+  }
+  const cnts={};(allO||[]).forEach(o=>{if(o.food_order_items)o.food_order_items.forEach(i=>{cnts[i.name]=(cnts[i.name]||0)+i.quantity;});});
+  const srt=Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,5);const mx2=srt[0]?srt[0][1]:1;
+  document.getElementById('s-top').innerHTML=srt.length?srt.map(([n,c],i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:${i<srt.length-1?'0.5px solid var(--border)':'none'}"><span class="hl" style="font-size:13px;font-weight:800;color:var(--text3);width:16px">${i+1}</span><div style="flex:1"><div style="font-size:12px;font-weight:600">${n}</div><div class="rank-bar"><div class="rank-fill" style="width:${Math.round(c/mx2*100)}%"></div></div></div><span style="font-size:12px;color:var(--text2);font-weight:600">${c}x</span></div>`).join(''):'<p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhum pedido ainda</p>';
+}
+function fStats(el,p){document.querySelectorAll('#tab-elistats .filter-pill').forEach(x=>x.classList.remove('active'));el.classList.add('active');statsPeriod=p;renderStats();}
+
+// ── HISTÓRICO ──
+function renderHist(f){
+  if(f!==undefined)histFil=f;
+  if(!co)return;
+  const pago=history.filter(o=>o.status==='entregue');
+  document.getElementById('h-total').textContent=fmtP(pago.reduce((a,o)=>a+getTotal(o),0));
+  document.getElementById('h-count').textContent=pago.length;
+  const fil=histFil==='todos'?history:history.filter(o=>o.status===histFil);
+  if(!fil.length){document.getElementById('h-list').innerHTML=`<div style="text-align:center;padding:28px;color:var(--text3)"><span class="ms" style="font-size:30px;display:block;margin-bottom:8px">receipt_long</span><div style="font-size:13px">Nenhum registro</div></div>`;return;}
+  document.getElementById('h-list').innerHTML=fil.map(o=>{
+    const tot=getTotal(o),ip=o.status==='entregue';
+    const hora=o.completed_at?fmtTime(o.completed_at):o.created_at?fmtTime(o.created_at):'—';
+    return `<div class="hist-row"><div style="display:flex;align-items:center;gap:10px"><div style="width:4px;height:32px;background:${ip?'var(--green)':'var(--red)'};border-radius:2px"></div><div><div style="display:flex;align-items:center;gap:5px"><span style="font-size:12px;font-weight:700">${o.order_number}</span><span style="font-size:9px;padding:2px 6px;background:${ip?'var(--green-l)':'var(--red-l)'};color:${ip?'var(--green)':'var(--red)'};border-radius:4px;font-weight:800;font-family:var(--hl)">${ip?'PAGO':'CANCEL.'}</span></div><div style="font-size:12px;color:var(--text2)">${o.cliente_nome}</div></div></div><div style="text-align:right"><div class="hl" style="font-size:13px;font-weight:700">${fmtP(tot)}</div><div style="font-size:10px;color:var(--text3)">${hora}</div></div></div>`;
+  }).join('');
+}
+function fHist(f,el){document.querySelectorAll('#tab-historico .filter-pill').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderHist(f);}
+function exportCSV(){
+  if(!history.length){toast('Nenhum registro');return;}
+  const rows=[['ID','Cliente','Total','Status','Hora']];
+  history.forEach(o=>rows.push([o.order_number,o.cliente_nome,getTotal(o).toFixed(2),o.status,o.completed_at?fmtTime(o.completed_at):'']));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='historico.csv';a.click();
+}
+
+// ── PERFIL ──
+function preencherPerfil(data){
+  document.getElementById('perfil-nome-display').textContent=data.name||'—';
+  document.getElementById('perfil-slug-display').textContent='@'+(data.slug||'—');
+  const plan=PLANS[data.plan]||PLANS.trial;
+  const badge=document.getElementById('perfil-plan-badge');
+  badge.textContent=plan.label;badge.style.background=plan.bg;badge.style.color=plan.c;
+  document.getElementById('perfil-nome').value=data.name||'';
+  document.getElementById('perfil-desc').value=data.description||'';
+  document.getElementById('perfil-tel').value=data.phone||'';
+  document.getElementById('perfil-city').value=data.city||'';
+  document.getElementById('perfil-wp').value=data.whatsapp_number||'';
+  // Link do cardápio
+  const base=window.location.origin+'/cardapio.html?slug='+data.slug;
+  const el=document.getElementById('perfil-link');
+  if(el)el.value=base;
+}
+
+async function salvarPerfil(){
+  const nome=document.getElementById('perfil-nome').value.trim();
+  if(!nome){toast('Nome obrigatório');return;}
+  const payload={name:nome,description:document.getElementById('perfil-desc').value.trim(),phone:document.getElementById('perfil-tel').value.trim(),city:document.getElementById('perfil-city').value.trim(),whatsapp_number:document.getElementById('perfil-wp').value.trim()};
+  const nova=document.getElementById('perfil-senha').value.trim();
+  if(nova)payload.password_hash=nova;
+  const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
+  if(error){toast('Erro ao salvar');return;}
+  Object.assign(co,payload);
+  document.getElementById('tp-name').textContent=co.name;
+  document.getElementById('sn-name').textContent=co.name;
+  document.getElementById('perfil-nome-display').textContent=co.name;
+  document.getElementById('perfil-senha').value='';
+  logActivity('perfil_atualizado','company',co.id,{name:co.name});
+  toast('Perfil salvo!');
+}
+
+async function uploadAvatarRestaurante(inp){
+  const f=inp.files[0];if(!f||!co)return;
+  toast('Enviando foto...');
+  // Tentar food-images primeiro, fallback para logos
+  const ext=(f.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+  const fname=co.id+'/logo.'+ext;
+  let url=null;
+  for(const bucket of['food-images','logos']){
+    const{data:up,error}=await db.storage.from(bucket).upload(fname,f,{upsert:true,contentType:f.type});
+    if(!error&&up){
+      const{data:ud}=db.storage.from(bucket).getPublicUrl(fname);
+      url=ud.publicUrl+'?t='+Date.now();
+      break;
+    }
+  }
+  if(!url){
+    // Fallback: converter para base64 e salvar na tabela mesmo (workaround)
+    const reader=new FileReader();
+    reader.onload=async(e)=>{
+      const b64=e.target.result;
+      await db.from('food_companies').update({logo_url:b64}).eq('id',co.id);
+      co.logo_url=b64;
+      _applyAvatar(b64);
+      toast('Foto salva!');
+    };
+    reader.readAsDataURL(f);
+    return;
+  }
+  await db.from('food_companies').update({logo_url:url}).eq('id',co.id);
+  co.logo_url=url;
+  _applyAvatar(url);
+  logActivity('upload_logo','company',co.id,{bucket:'food-images'});
+  toast('Foto atualizada!');
+}
+function _applyAvatar(url){
+  document.getElementById('perfil-avatar-img').src=url;
+  document.getElementById('perfil-avatar-img').style.display='block';
+  document.getElementById('perfil-avatar-icon').style.display='none';
+  document.getElementById('logo-avatar').innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+}
+
+// ── ACTIVITY LOGS ──
+async function logActivity(action,entity,entityId,details){
+  try{
+    await db.from('food_activity_logs').insert({
+      company_id:co?.id||null,
+      user_name:co?.name||'Sistema',
+      action,entity,entity_id:entityId,
+      details:details||{}
+    });
+  }catch{}
+}
+
+// ══════════════════════════════════
+// PAINEL FOUNDER
+// ══════════════════════════════════
+let founderRestaurants=[];
+let currentFounderTab='visao-geral';
+
+async function loadFounder(){
+  const{data:rests}=await db.from('food_companies').select('*').eq('is_founder',false).order('created_at');
+  founderRestaurants=rests||[];
+  renderFounderKPIs();
+  renderFounderStatusCards();
+  renderFounderRestaurantList();
+  renderFounderFinanceiro();
+}
+
+function fTab(tab,el){
+  currentFounderTab=tab;
+  document.querySelectorAll('.f-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['visao-geral','restaurantes','financeiro'].forEach(t=>{
+    document.getElementById('f-tab-'+t).style.display=t===tab?'block':'none';
+  });
+}
+
+function renderFounderKPIs(){
+  const ativos=founderRestaurants.filter(r=>r.active&&!r.blocked).length;
+  const bloqueados=founderRestaurants.filter(r=>r.blocked).length;
+  const inativos=founderRestaurants.filter(r=>!r.active&&!r.blocked).length;
+  const mrr=founderRestaurants.filter(r=>r.active&&!r.blocked).reduce((a,r)=>{
+    if(r.plan==='pro')return a+4500;
+    if(r.plan==='basico')return a+2500;
+    return a;
+  },0);
+  document.getElementById('f-kpis').innerHTML=`
+    <div class="card"><div class="metric-lbl">Restaurantes ativos</div><div class="metric-val" style="font-size:28px;color:var(--green)">${ativos}</div></div>
+    <div class="card"><div class="metric-lbl">MRR estimado</div><div class="metric-val" style="font-size:22px;color:var(--blue)">${fmtP(mrr)}</div><div style="font-size:10px;color:var(--text3);margin-top:4px">por mês</div></div>
+    <div class="card"><div class="metric-lbl">Em trial</div><div class="metric-val" style="font-size:28px;color:var(--amber)">${founderRestaurants.filter(r=>r.plan==='trial').length}</div></div>
+    <div class="card"><div class="metric-lbl">Bloqueados</div><div class="metric-val" style="font-size:28px;color:var(--red)">${bloqueados}</div></div>`;
+}
+
+function renderFounderStatusCards(){
+  if(!founderRestaurants.length){
+    document.getElementById('f-status-cards').innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:12px">store</span><div class="hl" style="font-size:15px;font-weight:700">Nenhum restaurante</div><div style="font-size:13px;margin-top:6px">Vá em "Restaurantes" e crie o primeiro</div></div>`;
+    return;
+  }
+  document.getElementById('f-status-cards').innerHTML=founderRestaurants.map(r=>{
+    const plan=PLANS[r.plan]||PLANS.trial;
+    const statusColor=r.blocked?'var(--red)':r.active?'var(--green)':'var(--text3)';
+    const statusLabel=r.blocked?'Bloqueado':r.active?'Ativo':'Inativo';
+    return `<div class="r-card ${r.blocked?'blocked':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:38px;height:38px;border-radius:10px;overflow:hidden;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            ${r.logo_url?`<img src="${r.logo_url}" style="width:100%;height:100%;object-fit:cover"/>`:`<span class="ms" style="font-size:18px;color:var(--text3)">store</span>`}
+          </div>
+          <div>
+            <div class="hl" style="font-size:14px;font-weight:700">${r.name}</div>
+            <div style="font-size:11px;color:var(--text3)">@${r.slug} ${r.city?'· '+r.city:''}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:${statusColor}">
+            <span style="width:6px;height:6px;border-radius:50%;background:${statusColor};display:inline-block"></span>${statusLabel}
+          </span>
+          <span class="plan-badge" style="background:${plan.bg};color:${plan.c}">${plan.label}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button onclick="openEditRestaurant('${r.id}')" style="flex:1;min-width:80px;padding:7px;background:var(--bg2);border:none;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--hl);color:var(--text)">
+          <span class="ms" style="font-size:14px;vertical-align:middle">edit</span> Editar
+        </button>
+        <button onclick="toggleBlock('${r.id}',${!r.blocked})" style="flex:1;min-width:80px;padding:7px;background:${r.blocked?'var(--green-l)':'var(--red-l)'};border:none;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--hl);color:${r.blocked?'var(--green)':'var(--red)'}">
+          <span class="ms" style="font-size:14px;vertical-align:middle">${r.blocked?'lock_open':'block'}</span> ${r.blocked?'Desbloquear':'Bloquear'}
+        </button>
+        <button onclick="openRestaurantAsFounder('${r.slug}','${r.password_hash}')" style="flex:1;min-width:80px;padding:7px;background:var(--blue-l);border:none;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--hl);color:var(--blue)">
+          <span class="ms" style="font-size:14px;vertical-align:middle">open_in_new</span> Acessar
+        </button>
+      </div>
+      ${r.notes?`<div style="margin-top:8px;font-size:11px;color:var(--text2);background:var(--bg2);padding:6px 10px;border-radius:6px">📝 ${r.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderFounderRestaurantList(){
+  if(!founderRestaurants.length){
+    document.getElementById('f-restaurant-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:12px">store</span><div style="font-size:14px">Nenhum restaurante cadastrado</div></div>';
+    return;
+  }
+  document.getElementById('f-restaurant-list').innerHTML=founderRestaurants.map(r=>{
+    const plan=PLANS[r.plan]||PLANS.trial;
+    return `<div class="r-card ${r.blocked?'blocked':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            ${r.logo_url?`<img src="${r.logo_url}" style="width:100%;height:100%;object-fit:cover"/>`:`<span class="ms" style="font-size:22px;color:var(--text3)">store</span>`}
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <div class="hl" style="font-size:14px;font-weight:700">${r.name}</div>
+              <span class="plan-badge" style="background:${plan.bg};color:${plan.c}">${plan.label}</span>
+              ${r.blocked?'<span class="plan-badge" style="background:var(--red-l);color:var(--red)">Bloqueado</span>':''}
+            </div>
+            <div style="font-size:11px;color:var(--text3)">@${r.slug} ${r.city?'· '+r.city:''} ${r.phone?'· '+r.phone:''}</div>
+            <div style="font-size:11px;color:var(--text3)">Senha: <b>${r.password_hash}</b></div>
+          </div>
+        </div>
+        <button onclick="openEditRestaurant('${r.id}')" style="padding:8px 14px;background:var(--bg2);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--hl)">
+          <span class="ms" style="font-size:15px;vertical-align:middle">edit</span>
+        </button>
+      </div>
+      ${r.notes?`<div style="margin-top:10px;font-size:11px;color:var(--text2);background:var(--bg2);padding:6px 10px;border-radius:6px">📝 ${r.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderFounderFinanceiro(){
+  const totalMRR=founderRestaurants.filter(r=>r.active&&!r.blocked).reduce((a,r)=>{
+    if(r.plan==='pro')return a+4500;
+    if(r.plan==='basico')return a+2500;
+    return a;
+  },0);
+  document.getElementById('f-fin-kpis').innerHTML=`
+    <div class="card"><div class="metric-lbl">MRR estimado</div><div class="metric-val" style="font-size:26px;color:var(--blue)">${fmtP(totalMRR)}</div></div>
+    <div class="card"><div class="metric-lbl">Clientes pagantes</div><div class="metric-val" style="font-size:26px;color:var(--green)">${founderRestaurants.filter(r=>r.active&&!r.blocked&&r.plan!=='trial').length}</div></div>
+    <div class="card"><div class="metric-lbl">Potencial (todos ativos)</div><div class="metric-val" style="font-size:18px">${fmtP(founderRestaurants.filter(r=>!r.blocked).length*2500)}</div></div>
+    <div class="card"><div class="metric-lbl">Setup fees</div><div class="metric-val" style="font-size:22px">${fmtP(founderRestaurants.length*1000)}</div></div>`;
+  document.getElementById('f-fin-list').innerHTML=founderRestaurants.map(r=>{
+    const plan=PLANS[r.plan]||PLANS.trial;
+    const valor=r.plan==='pro'?4500:r.plan==='basico'?2500:0;
+    return `<div style="background:white;border-radius:12px;padding:14px 16px;border:0.5px solid var(--border);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="hl" style="font-size:13px;font-weight:700">${r.name}</div>
+        <span class="plan-badge" style="background:${plan.bg};color:${plan.c};margin-top:4px">${plan.label}</span>
+      </div>
+      <div style="text-align:right">
+        <div class="hl" style="font-size:16px;font-weight:800;color:${valor>0?'var(--green)':'var(--text3)'}">${valor>0?fmtP(valor)+'/mês':'Trial'}</div>
+        ${r.blocked?'<div style="font-size:10px;color:var(--red)">Acesso bloqueado</div>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function toggleBlock(id,block){
+  await db.from('food_companies').update({blocked:block,blocked_reason:block?'Inadimplência':null}).eq('id',id);
+  const r=founderRestaurants.find(x=>x.id===id);if(r){r.blocked=block;}
+  renderFounderKPIs();renderFounderStatusCards();renderFounderRestaurantList();renderFounderFinanceiro();
+  toast(block?'Restaurante bloqueado':'Acesso restaurado');
+}
+
+function openRestaurantAsFounder(slug,pass){
+  const url=window.location.origin+'?slug='+slug+'&pass='+pass;
+  window.open(url,'_blank');
+}
+
+function openNewRestaurant(){
+  document.getElementById('rest-id').value='';
+  document.getElementById('rest-title').textContent='Novo restaurante';
+  ['rest-name','rest-slug','rest-pass','rest-phone','rest-city','rest-wp','rest-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rest-plan').value='trial';
+  document.getElementById('rest-active-tog').className='tog on';
+  document.getElementById('rest-del').style.display='none';
+  openMod('mod-restaurant');
+}
+
+function openEditRestaurant(id){
+  const r=founderRestaurants.find(x=>x.id===id);if(!r)return;
+  document.getElementById('rest-id').value=r.id;
+  document.getElementById('rest-title').textContent='Editar restaurante';
+  document.getElementById('rest-name').value=r.name||'';
+  document.getElementById('rest-slug').value=r.slug||'';
+  document.getElementById('rest-pass').value=r.password_hash||'';
+  document.getElementById('rest-phone').value=r.phone||'';
+  document.getElementById('rest-city').value=r.city||'';
+  document.getElementById('rest-wp').value=r.whatsapp_number||'';
+  document.getElementById('rest-notes').value=r.notes||'';
+  document.getElementById('rest-plan').value=r.plan||'trial';
+  document.getElementById('rest-active-tog').className='tog '+(r.active?'on':'off');
+  document.getElementById('rest-del').style.display='block';
+  openMod('mod-restaurant');
+}
+
+async function saveRestaurant(){
+  const id=document.getElementById('rest-id').value;
+  const name=document.getElementById('rest-name').value.trim();
+  const slug=document.getElementById('rest-slug').value.trim();
+  const pass=document.getElementById('rest-pass').value.trim();
+  if(!name||!slug||!pass){toast('Preencha nome, slug e senha');return;}
+  const btn=document.getElementById('rest-save');btn.textContent='Salvando...';btn.disabled=true;
+  const payload={name,slug,password_hash:pass,phone:document.getElementById('rest-phone').value.trim()||null,city:document.getElementById('rest-city').value.trim()||null,whatsapp_number:document.getElementById('rest-wp').value.trim()||null,notes:document.getElementById('rest-notes').value.trim()||null,plan:document.getElementById('rest-plan').value,active:document.getElementById('rest-active-tog').classList.contains('on'),is_founder:false};
+  let error;
+  if(id){({error}=await db.from('food_companies').update(payload).eq('id',id));}
+  else{({error}=await db.from('food_companies').insert(payload));}
+  btn.textContent='Salvar';btn.disabled=false;
+  if(error){toast('Erro: '+(error.message.includes('unique')?'Slug já existe':error.message));return;}
+  closeMod('mod-restaurant');await loadFounder();toast(id?'Atualizado!':'Restaurante criado!');
+}
+
+async function deleteRestaurant(){
+  const id=document.getElementById('rest-id').value;if(!id)return;
+  if(!confirm('Tem certeza? Isso vai excluir o restaurante e todos os dados.'))return;
+  await db.from('food_companies').delete().eq('id',id);
+  closeMod('mod-restaurant');await loadFounder();toast('Restaurante excluído');
+}
+
+// ── MODALS ──
+function openMod(id){document.getElementById(id).classList.add('open');}
+function closeMod(id,e){if(e&&e.target!==e.currentTarget)return;document.getElementById(id).classList.remove('open');}
+
+// ── TOAST ──
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity='0',2400);}
+
+// ── TIMER ──
+function startTick(){setInterval(()=>{if(!co||isFounder)return;orders.forEach(o=>{o.timer_minutes=(o.timer_minutes||0)+1;});if(document.getElementById('nav-pedidos')&&document.getElementById('nav-pedidos').classList.contains('active'))renderOrders();},60000);}
+
+// ── ELI INTEGRATION ──
+window.addOrderFromEli=async function(data){
+  if(!co)return;
+  const total=data.items.reduce((a,i)=>a+(i.unitPrice*(i.quantity||1))+(i.adicionais||[]).reduce((b,ad)=>b+(ad.preco||0),0),0);
+  const{data:order,error}=await db.from('food_orders').insert({company_id:co.id,order_number:'P'+String(Date.now()).slice(-4),cliente_nome:data.clienteNome,cliente_telefone:data.clienteTelefone,status:'recebido',obs:data.obs||'',total}).select().single();
+  if(error||!order)return;
+  await db.from('food_order_items').insert(data.items.map(i=>({order_id:order.id,menu_item_id:i.menuItemId||null,name:i.name,quantity:i.quantity||1,unit_price:i.unitPrice,tamanho_selecionado:i.tamanho||null,adicionais_selecionados:JSON.stringify(i.adicionais||[]),subtotal:(i.unitPrice*(i.quantity||1))+(i.adicionais||[]).reduce((b,ad)=>b+(ad.preco||0),0)})));
+};
+
+// ── SIMULAR ELI ──
+async function simEli(){
+  if(!co||!menuItems.length)return;
+  const nomes=['Carlos Eduardo','Ana Paula','Marcos Vinicius','Beatriz Lima','Rafael Costa'];
+  const disp=menuItems.filter(m=>m.active&&!m.esgotado_hoje);if(!disp.length){toast('Nenhum item disponível');return;}
+  const item=disp[Math.floor(Math.random()*disp.length)];
+  const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});
+  const szK=Object.keys(sz);const tam=szK.length?szK[Math.floor(Math.random()*szK.length)]:null;
+  const ad=typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]);
+  const adic=ad.length&&Math.random()>.5?[{nome:ad[Math.floor(Math.random()*ad.length)],preco:3}]:[];
+  await window.addOrderFromEli({restaurantSlug:co.slug,clienteNome:nomes[Math.floor(Math.random()*nomes.length)],clienteTelefone:'5547999'+Math.floor(Math.random()*9000000+1000000),obs:Math.random()>.7?'Sem cebola':'',items:[{menuItemId:item.id,name:item.name,quantity:1,unitPrice:tam&&sz[tam]?sz[tam]:item.price,tamanho:tam,adicionais:adic}]});
+  toast('Pedido simulado!');
+}
+
+// RESET ESGOTADO
+(function sched(){const now=new Date();setTimeout(async()=>{if(co&&!isFounder)await db.from('food_menu_items').update({esgotado_hoje:false}).eq('company_id',co.id);sched();},(new Date(now.getFullYear(),now.getMonth(),now.getDate()+1)-now));})();
+
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
