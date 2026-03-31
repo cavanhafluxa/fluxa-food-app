@@ -43,39 +43,37 @@ html,body{height:100%;background:var(--bg);font-family:var(--bd);color:var(--tex
 
 /* DOCK FLUTUANTE (APPLE STYLE) */
 .sidenav{
-  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;
-  background:rgba(20,20,22,0.65);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-  border:1px solid rgba(255,255,255,0.08);border-radius:40px;
-  display:flex;align-items:center;padding:8px;gap:8px;
-  box-shadow:0 30px 60px rgba(0,0,0,0.6);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:100;
+  background:rgba(20,20,22,0.7);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+  border:1px solid rgba(255,255,255,0.08);border-radius:32px;
+  display:flex;align-items:center;padding:6px;gap:6px;
+  box-shadow:0 15px 30px rgba(0,0,0,0.6);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);
   width:max-content;max-width:96vw;overflow:hidden;
 }
-.sidenav.shrunk{padding:4px;border-radius:32px;background:rgba(20,20,22,0.85);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.sidenav.shrunk .nav-item:not(.active){max-width:0;padding:0;opacity:0;pointer-events:none;margin:0}
-.sidenav.shrunk .nav-item.active{padding:12px;border-radius:50%;background:var(--blue)}
+.sidenav.shrunk{padding:4px;border-radius:32px;background:rgba(20,20,22,0.95);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
+.sidenav.shrunk .nav-item:not(.active){width:0;padding-left:0;padding-right:0;opacity:0;pointer-events:none;margin:0;transform:scaleX(0)}
+.sidenav.shrunk .nav-item.active{padding:10px;border-radius:50%;background:var(--blue)}
 .sidenav.shrunk .nav-item.active .nav-lbl{max-height:0;opacity:0;margin:0}
 
-#app-body{order:1;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+#app-body{order:1;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;padding-top:84px}
 
 /* TOPBAR */
-.topbar{position:absolute;top:20px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;z-index:90;background:transparent;border:none;padding:0;pointer-events:none}
-.topbar > *{pointer-events:auto}
-@media(max-width:768px){.topbar{top:90px;position:relative;left:0;right:0;padding:0 20px;margin-bottom:10px}}
+.topbar{position:static;display:flex;align-items:center;justify-content:space-between;z-index:90;background:transparent;border:none;padding:0 20px;margin-bottom:12px;flex-shrink:0}
 
 /* MAIN */
-main{flex:1;overflow-y:auto;padding-top:100px;padding-bottom:120px;scroll-behavior:smooth}
+main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 @media(max-width:768px){main{padding-top:10px}}
 @keyframes appleFadeInBlur{0%{opacity:0;filter:blur(20px);transform:scale(0.97)}100%{opacity:1;filter:blur(0px);transform:scale(1)}}
 .tab{display:none;padding:16px}
 .tab.active{display:block;animation:appleFadeInBlur 0.5s cubic-bezier(0.16,1,0.3,1) forwards}
 
 /* NAV */
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;border-radius:24px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);overflow:hidden;white-space:nowrap}
-.nav-item .ms{font-size:24px;color:var(--text3);transition:color 0.3s}
-.nav-item .nav-lbl{font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);font-family:var(--hl);height:12px;margin-top:2px;transition:all 0.3s;opacity:1}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:20px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap}
+.nav-item .ms{font-size:20px;color:rgba(255,255,255,0.4);transition:color 0.3s}
+.nav-item .nav-lbl{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:rgba(255,255,255,0.4);font-family:var(--hl);height:11px;margin-top:0;transition:all 0.3s;opacity:1}
 .nav-item.active{background:rgba(255,255,255,0.08)}
 .nav-item.active .ms,.nav-item.active .nav-lbl{color:#fff}
-.nav-badge{position:absolute;top:2px;right:4px;background:var(--red);color:white;font-size:9px;font-weight:800;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:var(--hl);box-shadow:0 4px 10px rgba(239,68,68,0.5)}
+.nav-badge{position:absolute;top:0;right:4px;background:var(--red);color:white;font-size:8px;font-weight:800;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:var(--hl);box-shadow:0 4px 10px rgba(239,68,68,0.5)}
 .nav-badge.show{display:flex}
 #sidenav-logo{display:none}
 
@@ -83,7 +81,7 @@ main{flex:1;overflow-y:auto;padding-top:100px;padding-bottom:120px;scroll-behavi
 @media(min-width:768px){
   html,body{background:var(--bg)}
   #app.on{flex-direction:column !important}
-  #app-body{order:2 !important;flex:1 !important;min-width:0 !important;padding-top:100px !important}
+  #app-body{order:2 !important;flex:1 !important;min-width:0 !important;padding-top:84px !important}
   main{padding-bottom:24px !important;padding-top:20px !important}
   .tab{padding:24px 28px !important}
 
