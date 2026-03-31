@@ -50,10 +50,10 @@ html,body{height:100%;background:var(--bg);font-family:var(--bd);color:var(--tex
   box-shadow:0 15px 30px rgba(0,0,0,0.6);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);
   width:max-content;max-width:96vw;overflow:hidden;
 }
-.sidenav.shrunk{padding:4px;border-radius:32px;background:rgba(20,20,22,0.95);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
-.sidenav.shrunk .nav-item:not(.active){width:0;padding-left:0;padding-right:0;opacity:0;pointer-events:none;margin:0;transform:scaleX(0)}
-.sidenav.shrunk .nav-item.active{padding:10px;border-radius:50%;background:var(--blue)}
-.sidenav.shrunk .nav-item.active .nav-lbl{max-height:0;opacity:0;margin:0}
+.sidenav.shrunk{padding:6px;border-radius:32px;background:rgba(20,20,22,0.95);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
+.sidenav.shrunk .nav-item:not(.active){width:0;height:0;padding:0;opacity:0;pointer-events:none;margin:0;overflow:hidden}
+.sidenav.shrunk .nav-item.active{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%;background:var(--blue)}
+.sidenav.shrunk .nav-item.active .nav-lbl{max-height:0;opacity:0;margin:0;display:none}
 
 #app-body{order:1;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;padding-top:84px}
 
@@ -68,8 +68,8 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 .tab.active{display:block;animation:appleFadeInBlur 0.5s cubic-bezier(0.16,1,0.3,1) forwards}
 
 /* NAV */
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:20px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap}
-.nav-item .ms{font-size:20px;color:rgba(255,255,255,0.4);transition:color 0.3s}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:20px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;overflow:hidden}
+.nav-item .ms{font-size:20px;color:rgba(255,255,255,0.4);transition:color 0.3s;flex-shrink:0}
 .nav-item .nav-lbl{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:rgba(255,255,255,0.4);font-family:var(--hl);height:11px;margin-top:0;transition:all 0.3s;opacity:1}
 .nav-item.active{background:rgba(255,255,255,0.08)}
 .nav-item.active .ms,.nav-item.active .nav-lbl{color:#fff}
