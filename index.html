@@ -242,9 +242,49 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 .btn-glow-white{background:#fff;color:#000;border:none;border-radius:24px;padding:18px;width:100%;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;box-shadow:0 0 20px rgba(255,255,255,0.15);font-family:var(--hl)}
 .btn-glow-white:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(255,255,255,0.3)}
 .btn-glow-white:active{transform:translateY(1px)}
+
+[data-theme="light"] {
+  --bg:#f5f5f7;--bg2:#ffffff;--bg3:#ebebed;--bg4:#e5e5e8;
+  --text:#1d1d1f;--text2:#86868b;--text3:#a1a1a6;
+  --border:rgba(0,0,0,0.08);
+  --shadow-sm:0 2px 4px 0 rgba(0,0,0,0.05);
+  --shadow-md:0 8px 16px -4px rgba(0,0,0,0.1);
+}
+[data-theme="light"] .sidenav{background:rgba(255,255,255,0.7);border-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .sidenav.shrunk{background:rgba(255,255,255,0.95)}
+[data-theme="light"] .nav-item .ms, [data-theme="light"] .nav-item .nav-lbl{color:rgba(0,0,0,0.5)}
+[data-theme="light"] .nav-item.active{background:rgba(0,0,0,0.06)}
+[data-theme="light"] .nav-item.active .ms, [data-theme="light"] .nav-item.active .nav-lbl{color:var(--text)!important}
+[data-theme="light"] #s-login{background:#f5f5f7;color:#1d1d1f}
+[data-theme="light"] .login-box{background:rgba(255,255,255,0.7);border-color:rgba(0,0,0,0.08);box-shadow:0 25px 50px -12px rgba(0,0,0,0.15)}
+[data-theme="light"] .dark-label{color:rgba(0,0,0,0.5)}
+[data-theme="light"] .auth-divider{color:rgba(0,0,0,0.4)}
+[data-theme="light"] .auth-divider::before, [data-theme="light"] .auth-divider::after{border-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .dark-input{background:rgba(0,0,0,0.03)!important;border-color:rgba(0,0,0,0.08)!important;color:#000!important}
+[data-theme="light"] .dark-input:focus{background:rgba(0,0,0,0.05)!important;border-color:rgba(0,0,0,0.2)!important;box-shadow:0 0 0 4px rgba(0,0,0,0.05)!important}
+[data-theme="light"] .dark-input::placeholder{color:rgba(0,0,0,0.3)}
+[data-theme="light"] .social-btn{background:rgba(0,0,0,0.03);border-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .social-btn .ms{color:#000!important}
+[data-theme="light"] .btn-glow-white{background:#000;color:#fff;box-shadow:0 0 20px rgba(0,0,0,0.15)}
+[data-theme="light"] .btn-glow-white .ms{color:#FFF!important}
+[data-theme="light"] .menu-card{background:rgba(255,255,255,0.5);border-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .menu-card .menu-img{background:rgba(0,0,0,0.03)}
+[data-theme="light"] .menu-card [style*="color:#fff"]{color:#000!important}
+[data-theme="light"] .f-header{background:rgba(255,255,255,0.85);border-color:var(--border)}
+[data-theme="light"] input, [data-theme="light"] textarea, [data-theme="light"] select{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);color:#000}
+[data-theme="light"] input::placeholder, [data-theme="light"] textarea::placeholder{color:rgba(0,0,0,0.4)}
+[data-theme="light"] input:focus, [data-theme="light"] textarea:focus, [data-theme="light"] select:focus{background:rgba(0,0,0,0.06);border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-l)}
+[data-theme="light"] .btn-p{background:#000;color:#fff}
+[data-theme="light"] .btn-s{background:rgba(0,0,0,0.06);color:#000}
+[data-theme="light"] #theme-tog{background:rgba(0,0,0,0.05)!important;border-color:rgba(0,0,0,0.08)!important;color:#000!important;}
 </style>
 </head>
 <body>
+<button id="theme-tog" onclick="toggleTheme()" style="position:fixed;top:24px;right:24px;background:rgba(120,120,135,0.15);border:1px solid rgba(120,120,135,0.1);color:var(--text);border-radius:24px;padding:6px 14px;font-size:10px;font-weight:800;cursor:pointer;z-index:999;display:flex;align-items:center;gap:6px;backdrop-filter:blur(20px);box-shadow:0 4px 10px rgba(0,0,0,0.1)"><span class="ms" id="theme-ic" style="font-size:14px">light_mode</span><span id="theme-lbl">LIGHT</span></button>
+<script>
+function toggleTheme(){const isL=document.body.getAttribute('data-theme')==='light';if(isL){document.body.removeAttribute('data-theme');localStorage.setItem('theme','dark');document.getElementById('theme-lbl').textContent='LIGHT';document.getElementById('theme-ic').textContent='light_mode';}else{document.body.setAttribute('data-theme','light');localStorage.setItem('theme','light');document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';}}
+if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-theme','light');document.addEventListener('DOMContentLoaded',()=>{document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';});}
+</script>
 
 <!-- LOADING -->
 <div class="screen on" id="s-loading">
@@ -259,9 +299,9 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 <div class="screen" id="s-login">
   <div class="food-cascade" id="food-cascade"></div>
   <div class="login-box">
-    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase">FLÜXA.IDENTITY</div>
-    <h1 style="font-size:28px;font-weight:700;margin-bottom:8px">Authenticate</h1>
-    <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:32px">Secure biometric or credential access.</p>
+    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase">AURA.IDENTITY</div>
+    <h1 style="font-size:28px;font-weight:700;margin-bottom:8px">Autenticação</h1>
+    <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:32px">Acesso seguro exclusivo para credenciados.</p>
     
     <div style="display:flex;gap:12px;margin-bottom:24px;justify-content:center">
       <button class="social-btn"><span class="ms" style="font-size:22px;color:#fff">local_pizza</span></button>
@@ -269,21 +309,21 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
       <button class="social-btn"><span class="ms" style="font-size:22px;color:#fff">local_cafe</span></button>
     </div>
     
-    <div class="auth-divider">STANDARD PROTOCOL</div>
+    <div class="auth-divider">PROTOCOLO DE ACESSO</div>
     
     <div style="margin-bottom:16px">
-      <label class="dark-label">IDENTIFIER</label>
+      <label class="dark-label">IDENTIFICADOR</label>
       <input type="text" id="lg-slug" class="dark-input" placeholder="user@domain.net" autocomplete="username"/>
     </div>
     <div style="margin-bottom:24px">
-      <label class="dark-label">PASSCODE</label>
+      <label class="dark-label">SENHA DE ACESSO</label>
       <input type="password" id="lg-pass" class="dark-input" placeholder="••••••••••" autocomplete="current-password"/>
     </div>
     
     <div id="lg-err" style="font-size:12px;color:#EF4444;display:none;text-align:center;background:rgba(239,68,68,0.1);padding:8px;border-radius:12px;margin-bottom:24px">Credenciais inválidas ou acesso bloqueado</div>
     
     <button class="btn-glow-white" id="lg-btn" onclick="doLogin()">
-      INITIALIZE UPLINK <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>
+      INICIAR CONEXÃO <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>
     </button>
   </div>
 </div>
@@ -650,18 +690,43 @@ const PLANS={trial:{label:'Trial',bg:'var(--amber-l)',c:'var(--amber)'},basico:{
 function initFoodCascade(){
   const c=document.getElementById('food-cascade');
   if(!c)return;
-  const f=['🍔','🍕','🍟','🌭','🍿','🍩','🍪','🌮','🍣','🍦'];
+  const f=['🍔','🍕','🍟','🌭','🍿','🍩','🍪','🌮','🍣','🍦','🥞','🥓','🥐','🥨','🧇','🧀','🥩'];
   setInterval(()=>{
     const el=document.createElement('div');
     el.className='food-item';
-    el.textContent=f[Math.floor(Math.random()*f.length)];
     el.style.left=(Math.random()*90)+'%';
-    const dur=6+Math.random()*8;
+    const dur=4+Math.random()*6;
     el.style.animationDuration=dur+'s';
-    el.style.fontSize=(30+Math.random()*40)+'px';
+    
+    const inner=document.createElement('span');
+    inner.textContent=f[Math.floor(Math.random()*f.length)];
+    inner.style.fontSize=(30+Math.random()*50)+'px';
+    inner.className='food-inner';
+    inner.style.display='inline-block';
+    inner.style.transition='transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+    
+    el.appendChild(inner);
     c.appendChild(el);
     setTimeout(()=>el.remove(),dur*1000);
-  }, 450);
+  }, 150);
+  
+  document.addEventListener('mousemove', e => {
+    const mx=e.clientX, my=e.clientY;
+    document.querySelectorAll('.food-inner').forEach(inner => {
+      const rect=inner.getBoundingClientRect();
+      const ox=rect.left+rect.width/2, oy=rect.top+rect.height/2;
+      const dx=mx-ox, dy=my-oy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<180){
+        const force=(180-dist)/180;
+        const mxForce=force * 80;
+        const ang=Math.atan2(dy, dx);
+        inner.style.transform=`translate(${Math.cos(ang)* -mxForce}px, ${Math.sin(ang)* -mxForce}px) scale(${1 + force*0.3})`;
+      } else {
+        inner.style.transform='translate(0,0) scale(1)';
+      }
+    });
+  });
 }
 initFoodCascade(); // começa a animação em background suavemente
 
