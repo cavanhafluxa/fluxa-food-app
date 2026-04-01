@@ -1133,7 +1133,7 @@ function preencherPerfil(data){
   updateMockup(data.primary_color||'#0369a1');
 
   // Link do cardápio
-  const base=`https://fluxa-cardapio.vercel.app/?slug=${data.slug}`;
+  const base = `https://fluxa-cardapio.vercel.app/${data.slug}`;
   const el=document.getElementById('perfil-link');
   if(el)el.value=base;
 }
