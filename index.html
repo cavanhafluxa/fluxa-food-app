@@ -474,6 +474,19 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
             <div><label>WhatsApp (instância Eli)</label><input type="text" id="perfil-wp" placeholder="5547999999999"/></div>
             <div><label>Nova senha (deixe em branco para não alterar)</label><input type="password" id="perfil-senha" placeholder="••••••"/></div>
             <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0">
+                <div>
+                  <div class="hl" style="font-size:14px;font-weight:700">Loja Aberta</div>
+                  <div style="font-size:11px;color:var(--text3)">Permitir receber pedidos agora</div>
+                </div>
+                <button class="tog on" id="perfil-is-open" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Cor do Site (Marca)</label><input type="color" id="perfil-color" style="height:46px;padding:4px;cursor:pointer"/></div>
+              <div><label>Taxa de Entrega (R$)</label><input type="number" step="0.01" id="perfil-delivery" placeholder="Ex: 5.50"/></div>
+            </div>
+            <div>
               <label>Link do cardápio digital</label>
               <div style="display:flex;gap:8px">
                 <input type="text" id="perfil-link" readonly style="font-size:11px;color:var(--blue);cursor:pointer" onclick="this.select();document.execCommand('copy');toast('Link copiado!')"/>
@@ -1055,6 +1068,11 @@ function preencherPerfil(data){
   document.getElementById('perfil-tel').value=data.phone||'';
   document.getElementById('perfil-city').value=data.city||'';
   document.getElementById('perfil-wp').value=data.whatsapp_number||'';
+  
+  document.getElementById('perfil-color').value=data.primary_color||'#0369a1';
+  document.getElementById('perfil-delivery').value=data.delivery_fee||'';
+  document.getElementById('perfil-is-open').className=data.is_open!==false?'tog on':'tog off';
+
   // Link do cardápio
   const base=window.location.origin+'/cardapio.html?slug='+data.slug;
   const el=document.getElementById('perfil-link');
@@ -1067,6 +1085,10 @@ async function salvarPerfil(){
   const payload={name:nome,description:document.getElementById('perfil-desc').value.trim(),phone:document.getElementById('perfil-tel').value.trim(),city:document.getElementById('perfil-city').value.trim(),whatsapp_number:document.getElementById('perfil-wp').value.trim()};
   const nova=document.getElementById('perfil-senha').value.trim();
   if(nova)payload.password_hash=nova;
+
+  payload.primary_color=document.getElementById('perfil-color').value;
+  payload.is_open=document.getElementById('perfil-is-open').classList.contains('on');
+  payload.delivery_fee=parseFloat(document.getElementById('perfil-delivery').value)||0;
   const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
   if(error){toast('Erro ao salvar');return;}
   Object.assign(co,payload);
