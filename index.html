@@ -278,11 +278,14 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 [data-theme="light"] input:focus, [data-theme="light"] textarea:focus, [data-theme="light"] select:focus{background:rgba(0,0,0,0.06);border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-l)}
 [data-theme="light"] .btn-p{background:#000;color:#fff}
 [data-theme="light"] .btn-s{background:rgba(0,0,0,0.06);color:#000}
-[data-theme="light"] #theme-tog{background:rgba(0,0,0,0.05)!important;border-color:rgba(0,0,0,0.08)!important;color:#000!important;}
+[data-theme="light"] .r-card { background: rgba(0,0,0,0.03)!important; border-color: rgba(0,0,0,0.08)!important; color:#000!important; }
+[data-theme="light"] .r-card .hl { color:#000!important; }
+.modal-overlay .modal-sheet::-webkit-scrollbar, .tab::-webkit-scrollbar, main::-webkit-scrollbar, #app-body::-webkit-scrollbar, .sheet::-webkit-scrollbar { display:none; }
+.modal-sheet, .tab, main, #app-body, .sheet { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 </head>
 <body>
-<button id="theme-tog" onclick="toggleTheme()" style="position:fixed;top:24px;right:24px;background:rgba(120,120,135,0.15);border:1px solid rgba(120,120,135,0.1);color:var(--text);border-radius:24px;padding:6px 14px;font-size:10px;font-weight:800;cursor:pointer;z-index:999;display:flex;align-items:center;gap:6px;backdrop-filter:blur(20px);box-shadow:0 4px 10px rgba(0,0,0,0.1)"><span class="ms" id="theme-ic" style="font-size:14px">light_mode</span><span id="theme-lbl">LIGHT</span></button>
+<button id="theme-tog" onclick="toggleTheme()" style="position:fixed;bottom:24px;left:24px;background:rgba(120,120,135,0.15);border:1px solid rgba(120,120,135,0.1);color:var(--text);border-radius:24px;padding:6px 14px;font-size:10px;font-weight:800;cursor:pointer;z-index:999;display:flex;align-items:center;gap:6px;backdrop-filter:blur(20px);box-shadow:0 4px 10px rgba(0,0,0,0.1)"><span class="ms" id="theme-ic" style="font-size:14px">light_mode</span><span id="theme-lbl">LIGHT</span></button>
 <script>
 function toggleTheme(){const isL=document.body.getAttribute('data-theme')==='light';if(isL){document.body.removeAttribute('data-theme');localStorage.setItem('theme','dark');document.getElementById('theme-lbl').textContent='LIGHT';document.getElementById('theme-ic').textContent='light_mode';}else{document.body.setAttribute('data-theme','light');localStorage.setItem('theme','light');document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';}}
 if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-theme','light');document.addEventListener('DOMContentLoaded',()=>{document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';});}
@@ -301,8 +304,8 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
 <div class="screen" id="s-login">
   <div class="food-cascade" id="food-cascade"></div>
   <div class="login-box">
-    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase">AURA.IDENTITY</div>
-    <h1 style="font-size:28px;font-weight:700;margin-bottom:8px">Autenticação</h1>
+    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase">FLÜXA KITCHENS</div>
+    <h1 style="font-size:28px;font-weight:700;margin-bottom:8px">Login</h1>
     <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:32px">Acesso seguro exclusivo para credenciados.</p>
     
     <div style="display:flex;gap:12px;margin-bottom:24px;justify-content:center">
@@ -314,11 +317,11 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     <div class="auth-divider">PROTOCOLO DE ACESSO</div>
     
     <div style="margin-bottom:16px">
-      <label class="dark-label">IDENTIFICADOR</label>
-      <input type="text" id="lg-slug" class="dark-input" placeholder="user@domain.net" autocomplete="username"/>
+      <label class="dark-label">NOME DO RESTAURANTE</label>
+      <input type="text" id="lg-slug" class="dark-input" placeholder="quiosque" autocomplete="username"/>
     </div>
     <div style="margin-bottom:24px">
-      <label class="dark-label">SENHA DE ACESSO</label>
+      <label class="dark-label">SENHA</label>
       <input type="password" id="lg-pass" class="dark-input" placeholder="••••••••••" autocomplete="current-password"/>
     </div>
     
@@ -619,15 +622,15 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     <div style="display:flex;flex-direction:column;gap:11px">
       <div><label>Nome *</label><input type="text" id="fi-nome"/></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label>Preço (R$) *</label><input type="number" id="fi-preco" step="0.01" min="0"/></div>
-        <div><label>Categoria *</label><select id="fi-cat"><option value="lanches">Lanches</option><option value="bebidas">Bebidas</option><option value="sobremesas">Sobremesas</option><option value="entradas">Entradas</option><option value="pratos">Pratos</option></select></div>
+        <div><label>Preço Base (R$) *</label><input type="number" id="fi-preco" step="0.01" min="0"/></div>
+        <div><label>Categoria *</label><select id="fi-cat"><option value="lanches">Lanches</option><option value="pizzas">Pizzas</option><option value="bebidas">Bebidas</option><option value="sobremesas">Sobremesas</option><option value="entradas">Entradas</option><option value="pratos">Pratos</option></select></div>
       </div>
       <div><label>Descrição</label><textarea id="fi-desc" rows="2"></textarea></div>
       <div>
-        <label style="margin-bottom:8px;display:block">Variações de preço</label>
+        <label style="margin-bottom:8px;display:block">Sabores & Variações (Ex: Calabresa, Média)</label>
         <div style="display:flex;flex-direction:column;gap:7px" id="fi-sizes">
           <div style="display:flex;align-items:center;gap:8px" id="sz-1">
-            <input type="text" id="sz-l-1" placeholder="Nome (ex: Médio)" style="flex:1"/>
+            <input type="text" id="sz-l-1" placeholder="Sabor / Tamanho" style="flex:1"/>
             <input type="number" id="sz-p-1" placeholder="R$" style="width:76px" step="0.01"/>
             <button onclick="addSzRow()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button>
           </div>
@@ -710,10 +713,22 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
   </div>
 </div>
 
-<button class="fab" id="fab" style="display:none" onclick="openNewItem()">
-  <span class="ms" style="color:white;font-size:24px">add</span>
+<div class="modal-overlay" id="mod-fab" onclick="closeMod('mod-fab',event)">
+  <div class="modal-sheet" style="padding-bottom:32px">
+    <div class="drag-h"></div>
+    <h3 class="hl" style="font-size:17px;font-weight:800;margin-bottom:20px;text-align:center">O que deseja cadastrar?</h3>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="btn-s" onclick="closeMod('mod-fab');openNewItem('lanches')" style="display:flex;align-items:center;gap:12px;text-align:left"><span class="ms" style="color:var(--amber)">lunch_dining</span>Lanche</button>
+      <button class="btn-s" onclick="closeMod('mod-fab');window.openPizzaMaker()" style="display:flex;align-items:center;gap:12px;text-align:left"><span class="ms" style="color:var(--red)">local_pizza</span>Sabor de Pizza / Variação</button>
+      <button class="btn-s" onclick="closeMod('mod-fab');openNewItem('bebidas')" style="display:flex;align-items:center;gap:12px;text-align:left"><span class="ms" style="color:var(--blue)">local_cafe</span>Bebida ou Especial</button>
+    </div>
+  </div>
+</div>
+
+<button class="fab" id="fab" style="display:none" onclick="openMod('mod-fab')">
+  <span class="ms" style="color:#000;font-size:24px">add</span>
 </button>
-<button id="demo-btn" onclick="simEli()" style="background:var(--amber);color:white;border:none;border-radius:12px;padding:8px 14px;font-size:11px;font-weight:700;font-family:var(--hl);cursor:pointer;box-shadow:0 3px 10px rgba(212,134,10,0.3)">+ Simular Eli</button>
+<button id="demo-btn" onclick="simEli()" style="background:var(--amber);color:white;border:none;border-radius:12px;padding:8px 14px;font-size:11px;font-weight:800;font-family:var(--hl);cursor:pointer;box-shadow:0 3px 10px rgba(212,134,10,0.3)">+ Simular Eli</button>
 <div id="toast"></div>
 
 <script>
@@ -1015,7 +1030,7 @@ function renderMenu(){
   if(!co)return;
   const cats=['todos',...new Set(menuItems.map(i=>i.category))];
   document.getElementById('cat-pills').innerHTML=cats.map(c=>`<button class="filter-pill ${menuFil===c?'active':''}" onclick="loadMenu('${c}')">${c==='todos'?'Todos':CL[c]||c}</button>`).join('');
-  const fil=menuFil==='todos'?menuItems:menuItems.filter(i=>i.category===menuFil);
+  const fil=menuFil==='todos'?menuItems.filter(i=>i.category!=='pizzas'):menuItems.filter(i=>i.category===menuFil);
   const sorted=[...fil].sort((a,b)=>(b.destaque?1:0)-(a.destaque?1:0));
   document.getElementById('m-count').textContent=menuItems.length+' itens';
   if(!sorted.length){document.getElementById('menu-grid').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 20px"><span class="ms" style="font-size:36px;color:var(--text3);display:block;margin-bottom:10px">menu_book</span><div class="hl" style="font-size:14px;font-weight:700;margin-bottom:4px">Cardápio vazio</div><div style="font-size:12px;color:var(--text3)">Toque em + para adicionar</div></div>`;return;}
@@ -1028,7 +1043,7 @@ function renderMenu(){
         <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:2px">${item.name}</div>
         <div style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1">${item.description||''}</div>
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:13px;font-weight:700;color:var(--text2)">${fmtP(item.price)}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px">${Object.keys(sz).length>0?'<span style="font-size:9px;font-weight:800;background:var(--blue-l);color:var(--blue);padding:3px 6px;border-radius:6px">'+Object.keys(sz).length+' SABORES</span>':''}${fmtP(item.price)}</span>
           <div style="display:flex;align-items:center;gap:4px">
             <button class="esg-btn ${item.esgotado_hoje?'esg':'disp'}" onclick="togEsg('${item.id}',event)">${item.esgotado_hoje?'OFF':'ON'}</button>
           </div>
@@ -1041,10 +1056,11 @@ function renderMenu(){
 async function togEsg(id,e){e.stopPropagation();const it=menuItems.find(i=>i.id===id);if(!it)return;it.esgotado_hoje=!it.esgotado_hoje;await db.from('food_menu_items').update({esgotado_hoje:it.esgotado_hoje}).eq('id',id);renderMenu();}
 async function togAtivo(id,e){e.stopPropagation();const it=menuItems.find(i=>i.id===id);if(!it)return;it.active=!it.active;await db.from('food_menu_items').update({active:it.active}).eq('id',id);renderMenu();}
 
-function resetIM(){editId=null;adics=[];alergs=[];photo=null;szCount=1;document.getElementById('mi-title').textContent='Novo item';['fi-nome','fi-preco','fi-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('fi-cat').value='lanches';const prev=document.getElementById('fi-prev');prev.src='';prev.style.display='none';document.getElementById('fi-ph-icon').style.display='block';document.getElementById('fi-ph-txt').style.display='block';document.getElementById('fi-sizes').innerHTML=`<div style="display:flex;align-items:center;gap:8px" id="sz-1"><input type="text" id="sz-l-1" placeholder="Nome (ex: Médio)" style="flex:1"/><input type="number" id="sz-p-1" placeholder="R$" style="width:76px" step="0.01"/><button onclick="addSzRow()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button></div>`;document.getElementById('fi-adic-tags').innerHTML='';document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>p.classList.remove('active'));document.getElementById('fi-dest').className='tog off';document.getElementById('fi-esg').className='tog off';document.getElementById('fi-del').style.display='none';}
-function addSzRow(){szCount++;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+szCount;d.innerHTML=`<input type="text" id="sz-l-${szCount}" placeholder="Nome" style="flex:1"/><input type="number" id="sz-p-${szCount}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="document.getElementById('sz-${szCount}').remove()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--red);font-size:18px">remove_circle</span></button>`;document.getElementById('fi-sizes').appendChild(d);}
-function openNewItem(){resetIM();openMod('mod-item');}
-function openEditItem(id){resetIM();const item=menuItems.find(i=>i.id===id);if(!item)return;editId=id;document.getElementById('mi-title').textContent='Editar item';document.getElementById('fi-nome').value=item.name;document.getElementById('fi-preco').value=item.price;document.getElementById('fi-desc').value=item.description||'';document.getElementById('fi-cat').value=item.category;if(item.image_url){photo=item.image_url;document.getElementById('fi-prev').src=item.image_url;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';}const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});const szE=Object.entries(sz);if(szE.length){document.getElementById('fi-sizes').innerHTML='';szE.forEach(([l,p],i)=>{const n=i+1;szCount=n;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+n;d.innerHTML=`<input type="text" id="sz-l-${n}" value="${l}" placeholder="Nome" style="flex:1"/><input type="number" id="sz-p-${n}" value="${p}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="${n===1?'addSzRow()':'document.getElementById(\'sz-'+n+'\').remove()'}" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:${n===1?'var(--text3)':'var(--red)'};font-size:18px">${n===1?'add_circle':'remove_circle'}</span></button>`;document.getElementById('fi-sizes').appendChild(d);});}adics=[...(typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]))];renderAdicTags();alergs=[...(typeof item.alergenicos==='string'?JSON.parse(item.alergenicos||'[]'):(item.alergenicos||[]))];document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>{if(alergs.includes(p.textContent.trim()))p.classList.add('active');});document.getElementById('fi-dest').className='tog '+(item.destaque?'on':'off');document.getElementById('fi-esg').className='tog '+(item.esgotado_hoje?'on':'off');document.getElementById('fi-del').style.display='block';openMod('mod-item');}
+function resetIM(){editId=null;adics=[];alergs=[];photo=null;szCount=1;document.getElementById('mi-title').textContent='Novo item';['fi-nome','fi-preco','fi-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('fi-cat').value='lanches';const prev=document.getElementById('fi-prev');prev.src='';prev.style.display='none';document.getElementById('fi-ph-icon').style.display='block';document.getElementById('fi-ph-txt').style.display='block';document.getElementById('fi-sizes').innerHTML=`<div style="display:flex;align-items:center;gap:8px" id="sz-1"><input type="text" id="sz-l-1" placeholder="Sabor / Tamanho" style="flex:1"/><input type="number" id="sz-p-1" placeholder="R$" style="width:76px" step="0.01"/><button onclick="addSzRow()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button></div>`;document.getElementById('fi-adic-tags').innerHTML='';document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>p.classList.remove('active'));document.getElementById('fi-dest').className='tog off';document.getElementById('fi-esg').className='tog off';document.getElementById('fi-del').style.display='none';}
+function addSzRow(){szCount++;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+szCount;d.innerHTML=`<input type="text" id="sz-l-${szCount}" placeholder="Sabor / Tamanho" style="flex:1"/><input type="number" id="sz-p-${szCount}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="document.getElementById('sz-${szCount}').remove()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--red);font-size:18px">remove_circle</span></button>`;document.getElementById('fi-sizes').appendChild(d);}
+function openNewItem(cat){resetIM();if(cat)document.getElementById('fi-cat').value=cat;openMod('mod-item');}
+window.openPizzaMaker=function(){const pz=menuItems.find(i=>i.category==='pizzas');if(pz){openEdit(pz.id);}else{openNewItem('pizzas');document.getElementById('fi-nome').value='Pizza Personalizada (Crie seus Sabores)';}}
+function openEditItem(id){resetIM();const item=menuItems.find(i=>i.id===id);if(!item)return;editId=id;document.getElementById('mi-title').textContent='Editar item';document.getElementById('fi-nome').value=item.name;document.getElementById('fi-preco').value=item.price;document.getElementById('fi-desc').value=item.description||'';document.getElementById('fi-cat').value=item.category;if(item.image_url){photo=item.image_url;document.getElementById('fi-prev').src=item.image_url;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';}const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});const szE=Object.entries(sz);if(szE.length){document.getElementById('fi-sizes').innerHTML='';szE.forEach(([l,p],i)=>{const n=i+1;szCount=n;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+n;d.innerHTML=`<input type="text" id="sz-l-${n}" value="${l}" placeholder="Sabor / Tamanho" style="flex:1"/><input type="number" id="sz-p-${n}" value="${p}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="${n===1?'addSzRow()':'document.getElementById(\'sz-'+n+'\').remove()'}" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:${n===1?'var(--text3)':'var(--red)'};font-size:18px">${n===1?'add_circle':'remove_circle'}</span></button>`;document.getElementById('fi-sizes').appendChild(d);});}adics=[...(typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]))];renderAdicTags();alergs=[...(typeof item.alergenicos==='string'?JSON.parse(item.alergenicos||'[]'):(item.alergenicos||[]))];document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>{if(alergs.includes(p.textContent.trim()))p.classList.add('active');});document.getElementById('fi-dest').className='tog '+(item.destaque?'on':'off');document.getElementById('fi-esg').className='tog '+(item.esgotado_hoje?'on':'off');document.getElementById('fi-del').style.display='block';openMod('mod-item');}
 function handlePhoto(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{photo=e.target.result;document.getElementById('fi-prev').src=e.target.result;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';};r.readAsDataURL(f);}
 function addAdic(){const i=document.getElementById('fi-adic');const v=i.value.trim();if(!v)return;if(!adics.includes(v))adics.push(v);i.value='';renderAdicTags();}
 function renderAdicTags(){document.getElementById('fi-adic-tags').innerHTML=adics.map((a,i)=>`<span class="tag">${a}<span class="tag-x" onclick="remAdic(${i})">×</span></span>`).join('');}
@@ -1129,6 +1145,7 @@ function preencherPerfil(data){
   badge.textContent=plan.label;badge.style.background=plan.bg;badge.style.color=plan.c;
   document.getElementById('perfil-nome').value=data.name||'';
   document.getElementById('perfil-desc').value=data.description||'';
+  document.getElementById('perfil-horario').value=data.horario_trabalho||'';
   document.getElementById('perfil-tel').value=data.phone||'';
   document.getElementById('perfil-city').value=data.city||'';
   document.getElementById('perfil-wp').value=data.whatsapp_number||'';
@@ -1152,7 +1169,7 @@ function updateMockup(color){
 async function salvarPerfil(){
   const nome=document.getElementById('perfil-nome').value.trim();
   if(!nome){toast('Nome obrigatório');return;}
-  const payload={name:nome,description:document.getElementById('perfil-desc').value.trim(),phone:document.getElementById('perfil-tel').value.trim(),city:document.getElementById('perfil-city').value.trim(),whatsapp_number:document.getElementById('perfil-wp').value.trim()};
+  const payload={name:nome,description:document.getElementById('perfil-desc').value.trim(),horario_trabalho:document.getElementById('perfil-horario').value.trim(),phone:document.getElementById('perfil-tel').value.trim(),city:document.getElementById('perfil-city').value.trim(),whatsapp_number:document.getElementById('perfil-wp').value.trim()};
   const nova=document.getElementById('perfil-senha').value.trim();
   if(nova)payload.password_hash=nova;
 
