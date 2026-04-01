@@ -1140,9 +1140,9 @@ function exportCSV(){
 function preencherPerfil(data){
   document.getElementById('perfil-nome-display').textContent=data.name||'—';
   document.getElementById('perfil-slug-display').textContent='@'+(data.slug||'—');
-  const plan=PLANS[data.plan]||PLANS.trial;
+  const planData = data.plan && typeof PLANS !== 'undefined' && PLANS[data.plan] ? PLANS[data.plan] : {label: 'Ativo', bg: 'var(--blue-l)', c: 'var(--blue)'};
   const badge=document.getElementById('perfil-plan-badge');
-  badge.textContent=plan.label;badge.style.background=plan.bg;badge.style.color=plan.c;
+  if(badge) { badge.textContent=planData.label;badge.style.background=planData.bg;badge.style.color=planData.c; }
   document.getElementById('perfil-nome').value=data.name||'';
   document.getElementById('perfil-desc').value=data.description||'';
   document.getElementById('perfil-horario').value=data.horario_trabalho||'';
