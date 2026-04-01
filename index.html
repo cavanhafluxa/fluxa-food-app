@@ -801,6 +801,20 @@ function initFoodCascade(){
 }
 initFoodCascade(); // começa a animação em background suavemente
 
+async function autoLogin() {
+  const s = localStorage.getItem('food_session');
+  if(!s) return;
+  try {
+    const {slug, pass} = JSON.parse(s);
+    if(slug && pass) {
+      document.getElementById('lg-slug').value = slug;
+      document.getElementById('lg-pass').value = pass;
+      await doLogin();
+    }
+  } catch(e){}
+}
+autoLogin();
+
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById('app').classList.remove('on');
@@ -823,6 +837,7 @@ async function doLogin(){
   if(data.password_hash!==pass&&data.founder_password!==pass){show('s-login');document.getElementById('lg-err').style.display='block';return;}
   if(data.blocked&&!data.is_founder){show('s-login');document.getElementById('lg-err').style.display='block';document.getElementById('lg-err').textContent='Acesso bloqueado. Entre em contato com a Flüxa.';return;}
   document.getElementById('lg-err').style.display='none';
+  localStorage.setItem('food_session', JSON.stringify({slug: data.slug || slug, pass}));
   co=data;isFounder=!!data.is_founder;
   if(isFounder){show('founder');loadFounder();}
   else{
@@ -842,6 +857,7 @@ async function doLogin(){
 }
 
 function doLogout(){
+  localStorage.removeItem('food_session');
   if(rtSub){db.removeChannel(rtSub);rtSub=null;}
   co=null;isFounder=false;orders=[];history=[];menuItems=[];
   document.getElementById('demo-btn').style.display='none';
