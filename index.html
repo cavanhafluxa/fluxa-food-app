@@ -841,7 +841,30 @@ function startRT(){
       const{data:it}=await db.from('food_order_items').select('*').eq('order_id',o.id);
       o._items=it||[];orders.unshift(o);renderOrders();
       if(!document.getElementById('nav-pedidos').classList.contains('active')){toast('🛍 Novo pedido de '+o.cliente_nome+'!');if(navigator.vibrate)navigator.vibrate([80,40,80]);}
-    }).subscribe();
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'food_orders',filter:'company_id=eq.'+co.id},async p=>{
+      const o=p.new;
+      const idx = orders.findIndex(x=>x.id===o.id);
+      if(idx!==-1) {
+         if(['entregue','cancelado'].includes(o.status)){
+            const rem = orders.splice(idx,1)[0];
+            rem.status = o.status;
+            rem.completed_at = o.updated_at || new Date().toISOString();
+            const hIdx = history.findIndex(x=>x.id===rem.id);
+            if(hIdx===-1) history.unshift(rem); else history[hIdx]=rem;
+         } else {
+            Object.assign(orders[idx], o);
+         }
+         renderOrders(); renderHist();
+      } else {
+         const hIdx = history.findIndex(x=>x.id===o.id);
+         if(hIdx!==-1) {
+             Object.assign(history[hIdx], o);
+             renderHist();
+         }
+      }
+    })
+    .subscribe();
 }
 
 // ── TABS ──
@@ -1116,7 +1139,7 @@ function preencherPerfil(data){
   updateMockup(data.primary_color||'#0369a1');
 
   // Link do cardápio
-  const base=`https://fluxa-cardapio.vercel.app/?slug=${data.slug}`;
+  const base=`https://fluxa-cardapio.vercel.app/${data.slug}`;
   const el=document.getElementById('perfil-link');
   if(el)el.value=base;
 }
