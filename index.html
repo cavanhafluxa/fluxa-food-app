@@ -470,6 +470,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <div style="display:flex;flex-direction:column;gap:10px">
             <div><label>Nome do restaurante</label><input type="text" id="perfil-nome" placeholder="Nome visível para os clientes"/></div>
             <div><label>Descrição</label><textarea id="perfil-desc" rows="2" placeholder="Especialidade, horário de funcionamento..."></textarea></div>
+            <div><label>Horário de funcionamento</label><input type="text" id="perfil-horario" placeholder="Seg-Sex: 11h-22h · Sab-Dom: 11h-23h"/></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <div><label>Telefone</label><input type="text" id="perfil-tel" placeholder="(47) 9xxxx-xxxx"/></div>
               <div><label>Cidade</label><input type="text" id="perfil-city" placeholder="Blumenau, SC"/></div>
@@ -749,13 +750,48 @@ const CI={lanches:'lunch_dining',bebidas:'local_bar',sobremesas:'cake',entradas:
 const CL={lanches:'Lanches',bebidas:'Bebidas',sobremesas:'Sobremesas',entradas:'Entradas',pratos:'Pratos'};
 const PLANS={trial:{label:'Trial',bg:'var(--amber-l)',c:'var(--amber)'},basico:{label:'Básico',bg:'var(--blue-l)',c:'var(--blue)'},pro:{label:'Pro',bg:'var(--green-l)',c:'var(--green)'}};
 
-// AUTO-LOGIN via URL
-(async()=>{
-  await new Promise(r=>setTimeout(r,600));
-  const p=new URLSearchParams(window.location.search);
-  const sl=p.get('slug'),ps=p.get('pass');
-  if(sl&&ps){document.getElementById('lg-slug').value=sl;document.getElementById('lg-pass').value=ps;await doLogin();}
-  else{show('s-login');}
+// BOOT ÚNICO — sem race condition entre show("s-login") e autoLogin()
+(async () => {
+  // 1. Tentar session salva ANTES de mostrar qualquer tela
+  const saved = localStorage.getItem('food_session');
+  if (saved) {
+    try {
+      const { slug, pass } = JSON.parse(saved);
+      if (slug && pass) {
+        const { data } = await db
+          .from('food_companies').select('*')
+          .eq('slug', slug).single();
+        if (data &&
+            (data.password_hash === pass || data.founder_password === pass) &&
+            !data.blocked) {
+          co = data;
+          isFounder = !!data.is_founder;
+          if (isFounder) {
+            show('founder');
+            await loadFounder();
+          } else {
+            show('app');
+            await bootApp(data);
+          }
+          return; // SAIR sem passar pelo login
+        }
+      }
+    } catch(e) {}
+    localStorage.removeItem('food_session'); // session inválida
+  }
+
+  // 2. Auto-login via URL params (founder acessando restaurante)
+  const p = new URLSearchParams(window.location.search);
+  const sl = p.get('slug'), ps = p.get('pass');
+  if (sl && ps) {
+    document.getElementById('lg-slug').value = sl;
+    document.getElementById('lg-pass').value = ps;
+    await doLogin();
+    return;
+  }
+
+  // 3. Nada encontrado -> mostrar login
+  show('s-login');
 })();
 
 function initFoodCascade(){
@@ -801,20 +837,7 @@ function initFoodCascade(){
 }
 initFoodCascade(); // começa a animação em background suavemente
 
-async function autoLogin() {
-  const s = localStorage.getItem('food_session');
-  if(!s) return;
-  try {
-    const {slug, pass} = JSON.parse(s);
-    if(slug && pass) {
-      document.getElementById('lg-slug').value = slug;
-      document.getElementById('lg-pass').value = pass;
-      await doLogin();
-    }
-  } catch(e){}
-}
-autoLogin();
-
+// ── LOGIN ──
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById('app').classList.remove('on');
@@ -840,20 +863,21 @@ async function doLogin(){
   localStorage.setItem('food_session', JSON.stringify({slug: data.slug || slug, pass}));
   co=data;isFounder=!!data.is_founder;
   if(isFounder){show('founder');loadFounder();}
-  else{
-    show('app');
-    document.getElementById('tp-name').textContent=data.name;
-    document.getElementById('sn-name').textContent=data.name;
-    document.getElementById('demo-btn').style.display='block';
-    if(data.logo_url){
-      document.getElementById('logo-avatar').innerHTML=`<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
-      document.getElementById('perfil-avatar-img').src=data.logo_url;
-      document.getElementById('perfil-avatar-img').style.display='block';
-      document.getElementById('perfil-avatar-icon').style.display='none';
-    }
-    preencherPerfil(data);
-    await loadOrders();await loadMenu();await renderStats();renderHist();startRT();startTick();
+  else{show('app');await bootApp(data);}
+}
+
+async function bootApp(data){
+  document.getElementById('tp-name').textContent=data.name;
+  document.getElementById('sn-name').textContent=data.name;
+  document.getElementById('demo-btn').style.display='block';
+  if(data.logo_url){
+    document.getElementById('logo-avatar').innerHTML=`<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+    document.getElementById('perfil-avatar-img').src=data.logo_url;
+    document.getElementById('perfil-avatar-img').style.display='block';
+    document.getElementById('perfil-avatar-icon').style.display='none';
   }
+  preencherPerfil(data);
+  await loadOrders();await loadMenu();await renderStats();renderHist();startRT();startTick();
 }
 
 function doLogout(){
@@ -868,6 +892,7 @@ function doLogout(){
 function startRT(){
   rtSub=db.channel('food_rt_'+co.id)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'food_orders',filter:'company_id=eq.'+co.id},async p=>{
+      console.log('[RT] Novo pedido recebido:', p.new); // DEBUG
       const o=p.new;
       const{data:it}=await db.from('food_order_items').select('*').eq('order_id',o.id);
       o._items=it||[];orders.unshift(o);renderOrders();
@@ -895,7 +920,9 @@ function startRT(){
          }
       }
     })
-    .subscribe();
+    .subscribe((status) => {
+      console.log('[RT] Status canal:', status); // DEBUG — SUBSCRIBED = OK | CHANNEL_ERROR = RLS bloqueando
+    });
 }
 
 // ── TABS ──
