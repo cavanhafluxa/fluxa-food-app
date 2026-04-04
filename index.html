@@ -764,37 +764,9 @@ const CI={lanches:'lunch_dining',bebidas:'local_bar',sobremesas:'cake',entradas:
 const CL={lanches:'Lanches',bebidas:'Bebidas',sobremesas:'Sobremesas',entradas:'Entradas',pratos:'Pratos'};
 const PLANS={trial:{label:'Trial',bg:'var(--amber-l)',c:'var(--amber)'},basico:{label:'Básico',bg:'var(--blue-l)',c:'var(--blue)'},pro:{label:'Pro',bg:'var(--green-l)',c:'var(--green)'}};
 
-// BOOT ÚNICO — sem race condition entre show("s-login") e autoLogin()
+// BOOT ÚNICO — offline-first: usa cache local imediatamente, valida em background
 (async () => {
-  // 1. Tentar session salva ANTES de mostrar qualquer tela
-  const saved = localStorage.getItem('food_session');
-  if (saved) {
-    try {
-      const { slug, pass } = JSON.parse(saved);
-      if (slug && pass) {
-        const { data } = await db
-          .from('food_companies').select('*')
-          .eq('slug', slug).single();
-        if (data &&
-            (data.password_hash === pass || data.founder_password === pass) &&
-            !data.blocked) {
-          co = data;
-          isFounder = !!data.is_founder;
-          if (isFounder) {
-            show('founder');
-            await loadFounder();
-          } else {
-            show('app');
-            await bootApp(data);
-          }
-          return; // SAIR sem passar pelo login
-        }
-      }
-    } catch(e) {}
-    localStorage.removeItem('food_session'); // session inválida
-  }
-
-  // 2. Auto-login via URL params (founder acessando restaurante)
+  // 1. URL params (founder abrindo restaurante em nova aba)
   const p = new URLSearchParams(window.location.search);
   const sl = p.get('slug'), ps = p.get('pass');
   if (sl && ps) {
@@ -804,7 +776,53 @@ const PLANS={trial:{label:'Trial',bg:'var(--amber-l)',c:'var(--amber)'},basico:{
     return;
   }
 
-  // 3. Nada encontrado -> mostrar login
+  // 2. Session salva no localStorage
+  const saved = localStorage.getItem('food_session');
+  if (!saved) { show('s-login'); return; }
+
+  let session;
+  try { session = JSON.parse(saved); } catch(e) { localStorage.removeItem('food_session'); show('s-login'); return; }
+  const { slug, pass, cachedData } = session;
+  if (!slug || !pass) { localStorage.removeItem('food_session'); show('s-login'); return; }
+
+  // 2a. Se temos dados em cache, iniciar app IMEDIATAMENTE sem aguardar rede
+  if (cachedData) {
+    co = cachedData;
+    isFounder = !!cachedData.is_founder;
+    if (isFounder) { show('founder'); loadFounder(); }
+    else { show('app'); bootApp(cachedData); }
+
+    // Revalidar em background (não bloqueia o boot)
+    db.from('food_companies').select('*').eq('slug', slug).single().then(({ data, error }) => {
+      if (error) return; // rede indisponível — manter sessão atual
+      if (!data || (data.password_hash !== pass && data.founder_password !== pass) || (data.blocked && !data.is_founder)) {
+        // Credenciais explicitamente rejeitadas pelo servidor
+        doLogout();
+        return;
+      }
+      // Atualizar cache com dados frescos
+      co = data;
+      localStorage.setItem('food_session', JSON.stringify({ slug, pass, cachedData: data }));
+    });
+    return;
+  }
+
+  // 2b. Sem cache — buscar na rede (primeira vez ou cache apagado)
+  show('s-loading');
+  try {
+    const { data } = await db.from('food_companies').select('*').eq('slug', slug).single();
+    if (data && (data.password_hash === pass || data.founder_password === pass) && (!data.blocked || data.is_founder)) {
+      co = data; isFounder = !!data.is_founder;
+      localStorage.setItem('food_session', JSON.stringify({ slug, pass, cachedData: data }));
+      if (isFounder) { show('founder'); await loadFounder(); }
+      else { show('app'); await bootApp(data); }
+      return;
+    }
+    // Credenciais inválidas
+    localStorage.removeItem('food_session');
+  } catch(e) {
+    // Falha de rede sem cache — não há o que fazer, mostrar login
+  }
   show('s-login');
 })();
 
@@ -874,7 +892,7 @@ async function doLogin(){
   if(data.password_hash!==pass&&data.founder_password!==pass){show('s-login');document.getElementById('lg-err').style.display='block';return;}
   if(data.blocked&&!data.is_founder){show('s-login');document.getElementById('lg-err').style.display='block';document.getElementById('lg-err').textContent='Acesso bloqueado. Entre em contato com a Flüxa.';return;}
   document.getElementById('lg-err').style.display='none';
-  localStorage.setItem('food_session', JSON.stringify({slug: data.slug || slug, pass}));
+  localStorage.setItem('food_session', JSON.stringify({slug: data.slug || slug, pass, cachedData: data}));
   co=data;isFounder=!!data.is_founder;
   if(isFounder){show('founder');loadFounder();}
   else{show('app');await bootApp(data);}
