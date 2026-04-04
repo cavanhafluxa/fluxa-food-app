@@ -148,12 +148,25 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 .status-pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--hl)}
 .timer{font-size:11px;font-weight:700;font-family:var(--hl);display:flex;align-items:center;gap:3px}
 .t-ok{color:var(--text3)}.t-warn{color:var(--amber)}.t-late{color:var(--red)}
+/* Timer pulsante quando atrasado */
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.t-late{color:var(--red);animation:timerPulse 1s ease-in-out infinite;}
 .hold-bar{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;overflow:hidden;opacity:0;transition:opacity 0.1s}
 .hold-fill{height:100%;width:0%;background:var(--red);border-radius:2px}
 @keyframes flyR{to{transform:translateX(110%);opacity:0}}
 @keyframes flyL{to{transform:translateX(-110%);opacity:0}}
 .fly-r{animation:flyR 0.3s cubic-bezier(0.4,0,1,1) forwards}
 .fly-l{animation:flyL 0.3s cubic-bezier(0.4,0,1,1) forwards}
+/* Animação de entrada de novo pedido */
+@keyframes newOrderGlow{0%{box-shadow:0 0 0 0 rgba(59,130,246,0.7),var(--shadow-sm)}40%{box-shadow:0 0 0 8px rgba(59,130,246,0.2),var(--shadow-md)}100%{box-shadow:0 0 0 0 rgba(59,130,246,0),var(--shadow-sm)}}
+@keyframes newOrderSlide{from{opacity:0;transform:translateY(-16px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.order-new{animation:newOrderSlide 0.45s cubic-bezier(0.16,1,0.3,1) forwards,newOrderGlow 1.2s ease 0.45s 2;}
+/* Skeleton para stats/histórico */
+@keyframes shimmerDark{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.sk{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:800px 100%;animation:shimmerDark 1.4s infinite linear;border-radius:8px;}
+/* Pull-to-refresh */
+#ptr-indicator{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;color:var(--text2);display:none;align-items:center;gap:6px;z-index:200;transition:opacity .2s;}
+#ptr-indicator.show{display:flex;}
 
 /* MENU */
 #menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -397,6 +410,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <span class="ms" style="font-size:13px;color:var(--text3)">swipe_right_alt</span>
           <span style="font-size:11px;color:var(--text3)">→ avança · Segure + ← cancela</span>
         </div>
+        <div id="ptr-indicator"><span class="ms" style="font-size:14px">refresh</span>Atualizando...</div>
         <div id="orders-wrap"></div>
       </div>
 
@@ -896,6 +910,8 @@ function startRT(){
       const o=p.new;
       const{data:it}=await db.from('food_order_items').select('*').eq('order_id',o.id);
       o._items=it||[];orders.unshift(o);renderOrders();
+      // Animação de entrada no novo card
+      setTimeout(()=>{const el=document.getElementById('oc-'+o.id);if(el)el.classList.add('order-new');},50);
       if(!document.getElementById('nav-pedidos').classList.contains('active')){toast('🛍 Novo pedido de '+o.cliente_nome+'!');if(navigator.vibrate)navigator.vibrate([80,40,80]);}
     })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'food_orders',filter:'company_id=eq.'+co.id},async p=>{
@@ -1135,6 +1151,8 @@ async function deleteItem(){if(!editId)return;await db.from('food_menu_items').d
 // ── STATS REAIS ──
 async function renderStats(){
   if(!co)return;
+  // Skeleton enquanto carrega
+  document.getElementById('s-metrics').innerHTML=Array.from({length:6},()=>`<div class="metric-card"><div class="sk" style="height:10px;width:60%;margin-bottom:8px"></div><div class="sk" style="height:22px;width:40%"></div></div>`).join('');
   const today=new Date();today.setHours(0,0,0,0);
   const weekAgo=new Date(Date.now()-7*864e5);
   const since=statsPeriod==='hoje'?today.toISOString():weekAgo.toISOString();
@@ -1509,6 +1527,15 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 
 // ── TIMER ──
 function startTick(){setInterval(()=>{if(!co||isFounder)return;orders.forEach(o=>{o.timer_minutes=(o.timer_minutes||0)+1;});if(document.getElementById('nav-pedidos')&&document.getElementById('nav-pedidos').classList.contains('active'))renderOrders();},60000);}
+
+// Pull-to-refresh na aba Pedidos
+(function initPTR(){
+  let startY=0,pulling=false;
+  const ind=()=>document.getElementById('ptr-indicator');
+  document.addEventListener('touchstart',e=>{if(window.scrollY===0&&document.getElementById('nav-pedidos')?.classList.contains('active'))startY=e.touches[0].clientY;},{ passive:true });
+  document.addEventListener('touchmove',e=>{if(!startY)return;const dy=e.touches[0].clientY-startY;if(dy>60&&!pulling){pulling=true;ind()&&ind().classList.add('show');}},{ passive:true });
+  document.addEventListener('touchend',async()=>{if(pulling){pulling=false;await loadOrders();ind()&&ind().classList.remove('show');}startY=0;},{ passive:true });
+})();
 
 // ── ELI INTEGRATION ──
 window.addOrderFromEli=async function(data){
