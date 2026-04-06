@@ -14,13 +14,14 @@
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 :root{
-  --bg:#040507;--bg2:#141416;--bg3:#1A1A1D;--bg4:#27272A;
-  --text:#FFFFFF;--text2:#A1A1AA;--text3:#71717A;
+  /* ── DARK MODE (blue-dark spec) ── */
+  --bg:#0F172A;--bg2:#1E293B;--bg3:#1A2744;--bg4:#334155;
+  --text:#FFFFFF;--text2:#94A3B8;--text3:#64748B;
   --blue:#3B82F6;--blue-l:rgba(59,130,246,0.15);--blue-m:#60A5FA;
   --green:#10B981;--green-l:rgba(16,185,129,0.15);
   --amber:#F59E0B;--amber-l:rgba(245,158,11,0.15);
   --red:#EF4444;--red-l:rgba(239,68,68,0.15);
-  --border:rgba(255,255,255,0.08);
+  --border:#334155;
   --shadow-sm:0 2px 4px 0 rgba(0,0,0,0.5);
   --shadow-md:0 8px 16px -4px rgba(0,0,0,0.5), 0 4px 8px -2px rgba(0,0,0,0.4);
   --shadow-lg:0 16px 24px -8px rgba(0,0,0,0.6), 0 8px 12px -4px rgba(0,0,0,0.5);
@@ -28,6 +29,9 @@
   --nav-w:240px;
   --hl:'Plus Jakarta Sans',sans-serif;
   --bd:'DM Sans',sans-serif;
+  /* ── SEMANTIC (dark defaults) ── */
+  --accent:#D32F2F;
+  --status-novo:#EF4444;--status-preparo:#FCD34D;--status-pronto:#22C55E;--status-entrega:#3B82F6;--status-cancelado:#6B7280;
 }
 html,body{height:100%;background:var(--bg);font-family:var(--bd);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .hl{font-family:var(--hl)}
@@ -265,51 +269,127 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 .btn-glow-white:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(255,255,255,0.3)}
 .btn-glow-white:active{transform:translateY(1px)}
 
+/* ══ LIGHT MODE — WCAG AA+ ══ */
 [data-theme="light"] {
-  --bg:#F5F5F7;--bg2:#FFFFFF;--bg3:#F0F0F2;--bg4:#E5E5E7;
-  --text:#121212;--text2:#3A3A3C;--text3:#6E6E73;
-  --border:rgba(0,0,0,0.08);
-  --shadow-sm:0 2px 8px rgba(0,0,0,0.04);
-  --shadow-md:0 8px 24px rgba(0,0,0,0.06);
-  --shadow-lg:0 12px 32px rgba(0,0,0,0.08);
+  --bg:#FFFFFF;--bg2:#F5F5F7;--bg3:#EAEAEC;--bg4:#E5E7EB;
+  --text:#1F2937;--text2:#6B7280;--text3:#9CA3AF;
+  --border:#E5E7EB;
+  --shadow-sm:0 1px 4px rgba(0,0,0,0.07);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.10);
+  --accent:#D32F2F;
+  --status-novo:#C41C3B;--status-preparo:#F59E0B;--status-pronto:#10B981;--status-entrega:#0EA5E9;--status-cancelado:#9CA3AF;
+  --blue:#D32F2F;--blue-l:rgba(211,47,47,0.10);--blue-m:#B71C1C;
+  --green:#10B981;--green-l:rgba(16,185,129,0.12);
+  --amber:#F59E0B;--amber-l:rgba(245,158,11,0.12);
+  --red:#C41C3B;--red-l:rgba(196,28,59,0.10);
 }
-[data-theme="light"] .sidenav { background: rgba(255,255,255,0.78)!important; border-color: rgba(0,0,0,0.08)!important; box-shadow: 0 15px 30px rgba(0,0,0,0.08)!important; }
-[data-theme="light"] .sidenav.shrunk { background: rgba(255,255,255,0.96)!important; }
-[data-theme="light"] .nav-item .ms, [data-theme="light"] .nav-item .nav-lbl { color: var(--text3)!important; }
-[data-theme="light"] .nav-item.active { background: rgba(0,0,0,0.06)!important; }
-[data-theme="light"] .nav-item.active .ms, [data-theme="light"] .nav-item.active .nav-lbl { color: #000 !important; }
-[data-theme="light"] .modal-sheet { background: rgba(255,255,255,0.98)!important; box-shadow: 0 -10px 40px rgba(0,0,0,0.1)!important; }
-[data-theme="light"] .photo-up { background: rgba(0,0,0,0.03)!important; border-color: rgba(0,0,0,0.08)!important; }
-[data-theme="light"] #s-login { background: #f5f5f7!important; color: #1d1d1f!important; }
-[data-theme="light"] .login-box { background: rgba(255,255,255,0.92)!important; border-color: rgba(0,0,0,0.08)!important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12)!important; }
-[data-theme="light"] .dark-label { color: rgba(0,0,0,0.55)!important; }
-[data-theme="light"] .auth-divider { color: rgba(0,0,0,0.4)!important; }
-[data-theme="light"] .auth-divider::before, [data-theme="light"] .auth-divider::after { border-color: rgba(0,0,0,0.08)!important; }
-[data-theme="light"] .dark-input { background: rgba(0,0,0,0.03) !important; border-color: rgba(0,0,0,0.08) !important; color: #000 !important; }
-[data-theme="light"] .dark-input:focus { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.2) !important; box-shadow: 0 0 0 4px rgba(0,0,0,0.05) !important; }
-[data-theme="light"] .dark-input::placeholder { color: rgba(0,0,0,0.3)!important; }
-[data-theme="light"] .social-btn { background: rgba(0,0,0,0.03)!important; border-color: rgba(0,0,0,0.08)!important; }
-[data-theme="light"] .social-btn .ms { color: #1d1d1f !important; }
-[data-theme="light"] .btn-glow-white { background: #1d1d1f !important; color: #fff !important; box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important; }
-[data-theme="light"] .btn-glow-white .ms { color: #FFF !important; }
-[data-theme="light"] .menu-card { background: rgba(255,255,255,0.5)!important; border-color: rgba(0,0,0,0.08)!important; }
-[data-theme="light"] .menu-card .menu-img { background: rgba(0,0,0,0.03)!important; }
-[data-theme="light"] .menu-card [style*="color:#fff"] { color: #000 !important; }
-[data-theme="light"] .f-header { background: rgba(255,255,255,0.92)!important; border-color: rgba(0,0,0,0.08)!important; }
-[data-theme="light"] input, [data-theme="light"] textarea, [data-theme="light"] select { background: rgba(0,0,0,0.04)!important; border-color: rgba(0,0,0,0.08)!important; color: #000!important; }
-[data-theme="light"] input::placeholder, [data-theme="light"] textarea::placeholder { color: rgba(0,0,0,0.4)!important; }
-[data-theme="light"] input:focus, [data-theme="light"] textarea:focus, [data-theme="light"] select:focus { background: rgba(0,0,0,0.06)!important; border-color: var(--blue)!important; box-shadow: 0 0 0 4px var(--blue-l)!important; }
-[data-theme="light"] .btn-p { background: #1d1d1f !important; color: #fff !important; }
-[data-theme="light"] .btn-s { background: rgba(0,0,0,0.06)!important; color: #000!important; }
-[data-theme="light"] .r-card { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; color: #121212 !important; }
-[data-theme="light"] .r-card .hl { color: #121212 !important; }
-[data-theme="light"] .f-tab { color: #555558 !important; }
-[data-theme="light"] .f-tab.active { background: #1d1d1f !important; color: #ffffff !important; }
-[data-theme="light"] #tp-name { color: #1d1d1f !important; }
-[data-theme="light"] #eli-badge[style*="green"] { background: rgba(16,185,129,0.12) !important; }
-[data-theme="light"] #eli-txt { color: #059669 !important; }
+/* Light: global component overrides */
+[data-theme="light"] body{background:#FFFFFF;color:#1F2937}
+[data-theme="light"] .card{background:#FAFAFA!important;border-color:#E5E7EB!important;box-shadow:0 1px 4px rgba(0,0,0,0.06)!important}
+[data-theme="light"] .order-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
+[data-theme="light"] .sidenav{background:rgba(255,255,255,0.95)!important;border-color:#E5E7EB!important;box-shadow:1px 0 12px rgba(0,0,0,0.06)!important}
+[data-theme="light"] .sidenav.shrunk{background:rgba(255,255,255,0.98)!important}
+[data-theme="light"] .nav-item .ms,[data-theme="light"] .nav-item .nav-lbl{color:#6B7280!important}
+[data-theme="light"] .nav-item.active{background:rgba(211,47,47,0.08)!important}
+[data-theme="light"] .nav-item.active .ms,[data-theme="light"] .nav-item.active .nav-lbl{color:#D32F2F!important}
+[data-theme="light"] .modal-sheet{background:#FFFFFF!important;box-shadow:0 -4px 32px rgba(0,0,0,0.10)!important}
+[data-theme="light"] .photo-up{background:#F5F5F7!important;border-color:#E5E7EB!important}
+[data-theme="light"] #s-login{background:#F5F5F7!important;color:#1F2937!important}
+[data-theme="light"] .login-box{background:#FFFFFF!important;border-color:#E5E7EB!important;box-shadow:0 8px 40px rgba(0,0,0,0.10)!important}
+[data-theme="light"] .dark-label{color:#6B7280!important}
+[data-theme="light"] .auth-divider{color:#9CA3AF!important}
+[data-theme="light"] .auth-divider::before,[data-theme="light"] .auth-divider::after{border-color:#E5E7EB!important}
+[data-theme="light"] .dark-input{background:#F5F5F7!important;border-color:#E5E7EB!important;color:#1F2937!important}
+[data-theme="light"] .dark-input:focus{background:#FFFFFF!important;border-color:#D32F2F!important;box-shadow:0 0 0 3px rgba(211,47,47,0.12)!important}
+[data-theme="light"] .dark-input::placeholder{color:#9CA3AF!important}
+[data-theme="light"] .social-btn{background:#F5F5F7!important;border-color:#E5E7EB!important}
+[data-theme="light"] .social-btn .ms{color:#1F2937!important}
+[data-theme="light"] .btn-glow-white{background:#D32F2F!important;color:#FFF!important;box-shadow:0 4px 16px rgba(211,47,47,0.3)!important}
+[data-theme="light"] .btn-glow-white .ms{color:#FFF!important}
+[data-theme="light"] .btn-p{background:#D32F2F!important;color:#FFF!important;box-shadow:0 4px 12px rgba(211,47,47,0.25)!important}
+[data-theme="light"] .btn-s{background:#F5F5F7!important;color:#1F2937!important;border:1px solid #E5E7EB!important}
+[data-theme="light"] .btn-d{background:rgba(196,28,59,0.08)!important;color:#C41C3B!important;border-color:rgba(196,28,59,0.2)!important}
+[data-theme="light"] .menu-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
+[data-theme="light"] .menu-card .menu-img{background:#F0F0F2!important}
+[data-theme="light"] .f-header{background:rgba(255,255,255,0.96)!important;border-color:#E5E7EB!important}
+[data-theme="light"] input,[data-theme="light"] textarea,[data-theme="light"] select{background:#F5F5F7!important;border-color:#E5E7EB!important;color:#1F2937!important}
+[data-theme="light"] input::placeholder,[data-theme="light"] textarea::placeholder{color:#9CA3AF!important}
+[data-theme="light"] input:focus,[data-theme="light"] textarea:focus,[data-theme="light"] select:focus{background:#FFFFFF!important;border-color:#D32F2F!important;box-shadow:0 0 0 3px rgba(211,47,47,0.12)!important}
+[data-theme="light"] .r-card{background:#FFFFFF!important;border-color:#E5E7EB!important;color:#1F2937!important}
+[data-theme="light"] .r-card .hl,[data-theme="light"] .r-card [style*="font-weight:700"],[data-theme="light"] .r-card [style*="font-weight:800"]{color:#1F2937!important}
+[data-theme="light"] .f-tab{color:#6B7280!important}
+[data-theme="light"] .f-tab.active{background:#D32F2F!important;color:#FFF!important}
+[data-theme="light"] #tp-name{color:#1F2937!important}
+[data-theme="light"] #eli-badge{background:rgba(16,185,129,0.10)!important}
+[data-theme="light"] #eli-txt{color:#059669!important}
+[data-theme="light"] .topbar{background:rgba(255,255,255,0.96)!important;border-bottom:1px solid #E5E7EB!important}
+[data-theme="light"] .order-tab.active{color:#D32F2F!important;border-bottom-color:#D32F2F!important}
+[data-theme="light"] .order-tabs{border-bottom-color:#E5E7EB!important}
+[data-theme="light"] .dash-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
+[data-theme="light"] .dash-status-row{border-bottom-color:#E5E7EB!important}
+[data-theme="light"] .section-lbl{color:#9CA3AF!important}
+[data-theme="light"] .metric-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
+[data-theme="light"] .filter-pill:not(.active){background:#F5F5F7!important;color:#6B7280!important;border-color:#E5E7EB!important}
+[data-theme="light"] .filter-pill.active{background:#D32F2F!important;color:#FFF!important}
+[data-theme="light"] .hist-row{border-bottom-color:#E5E7EB!important}
+[data-theme="light"] .swipe-bg.right{background:rgba(16,185,129,0.12)!important}
+[data-theme="light"] .swipe-bg.left{background:rgba(196,28,59,0.12)!important}
+[data-theme="light"] .eli-toggle-row{background:#FAFAFA!important;border-color:#E5E7EB!important}
 .modal-overlay .modal-sheet::-webkit-scrollbar, .tab::-webkit-scrollbar, main::-webkit-scrollbar, #app-body::-webkit-scrollbar, .sheet::-webkit-scrollbar { display:none; }
 .modal-sheet, .tab, main, #app-body, .sheet { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ══ V2 — PALETA FLUXA + NOVOS COMPONENTES ══ */
+
+/* Ads tab — fundo azul info */
+.ads-metric-card{background:rgba(14,165,233,0.10);border:1px solid rgba(14,165,233,0.2);border-radius:20px;padding:16px}
+.ads-metric-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#0EA5E9;margin-bottom:6px;font-family:var(--hl)}
+.ads-metric-val{font-size:22px;font-weight:800;color:#0EA5E9;font-family:var(--hl)}
+[data-theme="light"] .ads-metric-card{background:rgba(14,165,233,0.07)!important}
+
+/* Clientes list */
+.cliente-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:box-shadow .2s}
+.cliente-card:hover{box-shadow:var(--shadow-md)}
+.cliente-avatar{width:44px;height:44px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+[data-theme="light"] .cliente-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
+
+/* Upsell modal */
+#mod-upsell .modal-sheet{max-height:70dvh}
+.upsell-item{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.upsell-item:hover,.upsell-item:active{background:rgba(211,47,47,0.08);border-color:var(--accent)}
+.upsell-badge{font-size:9px;font-weight:800;background:rgba(76,175,80,0.15);color:#4CAF50;padding:2px 7px;border-radius:10px;font-family:var(--hl)}
+[data-theme="light"] .upsell-item{background:#FAFAFA!important;border-color:#E5E7EB!important}
+
+/* FAQ / Chat widget */
+#faq-widget{position:fixed;bottom:90px;right:16px;z-index:150;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+#faq-bubble{background:var(--accent);color:#fff;border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(211,47,47,0.4);border:none;transition:transform .2s}
+#faq-bubble:hover{transform:scale(1.08)}
+#faq-panel{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:300px;max-height:420px;overflow:hidden;flex-direction:column;box-shadow:var(--shadow-float)}
+#faq-panel.open{display:flex}
+.faq-header{background:var(--accent);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.faq-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none}
+.faq-messages::-webkit-scrollbar{display:none}
+.faq-msg{max-width:85%;padding:9px 12px;border-radius:16px;font-size:12px;line-height:1.4}
+.faq-msg.bot{background:rgba(255,255,255,0.06);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
+.faq-msg.user{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.faq-chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;border-top:1px solid var(--border)}
+.faq-chip{font-size:11px;font-weight:600;font-family:var(--hl);padding:6px 12px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);cursor:pointer;transition:all .15s;white-space:nowrap}
+.faq-chip:hover{background:var(--blue-l);border-color:var(--accent);color:var(--accent)}
+[data-theme="light"] #faq-panel{background:#FFFFFF!important;border-color:#E5E7EB!important}
+[data-theme="light"] .faq-msg.bot{background:#F5F5F7!important;color:#1F2937!important}
+[data-theme="light"] .faq-chip{background:#F5F5F7!important;border-color:#E5E7EB!important;color:#1F2937!important}
+
+/* Notificação badge inline (status mudou) */
+.eli-sent-dot{width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block;margin-left:4px;vertical-align:middle}
+
+/* Inner view areas (dentro de tab-pedidos) */
+#pedidos-orders-area{display:block}
+#pedidos-dashboard-area{display:none;padding-bottom:24px}
+#pedidos-ads-area{display:none;padding-bottom:24px}
+
+/* Clientes filtros */
+.clientes-filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.clientes-filter-row::-webkit-scrollbar{display:none}
 
 /* ══ V2 — PALETA FLUXA ══ */
 :root{
@@ -485,6 +565,9 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     <button class="nav-item" id="nav-historico" onclick="go('historico')">
       <span class="ms">history</span><span class="nav-lbl">Histórico</span>
     </button>
+    <button class="nav-item" id="nav-clientes" onclick="go('clientes')">
+      <span class="ms">group</span><span class="nav-lbl">Clientes</span>
+    </button>
     <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
       <span class="ms">person</span><span class="nav-lbl">Perfil</span>
     </button>
@@ -534,16 +617,31 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <span style="font-size:11px;color:var(--text3)">→ avança · Segure + ← cancela</span>
         </div>
 
-        <!-- Abas de tipo de pedido -->
+        <!-- Abas de tipo de pedido + Dashboard + Ads -->
         <div id="order-tabs-wrap" class="order-tabs scroll-x">
           <button class="order-tab active" id="otab-todos" onclick="setOrderTab('todos')">Todos <span id="otab-todos-count" style="font-size:10px;opacity:.6"></span></button>
           <button class="order-tab" id="otab-delivery" onclick="setOrderTab('delivery')">Delivery <span id="otab-delivery-count" style="font-size:10px;opacity:.6"></span></button>
           <button class="order-tab" id="otab-retirada" onclick="setOrderTab('retirada')">Retirada <span id="otab-retirada-count" style="font-size:10px;opacity:.6"></span></button>
           <button class="order-tab" id="otab-mesa" onclick="setOrderTab('mesa')">Mesa <span id="otab-mesa-count" style="font-size:10px;opacity:.6"></span></button>
+          <button class="order-tab" id="otab-ads" onclick="setOrderTab('ads')" style="color:#0EA5E9;border-bottom-color:transparent">🎯 Ads</button>
+          <button class="order-tab" id="otab-dashboard" onclick="setOrderTab('dashboard')">📊 Dashboard</button>
         </div>
 
-        <div id="ptr-indicator"><span class="ms" style="font-size:14px">refresh</span>Atualizando...</div>
-        <div id="orders-wrap"></div>
+        <!-- Área de orders (Todos/Delivery/Retirada/Mesa) -->
+        <div id="pedidos-orders-area">
+          <div id="ptr-indicator"><span class="ms" style="font-size:14px">refresh</span>Atualizando...</div>
+          <div id="orders-wrap"></div>
+        </div>
+
+        <!-- Área Ads -->
+        <div id="pedidos-ads-area">
+          <div id="ads-content"></div>
+        </div>
+
+        <!-- Área Dashboard -->
+        <div id="pedidos-dashboard-area">
+          <div id="dashboard-inner-content"></div>
+        </div>
 
         <!-- Dashboard lateral (só desktop via CSS grid) -->
         <div id="v2-dashboard">
@@ -620,6 +718,21 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <button class="filter-pill" onclick="fHist('cancelado',this)">Cancelados</button>
         </div>
         <div class="card" id="h-list"><div style="text-align:center;padding:28px;color:var(--text3)"><span class="ms" style="font-size:30px;display:block;margin-bottom:8px">receipt_long</span><div style="font-size:13px">Nenhum registro ainda</div></div></div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div id="tab-clientes" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Clientes</h2>
+          <span style="font-size:12px;color:var(--text3)" id="clientes-count"></span>
+        </div>
+        <div class="clientes-filter-row">
+          <button class="filter-pill active" onclick="fClientes('todos',this)">Todos</button>
+          <button class="filter-pill" onclick="fClientes('mais_gasto',this)">Maior gasto</button>
+          <button class="filter-pill" onclick="fClientes('mais_pedidos',this)">Mais pedidos</button>
+          <button class="filter-pill" onclick="fClientes('recentes',this)">Recentes</button>
+        </div>
+        <div id="clientes-list"><div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:36px;display:block;margin-bottom:10px">group</span><div style="font-size:13px">Carregando clientes...</div></div></div>
       </div>
 
       <!-- PERFIL -->
@@ -1019,8 +1132,11 @@ const db=supabase.createClient(SB_URL,SB_KEY);
 let co=null,isFounder=false,eliOn=true,menuFil='todos',histFil='todos',editId=null;
 let selectedTheme='light',selectedFont='moderno';
 let adics=[],alergs=[],photo=null,szCount=1,rtSub=null,statsPeriod='hoje';
-let orders=[],history=[],menuItems=[];
+let orders=[],history=[],menuItems=[],clientes=[];
 let orderTypeFil='todos'; // V2: filtro por tipo de pedido
+let clientesFil='todos';  // Fase 2: filtro de clientes
+// Fase 2: N8N webhook URL (configurar no Perfil ou via co.n8n_webhook)
+const N8N_NOTIFICATIONS_WEBHOOK=''; // Deixar vazio até configurar N8N
 
 // V2 — Cores de status conforme spec Fluxa
 const SL={
@@ -1104,6 +1220,156 @@ function renderDashboard(){
       return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border)"><span>${info.emoji} ${info.label}</span><span class="hl" style="font-weight:700">${cnt}</span></div>`;
     }).join('');
   }
+}
+
+// ══ FASE 2 — DASHBOARD INNER TAB ══
+function renderDashboardInner(){
+  const el=document.getElementById('dashboard-inner-content');if(!el||!co)return;
+  const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
+  const entregueHoje=history.filter(o=>o.status==='entregue');
+  const fat=entregueHoje.reduce((a,o)=>a+getTotal(o),0);
+  const ticket=entregueHoje.length?fat/entregueHoje.length:0;
+  const allHoje=[...active,...entregueHoje];
+  // Pedidos por hora (últimas 8h simplificado)
+  const byHour={};allHoje.forEach(o=>{const h=new Date(o.created_at).getHours();byHour[h]=(byHour[h]||0)+1;});
+  const hourBars=Array.from({length:8},(_,i)=>{const h=(new Date().getHours()-7+i+24)%24;const v=byHour[h]||0;return{h,v};});
+  const maxV=Math.max(...hourBars.map(x=>x.v),1);
+  // Por tipo
+  const porTipo={'delivery':0,'retirada':0,'mesa':0,'?':0};
+  active.forEach(o=>{const t=(o.tipo_pedido||'').toLowerCase();porTipo[t]=(porTipo[t]!==undefined?porTipo[t]:0)+1;if(!porTipo[t])porTipo['?']++;});
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="card" style="padding:16px;border-left:3px solid #4CAF50">
+        <div class="section-lbl">Faturamento hoje</div>
+        <div class="hl" style="font-size:28px;font-weight:800;color:#4CAF50;margin-top:4px">${fmtP(fat)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${entregueHoje.length} pedidos entregues</div>
+      </div>
+      <div class="card" style="padding:16px;border-left:3px solid #FFC107">
+        <div class="section-lbl">Ticket médio</div>
+        <div class="hl" style="font-size:28px;font-weight:800;color:#FFC107;margin-top:4px">${entregueHoje.length?fmtP(ticket):'—'}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Pedidos ativos: ${active.length}</div>
+      </div>
+      <div class="card" style="padding:16px;border-left:3px solid #D32F2F">
+        <div class="section-lbl">Por status</div>
+        ${['recebido','preparo','pronto'].map(s=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${SLB[s]}</span><span class="hl" style="font-weight:700;color:${BC[s]}">${active.filter(o=>o.status===s).length}</span></div>`).join('')}
+      </div>
+      <div class="card" style="padding:16px;border-left:3px solid #2196F3">
+        <div class="section-lbl">Por tipo</div>
+        ${[['delivery','🛵'],['retirada','🏪'],['mesa','🪑']].map(([t,e])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${e} ${t[0].toUpperCase()+t.slice(1)}</span><span class="hl" style="font-weight:700">${active.filter(o=>(o.tipo_pedido||'').toLowerCase()===t).length}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="padding:16px;margin-bottom:16px">
+      <div class="section-lbl" style="margin-bottom:12px">Pedidos por hora (últimas 8h)</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:80px">
+        ${hourBars.map(({h,v})=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:100%;background:var(--fluxa-red,#D32F2F);border-radius:4px 4px 0 0;height:${Math.max(v/maxV*60,v>0?6:0)}px;transition:height .3s"></div><span style="font-size:9px;color:var(--text3)">${h}h</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="padding:16px">
+      <div class="section-lbl" style="margin-bottom:10px">Origem dos pedidos hoje</div>
+      <div id="dash-inner-origem"></div>
+    </div>`;
+  // Origem
+  const origCount={};allHoje.forEach(o=>{const s=(o.order_source||'direto').toLowerCase();origCount[s]=(origCount[s]||0)+1;});
+  const origEl=document.getElementById('dash-inner-origem');
+  if(origEl){
+    const entries=Object.entries(origCount).sort((a,b)=>b[1]-a[1]);
+    origEl.innerHTML=entries.length?entries.map(([src,cnt])=>{const info=SRC_MAP[src]||{emoji:'📍',label:src};const pct=Math.round(cnt/allHoje.length*100);return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${info.emoji} ${info.label}</span><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:${pct}%;height:100%;background:#D32F2F;border-radius:2px"></div></div><span class="hl" style="font-size:12px;font-weight:700">${cnt}</span></div></div>`;}).join(''):'<span style="font-size:12px;color:var(--text3)">Sem dados</span>';
+  }
+}
+
+// ══ FASE 2 — ADS VIEW ══
+async function renderAdsView(){
+  const el=document.getElementById('ads-content');if(!el||!co)return;
+  el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--text3)"><div class="spin"></div></div>`;
+  const today=new Date();today.setHours(0,0,0,0);
+  const{data:adsOrders}=await db.from('food_orders').select('*,food_order_items(*)').eq('company_id',co.id).eq('order_source','ads').gte('created_at',today.toISOString()).order('created_at',{ascending:false});
+  const ao=adsOrders||[];
+  const {data:allDay}=await db.from('food_orders').select('id',{count:'exact',head:false}).eq('company_id',co.id).gte('created_at',today.toISOString());
+  const totalDay=allDay?.length||1;
+  const fat=ao.filter(o=>o.status==='entregue').reduce((a,o)=>a+Number(o.total||0),0);
+  const ticket=ao.filter(o=>o.status==='entregue').length?fat/ao.filter(o=>o.status==='entregue').length:0;
+  const conv=Math.round(ao.length/totalDay*100);
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <span style="font-size:20px">🎯</span>
+      <div class="hl" style="font-size:18px;font-weight:800">Pedidos via Ads</div>
+      <span style="font-size:11px;color:var(--text3)">— hoje</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="ads-metric-card"><div class="ads-metric-lbl">Total pedidos</div><div class="ads-metric-val">${ao.length}</div></div>
+      <div class="ads-metric-card"><div class="ads-metric-lbl">Faturamento</div><div class="ads-metric-val">${fmtP(fat)}</div></div>
+      <div class="ads-metric-card"><div class="ads-metric-lbl">Ticket médio</div><div class="ads-metric-val">${ao.length?fmtP(ticket):'—'}</div></div>
+      <div class="ads-metric-card"><div class="ads-metric-lbl">Taxa conversão</div><div class="ads-metric-val">${conv}%</div></div>
+    </div>
+    <div class="section-lbl" style="margin-bottom:8px">Pedidos Ads de hoje</div>
+    ${ao.length?ao.map(o=>{const sc=SL[o.status]||SL.recebido;return `<div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px"><div style="flex:1;min-width:0"><div class="hl" style="font-size:13px;font-weight:700">${o.cliente_nome}</div><div style="font-size:11px;color:var(--text2)">${o.order_number} · ${fmtTime(o.created_at)}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="status-pill" style="background:${sc.bg};color:${sc.c}">${SLB[o.status]||o.status}</span><span class="hl" style="font-size:12px;font-weight:700">${fmtP(Number(o.total||0))}</span></div></div>`;}).join(''):'<div style="text-align:center;padding:32px;color:var(--text3)"><span class="ms" style="font-size:32px;display:block;margin-bottom:8px">ads_click</span><div style="font-size:13px">Nenhum pedido via Ads hoje</div></div>'}`;
+}
+
+// ══ FASE 2 — CLIENTES ══
+async function loadClientes(){
+  const el=document.getElementById('clientes-list');if(!el||!co)return;
+  el.innerHTML=`<div style="text-align:center;padding:32px"><div class="spin"></div></div>`;
+  // Agregar clientes dos pedidos (histórico + ativos) — usa food_orders como fonte
+  const today=new Date();today.setHours(0,0,0,0);
+  const sevenDays=new Date(today);sevenDays.setDate(sevenDays.getDate()-7);
+  const{data}=await db.from('food_orders').select('cliente_nome,cliente_telefone,total,status,created_at').eq('company_id',co.id).gte('created_at',sevenDays.toISOString()).order('created_at',{ascending:false});
+  if(!data){el.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3)">Erro ao carregar</div>';return;}
+  // Agrupa por telefone
+  const map={};
+  data.forEach(o=>{
+    const k=o.cliente_telefone||o.cliente_nome;
+    if(!map[k])map[k]={nome:o.cliente_nome,tel:o.cliente_telefone,pedidos:0,gasto:0,ultimo:o.created_at};
+    map[k].pedidos++;
+    if(o.status==='entregue')map[k].gasto+=Number(o.total||0);
+    if(o.created_at>map[k].ultimo)map[k].ultimo=o.created_at;
+  });
+  clientes=Object.values(map);
+  document.getElementById('clientes-count').textContent=clientes.length+' clientes (7 dias)';
+  renderClientes();
+}
+
+function fClientes(fil,btn){
+  clientesFil=fil;
+  document.querySelectorAll('#tab-clientes .filter-pill').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderClientes();
+}
+
+function renderClientes(){
+  const el=document.getElementById('clientes-list');if(!el)return;
+  let sorted=[...clientes];
+  if(clientesFil==='mais_gasto')sorted.sort((a,b)=>b.gasto-a.gasto);
+  else if(clientesFil==='mais_pedidos')sorted.sort((a,b)=>b.pedidos-a.pedidos);
+  else if(clientesFil==='recentes')sorted.sort((a,b)=>b.ultimo.localeCompare(a.ultimo));
+  if(!sorted.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:36px;display:block;margin-bottom:10px">group</span><div>Sem clientes nos últimos 7 dias</div></div>';return;}
+  el.innerHTML=sorted.map(c=>`
+    <div class="cliente-card" onclick="openCliente(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+      <div class="cliente-avatar"><span class="hl" style="font-size:14px;font-weight:800;color:var(--blue)">${ini(c.nome)}</span></div>
+      <div style="flex:1;min-width:0">
+        <div class="hl" style="font-size:13px;font-weight:700">${c.nome}</div>
+        <div style="font-size:11px;color:var(--text2)">${c.tel||'—'} · ${c.pedidos} pedido${c.pedidos!==1?'s':''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="hl" style="font-size:13px;font-weight:700">${fmtP(c.gasto)}</div>
+        <div style="font-size:10px;color:var(--text3)">${fmtDate(c.ultimo)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openCliente(c){
+  document.getElementById('mod-cliente-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div class="cliente-avatar" style="width:52px;height:52px"><span class="hl" style="font-size:16px;font-weight:800;color:var(--blue)">${ini(c.nome)}</span></div>
+      <div><div class="hl" style="font-size:16px;font-weight:800">${c.nome}</div><div style="font-size:12px;color:var(--text3)">${c.tel||'Sem telefone'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--bg2);border-radius:12px;padding:12px;text-align:center"><div class="section-lbl">Pedidos</div><div class="hl" style="font-size:18px;font-weight:800">${c.pedidos}</div></div>
+      <div style="background:var(--bg2);border-radius:12px;padding:12px;text-align:center"><div class="section-lbl">Gasto</div><div class="hl" style="font-size:16px;font-weight:800;color:#4CAF50">${fmtP(c.gasto)}</div></div>
+      <div style="background:var(--bg2);border-radius:12px;padding:12px;text-align:center"><div class="section-lbl">Último</div><div class="hl" style="font-size:13px;font-weight:800">${fmtDate(c.ultimo)}</div></div>
+    </div>
+    ${c.tel?`<a href="https://wa.me/${c.tel}" target="_blank" class="btn-p" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:8px"><span class="ms" style="font-size:18px;color:#fff">chat</span>Enviar mensagem via Eli</a>`:''}
+    <button class="btn-s" onclick="closeMod('mod-cliente')" style="width:100%">Fechar</button>`;
+  openMod('mod-cliente');
 }
 
 // BOOT ÚNICO — offline-first: usa cache local imediatamente, valida em background
@@ -1309,12 +1575,15 @@ function go(tab){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  document.getElementById('nav-'+tab).classList.add('active');
+  const navEl=document.getElementById('nav-'+tab);if(navEl)navEl.classList.add('active');
   document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
+  // FAQ widget: só mostrar no app (não no founder)
+  const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display=isFounder?'none':'flex';
   if(tab==='pedidos')renderOrders();
   if(tab==='cardapio')loadMenu();
   if(tab==='elistats')renderStats();
   if(tab==='historico')renderHist();
+  if(tab==='clientes')loadClientes();
 }
 
 // ── ELI ──
@@ -1343,13 +1612,32 @@ async function loadOrders(){
   renderOrders();renderHist();
 }
 
-// V2 — Troca de aba de tipo de pedido
+// V2/Fase2 — Troca de aba interna dos pedidos
 function setOrderTab(tab){
   orderTypeFil=tab;
   document.querySelectorAll('.order-tab').forEach(el=>el.classList.remove('active'));
-  const el=document.getElementById('otab-'+tab);
-  if(el)el.classList.add('active');
-  renderOrders();
+  const el=document.getElementById('otab-'+tab);if(el)el.classList.add('active');
+
+  // Controla quais áreas ficam visíveis
+  const ordersArea=document.getElementById('pedidos-orders-area');
+  const dashArea=document.getElementById('pedidos-dashboard-area');
+  const adsArea=document.getElementById('pedidos-ads-area');
+  const topRow=document.getElementById('pedidos-top-row');
+  const hint=document.getElementById('pedidos-hint');
+
+  if(tab==='dashboard'){
+    ordersArea.style.display='none';adsArea.style.display='none';dashArea.style.display='block';
+    if(topRow)topRow.style.display='none';if(hint)hint.style.display='none';
+    renderDashboardInner();
+  }else if(tab==='ads'){
+    ordersArea.style.display='none';dashArea.style.display='none';adsArea.style.display='block';
+    if(topRow)topRow.style.display='none';if(hint)hint.style.display='none';
+    renderAdsView();
+  }else{
+    ordersArea.style.display='block';dashArea.style.display='none';adsArea.style.display='none';
+    if(topRow)topRow.style.display='';if(hint)hint.style.display='';
+    renderOrders();
+  }
 }
 
 function renderOrders(){
@@ -1438,18 +1726,61 @@ function attachSwipe(id){
   wrap.addEventListener('mousedown',onS);document.addEventListener('mousemove',onM);document.addEventListener('mouseup',onE);
 }
 
+// ══ FASE 2 — NOTIFICAÇÕES ELI VIA N8N ══
+const ELI_MESSAGES={
+  recebido:{key:'msg_recebido',text:'Pedido confirmado! ✅ Seu pedido foi recebido e será preparado em breve. Tempo estimado: ~25min'},
+  preparo:{key:'msg_preparo',text:'Iniciamos o seu pedido 👨‍🍳 Estamos preparando com carinho!'},
+  pronto:{key:'msg_pronto',text:'Seu pedido está pronto! 🎉 Pode retirar ou aguardar o entregador.'},
+  saiu:{key:'msg_saiu',text:'Seu pedido saiu para entrega! 🚗 Chegará em breve!'},
+  entregue:{key:'msg_entregue',text:'Pedido entregue! 🙌 Obrigado pela preferência! Avalie seu pedido.'}
+};
+
+async function sendEliNotification(order,newStatus){
+  const msgInfo=ELI_MESSAGES[newStatus];
+  if(!msgInfo||!order.cliente_telefone)return;
+  // Verifica se já foi enviada (via notifications_sent JSONB)
+  const sent=order.notifications_sent||{};
+  if(sent[msgInfo.key])return; // já enviou
+  // Marca como enviada primeiro (evita duplicatas)
+  const updatedSent={...sent,[msgInfo.key]:true};
+  await db.from('food_orders').update({notifications_sent:updatedSent}).eq('id',order.id);
+  // Dispara webhook N8N (se configurado)
+  const webhook=co.n8n_webhook||N8N_NOTIFICATIONS_WEBHOOK;
+  if(!webhook)return;
+  try{
+    await fetch(webhook,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        order_id:order.id,
+        order_number:order.order_number,
+        cliente_nome:order.cliente_nome,
+        cliente_telefone:order.cliente_telefone,
+        status:newStatus,
+        message:msgInfo.text,
+        restaurant:co.name,
+        whatsapp:co.whatsapp_number
+      })
+    });
+    // Log visual rápido
+    console.log('[ELI] Notificação enviada:',newStatus,'→',order.cliente_nome);
+  }catch(e){console.warn('[ELI] Erro webhook:',e);}
+}
+
 async function advOrder(id){
   const idx=orders.findIndex(o=>o.id===id);if(idx===-1)return;
   const cur=orders[idx].status,ci=SF.indexOf(cur);
   let ns;if(cur==='pronto')ns='entregue';else if(ci<SF.length-1)ns=SF[ci+1];else return;
+  const orderSnap={...orders[idx]};
   orders[idx].status=ns;
   await db.from('food_orders').update({status:ns,updated_at:new Date().toISOString()}).eq('id',id);
+  // Fase 2: dispara notificação Eli
+  sendEliNotification(orderSnap,ns);
   if(ns==='entregue'){
     const o=orders.splice(idx,1)[0];o.completed_at=new Date().toISOString();history.unshift(o);renderHist();
-    // Sprint 4 #3 — Registrar comissão Fluxa 10% ao confirmar entrega (evita duplicata: só insere se não existir)
     const tot=getTotal(o);
     const{count}=await db.from('food_commission_log').select('id',{count:'exact',head:true}).eq('order_id',o.id);
-    if(!count||count===0) await db.from('food_commission_log').insert({company_id:co.id,order_id:o.id,order_total:tot,commission_pct:10});
+    if(!count||count===0)await db.from('food_commission_log').insert({company_id:co.id,order_id:o.id,order_total:tot,commission_pct:10});
   }
   renderOrders();
 }
@@ -2017,6 +2348,73 @@ function closeMod(id,e){if(e&&e.target!==e.currentTarget)return;document.getElem
 let toastT;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity='0',2400);}
 
+// ══ FASE 2 — UPSELL MODAL ══
+let upsellShown=false;
+function showUpsell(){
+  if(upsellShown)return;upsellShown=true;
+  // Pega 3 bebidas ou itens de menor preço do cardápio
+  const candidates=menuItems.filter(m=>m.active&&!m.esgotado_hoje&&(m.category==='bebidas'||(m.price<15)));
+  const picks=candidates.slice(0,3);
+  if(!picks.length)return;
+  document.getElementById('upsell-items').innerHTML=picks.map(m=>`
+    <div class="upsell-item" onclick="closeMod('mod-upsell')">
+      <div style="width:44px;height:44px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span class="ms" style="font-size:20px;color:var(--text2)">local_drink</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="hl" style="font-size:13px;font-weight:700">${m.name}</div>
+        <div style="font-size:11px;color:var(--text2)">${m.description||'Adicionar ao pedido'}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:right">
+        <div class="hl" style="font-size:13px;font-weight:800">${fmtP(m.price)}</div>
+        <span class="upsell-badge">Economize</span>
+      </div>
+    </div>`).join('');
+  setTimeout(()=>openMod('mod-upsell'),800);
+}
+function resetUpsell(){upsellShown=false;}
+
+// ══ FASE 2 — FAQ WIDGET ══
+const FAQ_DB={
+  horario:{user:'⏰ Horário',bot:`📅 Atendimento: ${(() => {try{return co?.business_hours||'Seg-Dom: 11h às 22h';}catch(e){return '11h às 22h';}})()}`},
+  entrega:{user:'🚗 Entrega',bot:'🛵 Sim! Entregamos em raio de 5km. Tempo médio: 30 minutos. Taxa de entrega consultada no cardápio.'},
+  cardapio:{user:'📋 Cardápio',bot:'📋 Acesse nosso cardápio completo pelo link abaixo:'},
+  pagamento:{user:'💳 Pagamento',bot:'💳 Aceitamos: Cartão de débito/crédito, Pix, Dinheiro. Pagamento na entrega ou antecipado via Pix.'},
+};
+
+function toggleFAQ(){
+  const p=document.getElementById('faq-panel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')&&!document.getElementById('faq-messages').children.length){
+    addFAQMsg('bot','Olá! 👋 Sou o Eli, assistente virtual. Como posso ajudar?');
+  }
+}
+
+function addFAQMsg(type,text){
+  const msgs=document.getElementById('faq-messages');if(!msgs)return;
+  const div=document.createElement('div');
+  div.className='faq-msg '+type;
+  div.textContent=text;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function faqAnswer(key){
+  const qa=FAQ_DB[key];if(!qa)return;
+  addFAQMsg('user',qa.user);
+  setTimeout(()=>{
+    addFAQMsg('bot',qa.bot);
+    if(key==='cardapio'&&co?.slug){
+      const msgs=document.getElementById('faq-messages');
+      const a=document.createElement('a');
+      a.href='https://fluxa.app/'+co.slug;a.target='_blank';
+      a.className='faq-chip';a.style.display='inline-block';a.style.marginTop='4px';
+      a.textContent='Ver cardápio →';
+      msgs.appendChild(a);msgs.scrollTop=msgs.scrollHeight;
+    }
+  },400);
+}
+
 // ── TIMER ──
 function startTick(){setInterval(()=>{if(!co||isFounder)return;orders.forEach(o=>{o.timer_minutes=(o.timer_minutes||0)+1;});if(document.getElementById('nav-pedidos')&&document.getElementById('nav-pedidos').classList.contains('active'))renderOrders();},60000);}
 
@@ -2331,6 +2729,53 @@ async function deletePromo(){
   closeMod('mod-promo');await loadPromos();toast('Promoção removida');
 }
 </script>
+
+<!-- ══ UPSELL MODAL ══ -->
+<div class="modal-overlay" id="mod-upsell" onclick="closeMod('mod-upsell',event)">
+  <div class="modal-sheet">
+    <div class="drag-h"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h3 class="hl" style="font-size:17px;font-weight:800">Aproveite e economize! 🎉</h3>
+      <button onclick="closeMod('mod-upsell')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Adicione ao pedido com desconto</p>
+    <div id="upsell-items" style="display:flex;flex-direction:column;gap:10px">
+      <!-- Renderizado via JS -->
+    </div>
+    <button class="btn-s" onclick="closeMod('mod-upsell')" style="margin-top:14px;width:100%">Não, obrigado</button>
+  </div>
+</div>
+
+<!-- ══ MODAL DETALHES DO CLIENTE ══ -->
+<div class="modal-overlay" id="mod-cliente" onclick="closeMod('mod-cliente',event)">
+  <div class="modal-sheet">
+    <div class="drag-h"></div>
+    <div id="mod-cliente-body"></div>
+  </div>
+</div>
+
+<!-- ══ FAQ WIDGET ══ -->
+<div id="faq-widget">
+  <div id="faq-panel">
+    <div class="faq-header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="ms" style="color:#fff;font-size:18px">support_agent</span>
+        <span class="hl" style="font-size:13px;font-weight:800;color:#fff">Eli — Suporte</span>
+      </div>
+      <button onclick="toggleFAQ()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:rgba(255,255,255,0.8);font-size:18px">close</span></button>
+    </div>
+    <div class="faq-messages" id="faq-messages"></div>
+    <div class="faq-chips" id="faq-chips">
+      <span class="faq-chip" onclick="faqAnswer('horario')">⏰ Horário</span>
+      <span class="faq-chip" onclick="faqAnswer('entrega')">🚗 Entrega</span>
+      <span class="faq-chip" onclick="faqAnswer('cardapio')">📋 Cardápio</span>
+      <span class="faq-chip" onclick="faqAnswer('pagamento')">💳 Pagamento</span>
+    </div>
+  </div>
+  <button id="faq-bubble" onclick="toggleFAQ()">
+    <span class="ms" style="color:#fff;font-size:22px">support_agent</span>
+  </button>
+</div>
 
 <!-- MODAL BANNER -->
 <div class="modal-overlay" id="mod-banner" onclick="closeMod('mod-banner',event)">
