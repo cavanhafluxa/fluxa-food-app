@@ -69,8 +69,8 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 
 /* NAV */
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:20px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;overflow:hidden}
-.nav-item .ms{font-size:20px;color:rgba(255,255,255,0.4);transition:color 0.3s;flex-shrink:0}
-.nav-item .nav-lbl{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:rgba(255,255,255,0.4);font-family:var(--hl);height:11px;margin-top:0;transition:all 0.3s;opacity:1}
+.nav-item .ms{font-size:20px;color:rgba(255,255,255,0.6);transition:color 0.3s;flex-shrink:0}
+.nav-item .nav-lbl{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:rgba(255,255,255,0.6);font-family:var(--hl);height:11px;margin-top:0;transition:all 0.3s;opacity:1}
 .nav-item.active{background:rgba(255,255,255,0.08)}
 .nav-item.active .ms,.nav-item.active .nav-lbl{color:#fff}
 .nav-badge{position:absolute;top:0;right:4px;background:var(--red);color:white;font-size:8px;font-weight:800;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:var(--hl);box-shadow:0 4px 10px rgba(239,68,68,0.5)}
@@ -116,7 +116,7 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 .metric-val{font-size:24px;font-weight:800;color:var(--text);font-family:var(--hl);line-height:1}
 .filter-pill{padding:8px 16px;border-radius:24px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:var(--hl);transition:all 0.2s;border:none;outline:none}
 .filter-pill.active{background:var(--text);color:var(--bg);box-shadow:0 4px 10px rgba(255,255,255,0.15)}
-.filter-pill:not(.active){background:rgba(255,255,255,0.05);color:var(--text2)}
+.filter-pill:not(.active){background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--border)}
 .filter-pill:not(.active):hover{background:rgba(255,255,255,0.08)}
 .scroll-x{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .scroll-x::-webkit-scrollbar{display:none}
@@ -310,6 +310,110 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 [data-theme="light"] #eli-txt { color: #059669 !important; }
 .modal-overlay .modal-sheet::-webkit-scrollbar, .tab::-webkit-scrollbar, main::-webkit-scrollbar, #app-body::-webkit-scrollbar, .sheet::-webkit-scrollbar { display:none; }
 .modal-sheet, .tab, main, #app-body, .sheet { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ══ V2 — PALETA FLUXA ══ */
+:root{
+  --fluxa-red:#D32F2F;--fluxa-red-l:rgba(211,47,47,0.15);
+  --fluxa-yellow:#FFC107;--fluxa-yellow-l:rgba(255,193,7,0.15);
+  --fluxa-green2:#4CAF50;--fluxa-green2-l:rgba(76,175,80,0.15);
+  --fluxa-blue2:#2196F3;--fluxa-blue2-l:rgba(33,150,243,0.15);
+  --fluxa-gray:#9E9E9E;--fluxa-gray-l:rgba(158,158,158,0.15);
+}
+
+/* ══ V2 — ABAS DE TIPO DE PEDIDO ══ */
+.order-tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:2px solid var(--border);padding-bottom:0}
+.order-tab{padding:8px 14px;font-size:12px;font-weight:700;font-family:var(--hl);border:none;background:none;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;border-radius:0;white-space:nowrap}
+.order-tab.active{color:var(--fluxa-red);border-bottom-color:var(--fluxa-red)}
+.order-tab:hover:not(.active){color:var(--text2)}
+
+/* ══ V2 — BADGE DE ORIGEM ══ */
+.src-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:800;font-family:var(--hl)}
+.src-ads{background:rgba(33,150,243,0.15);color:#2196F3}
+.src-instagram{background:rgba(233,30,99,0.15);color:#E91E63}
+.src-eli{background:rgba(76,175,80,0.15);color:#4CAF50}
+.src-direto{background:rgba(158,158,158,0.12);color:var(--text3)}
+
+/* ══ V2 — DESKTOP SIDEBAR (≥1024px) ══ */
+@media(min-width:1024px){
+  #app.on{flex-direction:row !important;height:100dvh;overflow:hidden}
+
+  /* Sidebar vira coluna fixa à esquerda */
+  .sidenav{
+    position:sticky !important;top:0 !important;left:0 !important;
+    transform:none !important;
+    width:200px !important;min-width:200px;flex-shrink:0;
+    height:100dvh !important;
+    border-radius:0 !important;
+    flex-direction:column !important;
+    justify-content:flex-start !important;
+    align-items:stretch !important;
+    padding:20px 10px !important;
+    gap:4px !important;
+    border-right:1px solid var(--border) !important;
+    border-top:none !important;border-bottom:none !important;
+    backdrop-filter:blur(20px) !important;
+    box-shadow:none !important;
+    overflow-y:auto;overflow-x:hidden;
+    background:rgba(20,20,22,0.85) !important;
+  }
+  #sidenav-logo{display:flex !important;align-items:center;gap:8px;padding:8px 12px;margin-bottom:16px;flex-shrink:0}
+  .nav-item{
+    width:100% !important;
+    flex-direction:row !important;
+    justify-content:flex-start !important;
+    gap:10px !important;
+    border-radius:12px !important;
+    padding:11px 14px !important;
+    white-space:nowrap;
+  }
+  .nav-item .ms{font-size:18px !important}
+  .nav-lbl{
+    font-size:13px !important;
+    height:auto !important;
+    text-transform:none !important;
+    letter-spacing:0 !important;
+    font-weight:600 !important;
+  }
+  .sidenav.shrunk .nav-item:not(.active){width:auto !important;height:auto !important;padding:11px 14px !important;opacity:1 !important;pointer-events:auto !important;overflow:visible !important;margin:0 !important}
+  .sidenav.shrunk .nav-item.active{width:auto !important;height:auto !important;border-radius:12px !important;background:rgba(255,255,255,0.08) !important}
+  .sidenav.shrunk .nav-item.active .nav-lbl{display:block !important;max-height:none !important;opacity:1 !important;margin:0 !important}
+  .sidenav.shrunk{padding:20px 10px !important;border-radius:0 !important;background:rgba(20,20,22,0.85) !important}
+
+  /* App body ocupa o resto */
+  #app-body{
+    flex:1;min-width:0;
+    padding-top:0 !important;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  .topbar{padding:16px 24px !important;margin-bottom:0 !important;border-bottom:1px solid var(--border);background:rgba(20,20,22,0.6);backdrop-filter:blur(20px);flex-shrink:0}
+  main{padding-top:0 !important;padding-bottom:24px !important;flex:1;overflow-y:auto}
+  .tab{padding:20px 28px !important;max-width:none !important}
+
+  /* Grid pedidos no desktop: orders + dashboard */
+  #tab-pedidos{
+    display:grid !important;
+    grid-template-columns:1fr 280px !important;
+    grid-template-rows:auto auto auto 1fr !important;
+    gap:0 20px !important;
+    align-items:start;
+  }
+  #pedidos-top-row{grid-column:1}
+  #pedidos-hint{grid-column:1}
+  #order-tabs-wrap{grid-column:1}
+  #ptr-indicator{grid-column:1}
+  #orders-wrap{grid-column:1}
+  #v2-dashboard{grid-column:2;grid-row:1 / 99;position:sticky;top:0;display:block !important}
+}
+
+/* V2 Dashboard (escondido no mobile, visível no desktop via media query) */
+#v2-dashboard{display:none}
+.dash-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px}
+.dash-card-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;font-family:var(--hl)}
+.dash-card-val{font-size:22px;font-weight:800;color:var(--text);font-family:var(--hl);line-height:1}
+.dash-status-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.dash-status-row:last-child{border-bottom:none}
+.dash-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -408,25 +512,64 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     <main>
       <!-- PEDIDOS -->
       <div id="tab-pedidos" class="tab active">
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px">
+
+        <!-- Linha topo: contadores -->
+        <div id="pedidos-top-row" style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:12px">
           <div class="card" style="padding:12px 14px">
             <div class="section-lbl" style="margin-bottom:4px">Ao vivo</div>
             <div style="display:flex;align-items:baseline;gap:5px">
-              <span class="hl" style="font-size:26px;font-weight:800;color:var(--blue)" id="p-count">0</span>
+              <span class="hl" style="font-size:26px;font-weight:800;color:var(--fluxa-red)" id="p-count">0</span>
               <span style="font-size:12px;color:var(--text2)">ativos</span>
             </div>
           </div>
           <div class="card" style="padding:12px 14px;text-align:center">
             <div class="section-lbl" style="margin-bottom:4px">Média</div>
-            <span class="hl" style="font-size:20px;font-weight:800;color:var(--amber)" id="p-avg">—</span>
+            <span class="hl" style="font-size:20px;font-weight:800;color:var(--fluxa-yellow)" id="p-avg">—</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:5px;margin-bottom:12px">
+
+        <!-- Hint gestos -->
+        <div id="pedidos-hint" style="display:flex;align-items:center;gap:5px;margin-bottom:12px">
           <span class="ms" style="font-size:13px;color:var(--text3)">swipe_right_alt</span>
           <span style="font-size:11px;color:var(--text3)">→ avança · Segure + ← cancela</span>
         </div>
+
+        <!-- Abas de tipo de pedido -->
+        <div id="order-tabs-wrap" class="order-tabs scroll-x">
+          <button class="order-tab active" id="otab-todos" onclick="setOrderTab('todos')">Todos <span id="otab-todos-count" style="font-size:10px;opacity:.6"></span></button>
+          <button class="order-tab" id="otab-delivery" onclick="setOrderTab('delivery')">Delivery <span id="otab-delivery-count" style="font-size:10px;opacity:.6"></span></button>
+          <button class="order-tab" id="otab-retirada" onclick="setOrderTab('retirada')">Retirada <span id="otab-retirada-count" style="font-size:10px;opacity:.6"></span></button>
+          <button class="order-tab" id="otab-mesa" onclick="setOrderTab('mesa')">Mesa <span id="otab-mesa-count" style="font-size:10px;opacity:.6"></span></button>
+        </div>
+
         <div id="ptr-indicator"><span class="ms" style="font-size:14px">refresh</span>Atualizando...</div>
         <div id="orders-wrap"></div>
+
+        <!-- Dashboard lateral (só desktop via CSS grid) -->
+        <div id="v2-dashboard">
+          <div class="dash-card">
+            <div class="dash-card-lbl">Faturamento hoje</div>
+            <div class="dash-card-val" id="dash-faturamento">R$ 0,00</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-lbl">Ticket médio</div>
+            <div class="dash-card-val" id="dash-ticket">—</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-lbl">Status dos pedidos</div>
+            <div id="dash-status-rows">
+              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#D32F2F"></div><span style="font-size:12px">Recebido</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-recebido">0</span></div>
+              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#FFC107"></div><span style="font-size:12px">Em preparo</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-preparo">0</span></div>
+              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#4CAF50"></div><span style="font-size:12px">Pronto</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-pronto">0</span></div>
+              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#2196F3"></div><span style="font-size:12px">Entregue hoje</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-entregue">0</span></div>
+            </div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-lbl">Origem dos pedidos hoje</div>
+            <div id="dash-origem-rows" style="font-size:12px;color:var(--text3)">—</div>
+          </div>
+        </div>
+
       </div>
 
       <!-- CARDÁPIO -->
@@ -541,7 +684,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
                   <!-- COR DE DESTAQUE -->
                   <div>
                     <label>Cor de Destaque (botões e preços)</label>
-                    <input type="color" id="perfil-accent" style="height:46px;width:100%;border-radius:8px;padding:4px;cursor:pointer;border:1px solid var(--border)" oninput="updateMockup(this.value)"/>
+                    <input type="color" id="perfil-accent" style="height:46px;width:100%;border-radius:8px;padding:4px;cursor:pointer;border:1px solid var(--border)" oninput="updateMockup(this.value);updateThemePreview(selectedTheme,this.value)"/>
                   </div>
                   <!-- TIPOGRAFIA -->
                   <div>
@@ -595,29 +738,13 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
                   <div style="background:var(--bg);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px">
-            <!-- Mockup do Cardápio -->
-            <div style="flex:1;display:flex;justify-content:center;padding:12px 0">
-              <div style="width:80px;height:120px;background:var(--bg2);border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow-md);padding:10px 6px;display:flex;flex-direction:column;gap:8px;overflow:hidden;position:relative">
-                <div style="width:100%;height:35px;background:var(--bg3);border-radius:8px;position:relative;overflow:hidden">
-                  <div style="position:absolute;top:5px;left:5px;width:20px;height:20px;background:var(--bg4);border-radius:50%"></div>
-                  <div style="position:absolute;top:8px;left:30px;width:40%;height:3px;background:var(--bg4);border-radius:2px"></div>
-                  <div style="position:absolute;top:14px;left:30px;width:20%;height:2px;background:var(--bg4);border-radius:1px"></div>
-                </div>
-                <div style="width:50%;height:5px;background:var(--text);opacity:0.8;border-radius:3px" id="mock-cat-title"></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
-                  <div style="height:35px;background:var(--bg3);border-radius:6px;padding:4px">
-                    <div style="width:100%;height:15px;background:var(--bg4);border-radius:3px;margin-bottom:3px"></div>
-                    <div style="width:70%;height:3px;background:var(--text);opacity:0.3;border-radius:2px"></div>
-                    <div style="width:40%;height:3px;background:var(--blue);border-radius:2px;margin-top:3px" id="mock-cat"></div>
-                  </div>
-                  <div style="height:35px;background:var(--bg3);border-radius:6px;padding:4px">
-                    <div style="width:100%;height:15px;background:var(--bg4);border-radius:3px;margin-bottom:3px"></div>
-                    <div style="width:70%;height:3px;background:var(--text);opacity:0.3;border-radius:2px"></div>
-                    <div style="width:50%;height:3px;background:var(--blue);border-radius:2px;margin-top:3px" id="mock-price"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase">Preview</div>
+                    <div id="mock-box" style="width:80px;height:120px;background:#F5F5F7;border-radius:10px;box-shadow:inset 0 0 0 3px #e5e5e5;padding:8px 5px;display:flex;flex-direction:column;gap:6px;overflow:hidden;transition:background .3s">
+                      <div id="mock-cat" style="height:14px;border-radius:7px;background:var(--blue);transition:background .2s"></div>
+                      <div style="height:28px;border-radius:6px;background:rgba(0,0,0,0.07);margin-top:2px"></div>
+                      <div style="height:28px;border-radius:6px;background:rgba(0,0,0,0.07)"></div>
+                      <div id="mock-price" style="width:50%;height:8px;border-radius:4px;background:var(--blue);transition:background .2s;margin-top:auto"></div>
+                    </div>
                   </div>
                   <div style="flex:1"><button onclick="salvarPersonalizacao()" class="btn-p" style="width:100%">Salvar Visual</button></div>
                 </div>
@@ -766,7 +893,8 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       </div>
       <div><label>Descrição</label><textarea id="fi-desc" rows="2"></textarea></div>
       <div>
-        <label style="margin-bottom:8px;display:block">Sabores & Variações (Ex: Calabresa, Média)</label>
+        <label style="margin-bottom:6px;display:block">Tamanhos & Variações</label>
+        <div style="display:flex;gap:6px;font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px;padding:0 2px"><span style="flex:1">Nome</span><span style="width:68px;text-align:center">Preço</span><span style="width:52px;text-align:center" title="Sabores por tamanho — só pizzas">Sabores🍕</span><span style="width:26px"></span></div>
         <div style="display:flex;flex-direction:column;gap:7px" id="fi-sizes">
           <div style="display:flex;align-items:center;gap:8px" id="sz-1">
             <input type="text" id="sz-l-1" placeholder="Sabor / Tamanho" style="flex:1"/>
@@ -892,15 +1020,91 @@ let co=null,isFounder=false,eliOn=true,menuFil='todos',histFil='todos',editId=nu
 let selectedTheme='light',selectedFont='moderno';
 let adics=[],alergs=[],photo=null,szCount=1,rtSub=null,statsPeriod='hoje';
 let orders=[],history=[],menuItems=[];
+let orderTypeFil='todos'; // V2: filtro por tipo de pedido
 
-const SL={recebido:{bg:'var(--bg3)',c:'var(--text2)'},preparo:{bg:'var(--amber-l)',c:'var(--amber)'},pronto:{bg:'var(--green-l)',c:'var(--green)'},entregue:{bg:'var(--blue-l)',c:'var(--blue)'},cancelado:{bg:'var(--red-l)',c:'var(--red)'}};
+// V2 — Cores de status conforme spec Fluxa
+const SL={
+  recebido:{bg:'rgba(211,47,47,0.18)',c:'#D32F2F'},
+  preparo:{bg:'rgba(255,193,7,0.18)',c:'#FFC107'},
+  pronto:{bg:'rgba(76,175,80,0.18)',c:'#4CAF50'},
+  saiu:{bg:'rgba(33,150,243,0.18)',c:'#2196F3'},
+  entregue:{bg:'rgba(33,150,243,0.18)',c:'#2196F3'},
+  cancelado:{bg:'rgba(158,158,158,0.18)',c:'#9E9E9E'}
+};
 const SN={recebido:'Em preparo',preparo:'Pronto',pronto:'Entregar'};
 const SF=['recebido','preparo','pronto'];
-const SLB={recebido:'Recebido',preparo:'Em preparo',pronto:'Pronto',entregue:'Entregue',cancelado:'Cancelado'};
-const BC={recebido:'var(--bg4)',preparo:'var(--amber)',pronto:'var(--green)',entregue:'var(--blue)',cancelado:'var(--red)'};
+const SLB={recebido:'Recebido',preparo:'Em preparo',pronto:'Pronto',saiu:'Saiu p/ entrega',entregue:'Entregue',cancelado:'Cancelado'};
+const BC={recebido:'#D32F2F',preparo:'#FFC107',pronto:'#4CAF50',saiu:'#2196F3',entregue:'#2196F3',cancelado:'#9E9E9E'};
+
+// V2 — Mapa de origin source para badge
+const SRC_MAP={ads:{emoji:'🎯',label:'Ads',cls:'src-ads'},instagram:{emoji:'📱',label:'Instagram',cls:'src-instagram'},insta:{emoji:'📱',label:'Instagram',cls:'src-instagram'},eli:{emoji:'💬',label:'Eli',cls:'src-eli'},direto:{emoji:'📍',label:'Direto',cls:'src-direto'}};
 const CI={lanches:'lunch_dining',bebidas:'local_bar',sobremesas:'cake',entradas:'tapas',pratos:'dinner_dining'};
 const CL={lanches:'Lanches',bebidas:'Bebidas',sobremesas:'Sobremesas',entradas:'Entradas',pratos:'Pratos'};
 const PLANS={trial:{label:'Trial',bg:'var(--amber-l)',c:'var(--amber)'},basico:{label:'Básico',bg:'var(--blue-l)',c:'var(--blue)'},pro:{label:'Pro',bg:'var(--green-l)',c:'var(--green)'}};
+
+// ══ V2 — UTM SOURCE TRACKING ══
+// Captura ?src= do URL e salva para uso em novos pedidos
+(function captureUTM(){
+  const p=new URLSearchParams(window.location.search);
+  const src=p.get('src');
+  if(src)localStorage.setItem('fluxa_src',src);
+})();
+function getOrderSource(){return localStorage.getItem('fluxa_src')||'direto';}
+
+// ══ V2 — SOM DE NOTIFICAÇÃO (Web Audio API) ══
+// Tom suave de 2 beeps para novo pedido
+function playNotificationSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    function beep(freq,start,dur){
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';o.frequency.setValueAtTime(freq,ctx.currentTime+start);
+      g.gain.setValueAtTime(0,ctx.currentTime+start);
+      g.gain.linearRampToValueAtTime(0.18,ctx.currentTime+start+0.02);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+start+dur);
+      o.start(ctx.currentTime+start);o.stop(ctx.currentTime+start+dur+0.05);
+    }
+    beep(880,0,0.12);beep(1100,0.16,0.12);
+  }catch(e){}
+}
+
+// ══ V2 — DASHBOARD DE MÉTRICAS ══
+function renderDashboard(){
+  const fat=document.getElementById('dash-faturamento');
+  const tick=document.getElementById('dash-ticket');
+  const dscR=document.getElementById('dsc-recebido');
+  const dscP=document.getElementById('dsc-preparo');
+  const dscPr=document.getElementById('dsc-pronto');
+  const dscE=document.getElementById('dsc-entregue');
+  const origRows=document.getElementById('dash-origem-rows');
+  if(!fat)return; // dashboard não existe no DOM ainda
+
+  const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
+  const entregueHoje=history.filter(o=>o.status==='entregue');
+  const totalFat=entregueHoje.reduce((a,o)=>a+getTotal(o),0);
+  const ticketMedio=entregueHoje.length?totalFat/entregueHoje.length:0;
+
+  fat.textContent=fmtP(totalFat);
+  tick.textContent=entregueHoje.length?fmtP(ticketMedio):'—';
+  if(dscR)dscR.textContent=active.filter(o=>o.status==='recebido').length;
+  if(dscP)dscP.textContent=active.filter(o=>o.status==='preparo').length;
+  if(dscPr)dscPr.textContent=active.filter(o=>o.status==='pronto').length;
+  if(dscE)dscE.textContent=entregueHoje.length;
+
+  // Origem dos pedidos hoje (ativos + entregues)
+  if(origRows){
+    const allHoje=[...active,...entregueHoje];
+    const origCount={};
+    allHoje.forEach(o=>{const s=(o.order_source||'direto').toLowerCase();origCount[s]=(origCount[s]||0)+1;});
+    const entries=Object.entries(origCount).sort((a,b)=>b[1]-a[1]);
+    if(!entries.length){origRows.innerHTML='<span style="font-size:12px;color:var(--text3)">Sem dados</span>';return;}
+    origRows.innerHTML=entries.map(([src,cnt])=>{
+      const info=SRC_MAP[src]||{emoji:'📍',label:src};
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border)"><span>${info.emoji} ${info.label}</span><span class="hl" style="font-weight:700">${cnt}</span></div>`;
+    }).join('');
+  }
+}
 
 // BOOT ÚNICO — offline-first: usa cache local imediatamente, valida em background
 (async () => {
@@ -1068,7 +1272,10 @@ function startRT(){
       o._items=it||[];orders.unshift(o);renderOrders();
       // Animação de entrada no novo card
       setTimeout(()=>{const el=document.getElementById('oc-'+o.id);if(el)el.classList.add('order-new');},50);
-      if(!document.getElementById('nav-pedidos').classList.contains('active')){toast('🛍 Novo pedido de '+o.cliente_nome+'!');if(navigator.vibrate)navigator.vibrate([80,40,80]);}
+      // V2: som + vibração sempre que chega pedido novo
+      playNotificationSound();
+      if(navigator.vibrate)navigator.vibrate([80,40,80]);
+      if(!document.getElementById('nav-pedidos').classList.contains('active')){toast('🛍 Novo pedido de '+o.cliente_nome+'!');}
     })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'food_orders',filter:'company_id=eq.'+co.id},async p=>{
       const o=p.new;
@@ -1136,25 +1343,62 @@ async function loadOrders(){
   renderOrders();renderHist();
 }
 
+// V2 — Troca de aba de tipo de pedido
+function setOrderTab(tab){
+  orderTypeFil=tab;
+  document.querySelectorAll('.order-tab').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('otab-'+tab);
+  if(el)el.classList.add('active');
+  renderOrders();
+}
+
 function renderOrders(){
   if(!co)return;
   const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
+
+  // Contagens por tipo para as abas
+  const tipos=['delivery','retirada','mesa'];
+  document.getElementById('otab-todos-count').textContent=active.length?'('+active.length+')':'';
+  tipos.forEach(t=>{
+    const el=document.getElementById('otab-'+t+'-count');
+    if(el){const n=active.filter(o=>(o.tipo_pedido||'').toLowerCase()===t).length;el.textContent=n?'('+n+')'  :'';}
+  });
+
+  // Filtro por tipo
+  const filtered=orderTypeFil==='todos'?active:active.filter(o=>(o.tipo_pedido||'').toLowerCase()===orderTypeFil);
+
   document.getElementById('p-count').textContent=active.length;
   const badge=document.getElementById('nav-badge');
   badge.textContent=active.length;badge.classList.toggle('show',active.length>0);
   document.getElementById('p-avg').textContent=active.length?Math.round(active.reduce((a,o)=>a+(o.timer_minutes||0),0)/active.length)+'m':'—';
+
+  // Atualiza dashboard (se existir)
+  renderDashboard();
+
   const wrap=document.getElementById('orders-wrap');
-  if(!active.length){wrap.innerHTML=`<div style="text-align:center;padding:48px 20px"><div style="width:50px;height:50px;border-radius:50%;background:var(--green-l);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><span class="ms" style="font-size:24px;color:var(--green)">check_circle</span></div><div class="hl" style="font-size:15px;font-weight:700">Tudo em dia!</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Nenhum pedido ativo</div></div>`;return;}
-  wrap.innerHTML=active.map(o=>{
-    const sc=SL[o.status]||SL.recebido,bc=BC[o.status]||'var(--bg4)',nxt=SN[o.status]||'Entregar';
+  if(!filtered.length){
+    const emptyMsg=orderTypeFil!=='todos'?'Nenhum pedido de '+orderTypeFil+' ativo':'Tudo em dia!';
+    wrap.innerHTML=`<div style="text-align:center;padding:48px 20px"><div style="width:50px;height:50px;border-radius:50%;background:var(--fluxa-green2-l);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><span class="ms" style="font-size:24px;color:var(--fluxa-green2)">check_circle</span></div><div class="hl" style="font-size:15px;font-weight:700">${emptyMsg}</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Nenhum pedido ativo</div></div>`;
+    return;
+  }
+  wrap.innerHTML=filtered.map(o=>{
+    const sc=SL[o.status]||SL.recebido,bc=BC[o.status]||'#9E9E9E',nxt=SN[o.status]||'Entregar';
     const tot=getTotal(o),ttl=getTitle(o),tim=o.timer_minutes||0;
     const tc=tim>15?'t-late':tim>8?'t-warn':'t-ok',icon=tim>15?'warning':'schedule';
+    // Badge de tipo de pedido
+    const tipoLabel={delivery:'🛵 Delivery',retirada:'🏪 Retirada',mesa:'🪑 Mesa'}[(o.tipo_pedido||'').toLowerCase()]||'';
+    // Badge de origem
+    const srcInfo=SRC_MAP[(o.order_source||'').toLowerCase()];
+    const srcBadge=srcInfo?`<span class="src-badge ${srcInfo.cls}">${srcInfo.emoji} ${srcInfo.label}</span>`:'';
+    // Avatar color por status
+    const avatarBg=SL[o.status]?`background:${SL[o.status].bg};`:'background:rgba(211,47,47,0.12);';
+    const avatarC=SL[o.status]?`color:${SL[o.status].c}`:  'color:#D32F2F';
     return `<div class="swipe-wrap" id="sw-${o.id}">
       <div class="swipe-bg right" id="sb-r-${o.id}"><div class="swipe-icon"><span class="ms" style="color:white;font-size:17px">arrow_forward</span></div><span class="swipe-lbl">${nxt}</span></div>
       <div class="swipe-bg left" id="sb-l-${o.id}"><span class="swipe-lbl">Cancelar</span><div class="swipe-icon"><span class="ms" style="color:white;font-size:17px">close</span></div></div>
       <div class="order-card" id="oc-${o.id}" style="border-left:3px solid ${bc}" onclick="openOrder('${o.id}')">
-        <div style="width:50px;height:50px;border-radius:10px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)">
-          <span class="hl" style="font-size:14px;font-weight:800;color:var(--blue)">${ini(o.cliente_nome)}</span>
+        <div style="width:50px;height:50px;border-radius:10px;${avatarBg}display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid var(--border)">
+          <span class="hl" style="font-size:14px;font-weight:800;${avatarC}">${ini(o.cliente_nome)}</span>
         </div>
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
@@ -1162,20 +1406,22 @@ function renderOrders(){
             <div class="timer ${tc}"><span class="ms" style="font-size:12px">${icon}</span>${tim}m</div>
           </div>
           <div style="font-size:11px;color:var(--text2);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ttl}</div>
-          <div style="display:flex;align-items:center;justify-content:space-between">
-            <div style="display:flex;align-items:center;gap:5px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
               <span style="font-size:10px;color:var(--text3)">${o.order_number}</span>
-              <span class="status-pill" style="background:${sc.bg};color:${sc.c}">${SLB[o.status]}</span>
+              <span class="status-pill" style="background:${sc.bg};color:${sc.c}">${SLB[o.status]||o.status}</span>
+              ${tipoLabel?`<span style="font-size:9px;color:var(--text3)">${tipoLabel}</span>`:''}
+              ${srcBadge}
             </div>
             <span class="hl" style="font-size:12px;font-weight:700">${fmtP(tot)}</span>
           </div>
-          ${o.obs?`<div style="margin-top:5px;font-size:10px;color:var(--amber);display:flex;align-items:center;gap:3px"><span class="ms" style="font-size:12px">info</span>${o.obs}</div>`:''}
+          ${o.obs?`<div style="margin-top:5px;font-size:10px;color:var(--fluxa-yellow);display:flex;align-items:center;gap:3px"><span class="ms" style="font-size:12px">info</span>${o.obs}</div>`:''}
           <div class="hold-bar" id="hb-${o.id}"><div class="hold-fill" id="hf-${o.id}"></div></div>
         </div>
       </div>
     </div>`;
   }).join('');
-  active.forEach(o=>attachSwipe(o.id));
+  filtered.forEach(o=>attachSwipe(o.id));
 }
 
 function attachSwipe(id){
@@ -1222,10 +1468,16 @@ function openOrder(id){
     const a=typeof it.adicionais_selecionados==='string'?JSON.parse(it.adicionais_selecionados||'[]'):(it.adicionais_selecionados||[]);
     return `<div style="padding:7px 0;border-bottom:0.5px solid var(--border)"><div style="font-size:13px;font-weight:600">${it.quantity}x ${it.name}${it.tamanho_selecionado?' ('+it.tamanho_selecionado+')':''}</div>${a.length?`<div style="margin-top:3px">${a.map(x=>`<span class="adic-chip">+${x.nome||x}</span>`).join('')}</div>`:''}<div style="font-size:12px;color:var(--blue);margin-top:2px;font-weight:600">${fmtP(it.subtotal)}</div></div>`;
   }).join(''):'<div style="font-size:13px;color:var(--text2)">—</div>';
+  const srcInfoMod=SRC_MAP[(o.order_source||'').toLowerCase()];
+  const srcBadgeMod=srcInfoMod?`<span class="src-badge ${srcInfoMod.cls}" style="margin-left:6px">${srcInfoMod.emoji} ${srcInfoMod.label}</span>`:'';
+  const tipoLabelMod={delivery:'🛵 Delivery',retirada:'🏪 Retirada',mesa:'🪑 Mesa'}[(o.tipo_pedido||'').toLowerCase()]||'';
   document.getElementById('mod-order-body').innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-      <div style="width:46px;height:46px;border-radius:10px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border)"><span class="hl" style="font-size:13px;font-weight:800;color:var(--blue)">${ini(o.cliente_nome)}</span></div>
-      <div><div class="hl" style="font-size:15px;font-weight:800">${o.cliente_nome}</div><div style="font-size:12px;color:var(--text3)">${o.order_number} · ${o.timer_minutes||0}min atrás</div></div>
+      <div style="width:46px;height:46px;border-radius:10px;background:${SL[o.status]?SL[o.status].bg:'rgba(211,47,47,0.12)'};display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border)"><span class="hl" style="font-size:13px;font-weight:800;color:${SL[o.status]?SL[o.status].c:'#D32F2F'}">${ini(o.cliente_nome)}</span></div>
+      <div>
+        <div class="hl" style="font-size:15px;font-weight:800">${o.cliente_nome}${srcBadgeMod}</div>
+        <div style="font-size:12px;color:var(--text3)">${o.order_number} · ${o.timer_minutes||0}min atrás${tipoLabelMod?' · '+tipoLabelMod:''}</div>
+      </div>
     </div>
     <div style="background:var(--bg2);border-radius:12px;padding:12px;margin-bottom:12px"><div class="section-lbl" style="margin-bottom:7px">Itens</div>${iHtml}</div>
     ${o.obs?`<div style="background:var(--amber-l);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--amber);margin-bottom:12px;display:flex;gap:6px"><span class="ms" style="font-size:15px">info</span>${o.obs}</div>`:''}
@@ -1264,7 +1516,7 @@ function renderMenu(){
         <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:2px">${item.name}</div>
         <div style="font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1">${item.description||''}</div>
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px">${Object.keys(sz).length>0?'<span style="font-size:9px;font-weight:800;background:var(--blue-l);color:var(--blue);padding:3px 6px;border-radius:6px">'+Object.keys(sz).length+' SABORES</span>':''}${fmtP(item.price)}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px">${Object.keys(sz).length>0?'<span style="font-size:9px;font-weight:800;background:var(--blue-l);color:var(--blue);padding:3px 6px;border-radius:6px">'+Object.keys(sz).length+' TAMANHOS</span>':''}${fmtP(item.price)}</span>
           <div style="display:flex;align-items:center;gap:4px">
             <button class="esg-btn ${item.esgotado_hoje?'esg':'disp'}" onclick="togEsg('${item.id}',event)">${item.esgotado_hoje?'OFF':'ON'}</button>
           </div>
@@ -1277,11 +1529,11 @@ function renderMenu(){
 async function togEsg(id,e){e.stopPropagation();const it=menuItems.find(i=>i.id===id);if(!it)return;it.esgotado_hoje=!it.esgotado_hoje;await db.from('food_menu_items').update({esgotado_hoje:it.esgotado_hoje}).eq('id',id);renderMenu();}
 async function togAtivo(id,e){e.stopPropagation();const it=menuItems.find(i=>i.id===id);if(!it)return;it.active=!it.active;await db.from('food_menu_items').update({active:it.active}).eq('id',id);renderMenu();}
 
-function resetIM(){editId=null;adics=[];alergs=[];photo=null;szCount=1;document.getElementById('mi-title').textContent='Novo item';['fi-nome','fi-preco','fi-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('fi-cat').value='lanches';const prev=document.getElementById('fi-prev');prev.src='';prev.style.display='none';document.getElementById('fi-ph-icon').style.display='block';document.getElementById('fi-ph-txt').style.display='block';document.getElementById('fi-sizes').innerHTML=`<div style="display:flex;align-items:center;gap:8px" id="sz-1"><input type="text" id="sz-l-1" placeholder="Sabor / Tamanho" style="flex:1"/><input type="number" id="sz-p-1" placeholder="R$" style="width:76px" step="0.01"/><button onclick="addSzRow()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button></div>`;document.getElementById('fi-adic-tags').innerHTML='';document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>p.classList.remove('active'));document.getElementById('fi-dest').className='tog off';document.getElementById('fi-esg').className='tog off';document.getElementById('fi-promo-active').className='tog off';document.getElementById('fi-promo-price').value='';document.getElementById('fi-promo-label').value='';document.getElementById('fi-promo-expires').value='';document.getElementById('fi-del').style.display='none';}
-function addSzRow(){szCount++;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+szCount;d.innerHTML=`<input type="text" id="sz-l-${szCount}" placeholder="Sabor / Tamanho" style="flex:1"/><input type="number" id="sz-p-${szCount}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="document.getElementById('sz-${szCount}').remove()" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--red);font-size:18px">remove_circle</span></button>`;document.getElementById('fi-sizes').appendChild(d);}
+function resetIM(){editId=null;adics=[];alergs=[];photo=null;szCount=1;document.getElementById('mi-title').textContent='Novo item';['fi-nome','fi-preco','fi-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('fi-cat').value='lanches';const prev=document.getElementById('fi-prev');prev.src='';prev.style.display='none';document.getElementById('fi-ph-icon').style.display='block';document.getElementById('fi-ph-txt').style.display='block';document.getElementById('fi-sizes').innerHTML=`<div style="display:flex;align-items:center;gap:6px" id="sz-1"><input type="text" id="sz-l-1" placeholder="Tamanho / Sabor" style="flex:1;min-width:0"/><input type="number" id="sz-p-1" placeholder="R$" style="width:68px" step="0.01"/><input type="number" id="sz-s-1" placeholder="Sab." style="width:52px" min="1" max="10" title="Sabores por tamanho (só para pizzas)"/><button onclick="addSzRow()" style="border:none;background:none;cursor:pointer;flex-shrink:0"><span class="ms" style="color:var(--text3);font-size:18px">add_circle</span></button></div>`;document.getElementById('fi-adic-tags').innerHTML='';document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>p.classList.remove('active'));document.getElementById('fi-dest').className='tog off';document.getElementById('fi-esg').className='tog off';document.getElementById('fi-promo-active').className='tog off';document.getElementById('fi-promo-price').value='';document.getElementById('fi-promo-label').value='';document.getElementById('fi-promo-expires').value='';document.getElementById('fi-del').style.display='none';}
+function addSzRow(){szCount++;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:6px';d.id='sz-'+szCount;d.innerHTML=`<input type="text" id="sz-l-${szCount}" placeholder="Tamanho / Sabor" style="flex:1;min-width:0"/><input type="number" id="sz-p-${szCount}" placeholder="R$" style="width:68px" step="0.01"/><input type="number" id="sz-s-${szCount}" placeholder="Sab." style="width:52px" min="1" max="10" title="Sabores por tamanho (só para pizzas)"/><button onclick="document.getElementById('sz-${szCount}').remove()" style="border:none;background:none;cursor:pointer;flex-shrink:0"><span class="ms" style="color:var(--red);font-size:18px">remove_circle</span></button>`;document.getElementById('fi-sizes').appendChild(d);}
 function openNewItem(cat){resetIM();if(cat)document.getElementById('fi-cat').value=cat;openMod('mod-item');}
 window.openPizzaMaker=function(){const pz=menuItems.find(i=>i.category==='pizzas');if(pz){openEdit(pz.id);}else{openNewItem('pizzas');document.getElementById('fi-nome').value='Pizza Personalizada (Crie seus Sabores)';}}
-function openEditItem(id){resetIM();const item=menuItems.find(i=>i.id===id);if(!item)return;editId=id;document.getElementById('mi-title').textContent='Editar item';document.getElementById('fi-nome').value=item.name;document.getElementById('fi-preco').value=item.price;document.getElementById('fi-desc').value=item.description||'';document.getElementById('fi-cat').value=item.category;if(item.image_url){photo=item.image_url;document.getElementById('fi-prev').src=item.image_url;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';}const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});const szE=Object.entries(sz);if(szE.length){document.getElementById('fi-sizes').innerHTML='';szE.forEach(([l,p],i)=>{const n=i+1;szCount=n;const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px';d.id='sz-'+n;d.innerHTML=`<input type="text" id="sz-l-${n}" value="${l}" placeholder="Sabor / Tamanho" style="flex:1"/><input type="number" id="sz-p-${n}" value="${p}" placeholder="R$" style="width:76px" step="0.01"/><button onclick="${n===1?'addSzRow()':'document.getElementById(\'sz-'+n+'\').remove()'}" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:${n===1?'var(--text3)':'var(--red)'};font-size:18px">${n===1?'add_circle':'remove_circle'}</span></button>`;document.getElementById('fi-sizes').appendChild(d);});}adics=[...(typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]))];renderAdicTags();alergs=[...(typeof item.alergenicos==='string'?JSON.parse(item.alergenicos||'[]'):(item.alergenicos||[]))];document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>{if(alergs.includes(p.textContent.trim()))p.classList.add('active');});document.getElementById('fi-dest').className='tog '+(item.destaque?'on':'off');document.getElementById('fi-esg').className='tog '+(item.esgotado_hoje?'on':'off');
+function openEditItem(id){resetIM();const item=menuItems.find(i=>i.id===id);if(!item)return;editId=id;document.getElementById('mi-title').textContent='Editar item';document.getElementById('fi-nome').value=item.name;document.getElementById('fi-preco').value=item.price;document.getElementById('fi-desc').value=item.description||'';document.getElementById('fi-cat').value=item.category;if(item.image_url){photo=item.image_url;document.getElementById('fi-prev').src=item.image_url;document.getElementById('fi-prev').style.display='block';document.getElementById('fi-ph-icon').style.display='none';document.getElementById('fi-ph-txt').style.display='none';}const sz=typeof item.sizes==='string'?JSON.parse(item.sizes||'{}'):(item.sizes||{});const flavPerSz=typeof item.pizza_flavors_per_size==='string'?JSON.parse(item.pizza_flavors_per_size||'{}'):(item.pizza_flavors_per_size||{});const szE=Object.entries(sz);if(szE.length){document.getElementById('fi-sizes').innerHTML='';szE.forEach(([l,p],i)=>{const n=i+1;szCount=n;const sabVal=flavPerSz[l]||'';const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:6px';d.id='sz-'+n;d.innerHTML=`<input type="text" id="sz-l-${n}" value="${l}" placeholder="Tamanho / Sabor" style="flex:1;min-width:0"/><input type="number" id="sz-p-${n}" value="${p}" placeholder="R$" style="width:68px" step="0.01"/><input type="number" id="sz-s-${n}" value="${sabVal}" placeholder="Sab." style="width:52px" min="1" max="10" title="Sabores por tamanho (só para pizzas)"/><button onclick="${n===1?'addSzRow()':'document.getElementById(\'sz-'+n+'\').remove()'}" style="border:none;background:none;cursor:pointer;flex-shrink:0"><span class="ms" style="color:${n===1?'var(--text3)':'var(--red)'};font-size:18px">${n===1?'add_circle':'remove_circle'}</span></button>`;document.getElementById('fi-sizes').appendChild(d);});}adics=[...(typeof item.adicionais==='string'?JSON.parse(item.adicionais||'[]'):(item.adicionais||[]))];renderAdicTags();alergs=[...(typeof item.alergenicos==='string'?JSON.parse(item.alergenicos||'[]'):(item.alergenicos||[]))];document.querySelectorAll('#fi-alerg .filter-pill').forEach(p=>{if(alergs.includes(p.textContent.trim()))p.classList.add('active');});document.getElementById('fi-dest').className='tog '+(item.destaque?'on':'off');document.getElementById('fi-esg').className='tog '+(item.esgotado_hoje?'on':'off');
   // Promoção
   document.getElementById('fi-promo-active').className='tog '+(item.promo_active?'on':'off');
   document.getElementById('fi-promo-price').value=item.promo_price||'';
@@ -1298,11 +1550,11 @@ async function saveItem(){
   const nome=document.getElementById('fi-nome').value.trim(),preco=parseFloat(document.getElementById('fi-preco').value),cat=document.getElementById('fi-cat').value;
   if(!nome||isNaN(preco)){toast('Preencha nome e preço');return;}
   const btn=document.getElementById('fi-save');btn.textContent='Salvando...';btn.disabled=true;
-  const sz={};document.querySelectorAll('[id^="sz-"]:not([id^="sz-l"]):not([id^="sz-p"])').forEach(row=>{const n=row.id.replace('sz-','');const l=document.getElementById('sz-l-'+n);const p=document.getElementById('sz-p-'+n);if(l&&p&&l.value.trim()&&p.value)sz[l.value.trim()]=parseFloat(p.value);});
+  const sz={};const flavPerSz={};document.querySelectorAll('[id^="sz-"]:not([id^="sz-l"]):not([id^="sz-p"]):not([id^="sz-s"])').forEach(row=>{const n=row.id.replace('sz-','');const l=document.getElementById('sz-l-'+n);const p=document.getElementById('sz-p-'+n);const s=document.getElementById('sz-s-'+n);if(l&&p&&l.value.trim()&&p.value){sz[l.value.trim()]=parseFloat(p.value);if(s&&s.value)flavPerSz[l.value.trim()]=parseInt(s.value);}});
   let imgUrl=photo;
   if(photo&&photo.startsWith('data:')){try{const res=await fetch(photo);const blob=await res.blob();const ext=blob.type.split('/')[1]||'jpg';const fname=co.id+'/'+Date.now()+'.'+ext;const{data:up,error:ue}=await db.storage.from('food-images').upload(fname,blob,{upsert:true});if(!ue&&up){const{data:ud}=db.storage.from('food-images').getPublicUrl(fname);imgUrl=ud.publicUrl;}}catch{imgUrl=null;}}
   const promoExpiresRaw=document.getElementById('fi-promo-expires').value;
-  const payload={company_id:co.id,name:nome,price:preco,category:cat,description:document.getElementById('fi-desc').value.trim(),sizes:sz,adicionais:adics,alergenicos:alergs,image_url:imgUrl,destaque:document.getElementById('fi-dest').classList.contains('on'),esgotado_hoje:document.getElementById('fi-esg').classList.contains('on'),promo_active:document.getElementById('fi-promo-active').classList.contains('on'),promo_price:parseFloat(document.getElementById('fi-promo-price').value)||null,promo_label:document.getElementById('fi-promo-label').value.trim()||null,promo_expires_at:promoExpiresRaw?new Date(promoExpiresRaw).toISOString():null,updated_at:new Date().toISOString()};
+  const payload={company_id:co.id,name:nome,price:preco,category:cat,description:document.getElementById('fi-desc').value.trim(),sizes:sz,pizza_flavors_per_size:Object.keys(flavPerSz).length?flavPerSz:null,adicionais:adics,alergenicos:alergs,image_url:imgUrl,destaque:document.getElementById('fi-dest').classList.contains('on'),esgotado_hoje:document.getElementById('fi-esg').classList.contains('on'),promo_active:document.getElementById('fi-promo-active').classList.contains('on'),promo_price:parseFloat(document.getElementById('fi-promo-price').value)||null,promo_label:document.getElementById('fi-promo-label').value.trim()||null,promo_expires_at:promoExpiresRaw?new Date(promoExpiresRaw).toISOString():null,updated_at:new Date().toISOString()};
   let err;if(editId){({error:err}=await db.from('food_menu_items').update(payload).eq('id',editId));}else{payload.display_order=menuItems.length+1;({error:err}=await db.from('food_menu_items').insert(payload));}
   btn.textContent='Salvar';btn.disabled=false;
   if(err){toast('Erro: '+err.message);return;}
@@ -1395,6 +1647,25 @@ function preencherPerfil(data){
   selectedTheme=data.theme_template||'light';
   selectedFont=data.font_template||'moderno';
   initThemePills();
+  // Restore bg_color selection
+  if(data.bg_color&&document.getElementById('perf-bg')){
+    document.getElementById('perf-bg').value=data.bg_color;
+    document.querySelectorAll('.perf-bg-btn').forEach(b=>{
+      const oc=b.getAttribute('onclick')||'';
+      b.classList.toggle('active',oc.includes("'"+data.bg_color+"'"));
+    });
+  }
+  // Restore card_style selection
+  if(data.card_style&&document.getElementById('perf-card-style')){
+    document.getElementById('perf-card-style').value=data.card_style;
+    document.querySelectorAll('[onclick*="selStyle(\'card\'"]').forEach(b=>{
+      b.classList.toggle('active',b.getAttribute('onclick').includes("'"+data.card_style+"'"));
+    });
+  }
+  // Sync font perf-style-btns
+  document.querySelectorAll('[onclick*="selStyle(\'font\'"]').forEach(b=>{
+    b.classList.toggle('active',b.getAttribute('onclick').includes("'"+selectedFont+"'"));
+  });
   if(data.estimated_delivery_min)document.getElementById('perf-del-min').value=data.estimated_delivery_min;
   if(data.estimated_delivery_max)document.getElementById('perf-del-max').value=data.estimated_delivery_max;
   if(data.min_order_value)document.getElementById('perf-min-order').value=data.min_order_value;
@@ -1423,6 +1694,16 @@ function updateMockup(color){
   document.getElementById('mock-price').style.background=color;
 }
 
+const THEME_PREVIEW_BG={light:'#F5F5F7',dark:'#111113',colorful:'#FFF8F0'};
+function updateThemePreview(theme,accent){
+  const bg=THEME_PREVIEW_BG[theme]||'#F5F5F7';
+  const box=document.getElementById('mock-box');
+  if(box)box.style.background=bg;
+  const mc=document.getElementById('mock-cat');
+  const mp=document.getElementById('mock-price');
+  if(mc)mc.style.background=accent||'var(--blue)';
+  if(mp)mp.style.background=accent||'var(--blue)';
+}
 function initThemePills(){
   document.querySelectorAll('.theme-pill').forEach(btn=>{
     btn.style.border=btn.dataset.theme===selectedTheme?'2px solid var(--blue)':'2px solid transparent';
@@ -1430,14 +1711,20 @@ function initThemePills(){
       selectedTheme=btn.dataset.theme;
       document.querySelectorAll('.theme-pill').forEach(b=>
         b.style.border=b.dataset.theme===selectedTheme?'2px solid var(--blue)':'2px solid transparent');
+      updateThemePreview(selectedTheme,document.getElementById('perfil-accent')?.value);
     };
   });
+  updateThemePreview(selectedTheme,document.getElementById('perfil-accent')?.value);
   document.querySelectorAll('.font-pill').forEach(btn=>{
     btn.style.border=btn.dataset.font===selectedFont?'2px solid var(--blue)':'2px solid transparent';
     btn.onclick=()=>{
       selectedFont=btn.dataset.font;
       document.querySelectorAll('.font-pill').forEach(b=>
         b.style.border=b.dataset.font===selectedFont?'2px solid var(--blue)':'2px solid transparent');
+      // Sync perf-style-btn font buttons
+      document.querySelectorAll('[onclick*="selStyle(\'font\'"]').forEach(b=>{
+        b.classList.toggle('active',b.getAttribute('onclick').includes("'"+selectedFont+"'"));
+      });
     };
   });
 }
@@ -1803,6 +2090,10 @@ function selStyle(type,btn,val){
   group.forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('perf-'+(type==='card'?'card-style':'font')).value=val;
+  if(type==='font'){
+    selectedFont=val;
+    document.querySelectorAll('.font-pill').forEach(b=>b.style.border=b.dataset.font===val?'2px solid var(--blue)':'2px solid transparent');
+  }
 }
 
 async function salvarPersonalizacao(){
@@ -1816,7 +2107,7 @@ async function salvarPersonalizacao(){
     bg_color:document.getElementById('perf-bg').value,
     card_style:document.getElementById('perf-card-style').value,
     font_style:document.getElementById('perf-font').value,
-    delivery_fee:parseFloat(document.getElementById('perfil-delivery').value)||0,
+    delivery_fee:parseFloat(document.getElementById('perfil-delivery')?.value)||0,
     estimated_delivery_min:parseInt(document.getElementById('perf-del-min').value)||null,
     estimated_delivery_max:parseInt(document.getElementById('perf-del-max').value)||null,
     min_order_value:parseFloat(document.getElementById('perf-min-order').value)||null,
@@ -1826,15 +2117,8 @@ async function salvarPersonalizacao(){
 
   try {
     const { error } = await db.from('food_companies').update(payload).eq('id', co.id);
-    if (error) {
-      toast('Erro ao salvar: ' + error.message);
-      return;
-    }
+    if (error) { toast('Erro ao salvar: ' + error.message); return; }
     Object.assign(co, payload);
-    // Atualizar UI principal se necessário
-    if (document.getElementById('perfil-delivery')) {
-      document.getElementById('perfil-delivery').value = co.delivery_fee;
-    }
     toast('Visual e configurações atualizados!');
   } catch (e) {
     toast('Erro inesperado ao salvar');
