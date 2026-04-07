@@ -14,14 +14,14 @@
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 :root{
-  /* ── DARK MODE (blue-dark spec) ── */
-  --bg:#0F172A;--bg2:#1E293B;--bg3:#1A2744;--bg4:#334155;
-  --text:#FFFFFF;--text2:#94A3B8;--text3:#64748B;
+  /* ── DARK MODE (pretinho) ── */
+  --bg:#0A0E17;--bg2:#141820;--bg3:#1E2330;--bg4:#2D3340;
+  --text:#FFFFFF;--text2:#CBD5E0;--text3:#718096;
   --blue:#3B82F6;--blue-l:rgba(59,130,246,0.15);--blue-m:#60A5FA;
   --green:#10B981;--green-l:rgba(16,185,129,0.15);
   --amber:#F59E0B;--amber-l:rgba(245,158,11,0.15);
   --red:#EF4444;--red-l:rgba(239,68,68,0.15);
-  --border:#334155;
+  --border:rgba(255,255,255,0.08);
   --shadow-sm:0 2px 4px 0 rgba(0,0,0,0.5);
   --shadow-md:0 8px 16px -4px rgba(0,0,0,0.5), 0 4px 8px -2px rgba(0,0,0,0.4);
   --shadow-lg:0 16px 24px -8px rgba(0,0,0,0.6), 0 8px 12px -4px rgba(0,0,0,0.5);
@@ -382,10 +382,7 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 /* Notificação badge inline (status mudou) */
 .eli-sent-dot{width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block;margin-left:4px;vertical-align:middle}
 
-/* Inner view areas (dentro de tab-pedidos) */
-#pedidos-orders-area{display:block}
-#pedidos-dashboard-area{display:none;padding-bottom:24px}
-#pedidos-ads-area{display:none;padding-bottom:24px}
+/* Clientes filter */
 
 /* Clientes filtros */
 .clientes-filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
@@ -470,24 +467,11 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
   main{padding-top:0 !important;padding-bottom:24px !important;flex:1;overflow-y:auto}
   .tab{padding:20px 28px !important;max-width:none !important}
 
-  /* Grid pedidos no desktop: orders + dashboard */
-  #tab-pedidos{
-    display:grid !important;
-    grid-template-columns:1fr 280px !important;
-    grid-template-rows:auto auto auto 1fr !important;
-    gap:0 20px !important;
-    align-items:start;
-  }
-  #pedidos-top-row{grid-column:1}
-  #pedidos-hint{grid-column:1}
-  #order-tabs-wrap{grid-column:1}
-  #ptr-indicator{grid-column:1}
-  #orders-wrap{grid-column:1}
-  #v2-dashboard{grid-column:2;grid-row:1 / 99;position:sticky;top:0;display:block !important}
+  /* Pedidos: coluna única, sem vazamento de conteúdo */
+  #tab-pedidos{display:block !important}
 }
 
-/* V2 Dashboard (escondido no mobile, visível no desktop via media query) */
-#v2-dashboard{display:none}
+/* Dashboard + Ads tabs */
 .dash-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px}
 .dash-card-lbl{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;font-family:var(--hl)}
 .dash-card-val{font-size:22px;font-weight:800;color:var(--text);font-family:var(--hl);line-height:1}
@@ -565,8 +549,14 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     <button class="nav-item" id="nav-historico" onclick="go('historico')">
       <span class="ms">history</span><span class="nav-lbl">Histórico</span>
     </button>
+    <button class="nav-item" id="nav-dashboard" onclick="go('dashboard')">
+      <span class="ms">bar_chart</span><span class="nav-lbl">Dashboard</span>
+    </button>
     <button class="nav-item" id="nav-clientes" onclick="go('clientes')">
       <span class="ms">group</span><span class="nav-lbl">Clientes</span>
+    </button>
+    <button class="nav-item" id="nav-ads" onclick="go('ads')">
+      <span class="ms">ads_click</span><span class="nav-lbl">Ads</span>
     </button>
     <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
       <span class="ms">person</span><span class="nav-lbl">Perfil</span>
@@ -617,56 +607,16 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <span style="font-size:11px;color:var(--text3)">→ avança · Segure + ← cancela</span>
         </div>
 
-        <!-- Abas de tipo de pedido + Dashboard + Ads -->
+        <!-- Abas de tipo de pedido (apenas filtros de tipo) -->
         <div id="order-tabs-wrap" class="order-tabs scroll-x">
           <button class="order-tab active" id="otab-todos" onclick="setOrderTab('todos')">Todos <span id="otab-todos-count" style="font-size:10px;opacity:.6"></span></button>
           <button class="order-tab" id="otab-delivery" onclick="setOrderTab('delivery')">Delivery <span id="otab-delivery-count" style="font-size:10px;opacity:.6"></span></button>
           <button class="order-tab" id="otab-retirada" onclick="setOrderTab('retirada')">Retirada <span id="otab-retirada-count" style="font-size:10px;opacity:.6"></span></button>
           <button class="order-tab" id="otab-mesa" onclick="setOrderTab('mesa')">Mesa <span id="otab-mesa-count" style="font-size:10px;opacity:.6"></span></button>
-          <button class="order-tab" id="otab-ads" onclick="setOrderTab('ads')" style="color:#0EA5E9;border-bottom-color:transparent">🎯 Ads</button>
-          <button class="order-tab" id="otab-dashboard" onclick="setOrderTab('dashboard')">📊 Dashboard</button>
         </div>
 
-        <!-- Área de orders (Todos/Delivery/Retirada/Mesa) -->
-        <div id="pedidos-orders-area">
-          <div id="ptr-indicator"><span class="ms" style="font-size:14px">refresh</span>Atualizando...</div>
-          <div id="orders-wrap"></div>
-        </div>
-
-        <!-- Área Ads -->
-        <div id="pedidos-ads-area">
-          <div id="ads-content"></div>
-        </div>
-
-        <!-- Área Dashboard -->
-        <div id="pedidos-dashboard-area">
-          <div id="dashboard-inner-content"></div>
-        </div>
-
-        <!-- Dashboard lateral (só desktop via CSS grid) -->
-        <div id="v2-dashboard">
-          <div class="dash-card">
-            <div class="dash-card-lbl">Faturamento hoje</div>
-            <div class="dash-card-val" id="dash-faturamento">R$ 0,00</div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-lbl">Ticket médio</div>
-            <div class="dash-card-val" id="dash-ticket">—</div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-lbl">Status dos pedidos</div>
-            <div id="dash-status-rows">
-              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#D32F2F"></div><span style="font-size:12px">Recebido</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-recebido">0</span></div>
-              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#FFC107"></div><span style="font-size:12px">Em preparo</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-preparo">0</span></div>
-              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#4CAF50"></div><span style="font-size:12px">Pronto</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-pronto">0</span></div>
-              <div class="dash-status-row"><div style="display:flex;align-items:center;gap:8px"><div class="dash-status-dot" style="background:#2196F3"></div><span style="font-size:12px">Entregue hoje</span></div><span class="hl" style="font-size:13px;font-weight:700" id="dsc-entregue">0</span></div>
-            </div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-lbl">Origem dos pedidos hoje</div>
-            <div id="dash-origem-rows" style="font-size:12px;color:var(--text3)">—</div>
-          </div>
-        </div>
+        <div id="ptr-indicator"><span class="ms" style="font-size:14px">refresh</span>Atualizando...</div>
+        <div id="orders-wrap"></div>
 
       </div>
 
@@ -718,6 +668,32 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <button class="filter-pill" onclick="fHist('cancelado',this)">Cancelados</button>
         </div>
         <div class="card" id="h-list"><div style="text-align:center;padding:28px;color:var(--text3)"><span class="ms" style="font-size:30px;display:block;margin-bottom:8px">receipt_long</span><div style="font-size:13px">Nenhum registro ainda</div></div></div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="tab-dashboard" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Dashboard</h2>
+          <div style="display:flex;gap:6px">
+            <button class="filter-pill active" id="dbf-hoje" onclick="setDashPeriod('hoje',this)">Hoje</button>
+            <button class="filter-pill" id="dbf-semana" onclick="setDashPeriod('semana',this)">Semana</button>
+          </div>
+        </div>
+        <div id="dash-full-content">
+          <div style="text-align:center;padding:40px"><div class="spin"></div></div>
+        </div>
+      </div>
+
+      <!-- ADS -->
+      <div id="tab-ads" class="tab">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <span style="font-size:22px">🎯</span>
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Ads</h2>
+          <span style="font-size:11px;color:var(--text3)" id="ads-period-lbl">hoje</span>
+        </div>
+        <div id="ads-full-content">
+          <div style="text-align:center;padding:40px"><div class="spin"></div></div>
+        </div>
       </div>
 
       <!-- CLIENTES -->
@@ -1222,9 +1198,23 @@ function renderDashboard(){
   }
 }
 
-// ══ FASE 2 — DASHBOARD INNER TAB ══
-function renderDashboardInner(){
-  const el=document.getElementById('dashboard-inner-content');if(!el||!co)return;
+// ══ FASE 3 — DASHBOARD TAB COMPLETO ══
+// renderDashboard() → mini-cards no #v2-dashboard (mantido p/ compatibilidade; agora vazio)
+function renderDashboard(){} // removido side panel — ver renderDashboardFull()
+
+async function renderDashboardFull(){
+  const el=document.getElementById('dash-full-content');if(!el||!co)return;
+  el.innerHTML=`<div style="text-align:center;padding:32px"><div class="spin"></div></div>`;
+  // Busca dados frescos do período
+  const today=new Date();today.setHours(0,0,0,0);
+  let since=today;
+  if(dashPeriod==='semana'){since=new Date(today);since.setDate(since.getDate()-6);}
+  const{data:periodo}=await db.from('food_orders').select('id,total,status,tipo_pedido,order_source,created_at').eq('company_id',co.id).gte('created_at',since.toISOString()).order('created_at',{ascending:false});
+  const pd=periodo||[];
+  const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
+  const entregues=pd.filter(o=>o.status==='entregue');
+  const fat=entregues.reduce((a,o)=>a+Number(o.total||0),0);
+  const ticket=entregues.length?fat/entregues.length:0;
   const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
   const entregueHoje=history.filter(o=>o.status==='entregue');
   const fat=entregueHoje.reduce((a,o)=>a+getTotal(o),0);
@@ -1237,72 +1227,81 @@ function renderDashboardInner(){
   // Por tipo
   const porTipo={'delivery':0,'retirada':0,'mesa':0,'?':0};
   active.forEach(o=>{const t=(o.tipo_pedido||'').toLowerCase();porTipo[t]=(porTipo[t]!==undefined?porTipo[t]:0)+1;if(!porTipo[t])porTipo['?']++;});
+  // Gráfico de barras por hora
+  const byHour={};pd.forEach(o=>{const h=new Date(o.created_at).getHours();byHour[h]=(byHour[h]||0)+1;});
+  const slots=dashPeriod==='hoje'?8:12;
+  const hourBars=Array.from({length:slots},(_,i)=>{const h=(new Date().getHours()-slots+1+i+24)%24;return{h,v:byHour[h]||0};});
+  const maxV=Math.max(...hourBars.map(x=>x.v),1);
+  const periodLabel=dashPeriod==='semana'?'últimos 7 dias':'hoje';
+
   el.innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div class="card" style="padding:16px;border-left:3px solid #4CAF50">
-        <div class="section-lbl">Faturamento hoje</div>
-        <div class="hl" style="font-size:28px;font-weight:800;color:#4CAF50;margin-top:4px">${fmtP(fat)}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">${entregueHoje.length} pedidos entregues</div>
+        <div class="section-lbl">Faturamento (${periodLabel})</div>
+        <div class="hl" style="font-size:26px;font-weight:800;color:#4CAF50;margin-top:4px">${fmtP(fat)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${entregues.length} pedidos entregues</div>
       </div>
       <div class="card" style="padding:16px;border-left:3px solid #FFC107">
         <div class="section-lbl">Ticket médio</div>
-        <div class="hl" style="font-size:28px;font-weight:800;color:#FFC107;margin-top:4px">${entregueHoje.length?fmtP(ticket):'—'}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">Pedidos ativos: ${active.length}</div>
+        <div class="hl" style="font-size:26px;font-weight:800;color:#FFC107;margin-top:4px">${entregues.length?fmtP(ticket):'—'}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Ativos agora: ${active.length}</div>
       </div>
       <div class="card" style="padding:16px;border-left:3px solid #D32F2F">
-        <div class="section-lbl">Por status</div>
+        <div class="section-lbl">Status ativos</div>
         ${['recebido','preparo','pronto'].map(s=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${SLB[s]}</span><span class="hl" style="font-weight:700;color:${BC[s]}">${active.filter(o=>o.status===s).length}</span></div>`).join('')}
       </div>
       <div class="card" style="padding:16px;border-left:3px solid #2196F3">
-        <div class="section-lbl">Por tipo</div>
-        ${[['delivery','🛵'],['retirada','🏪'],['mesa','🪑']].map(([t,e])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${e} ${t[0].toUpperCase()+t.slice(1)}</span><span class="hl" style="font-weight:700">${active.filter(o=>(o.tipo_pedido||'').toLowerCase()===t).length}</span></div>`).join('')}
+        <div class="section-lbl">Por tipo (${periodLabel})</div>
+        ${[['delivery','🛵'],['retirada','🏪'],['mesa','🪑']].map(([t,e])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${e} ${t[0].toUpperCase()+t.slice(1)}</span><span class="hl" style="font-weight:700">${pd.filter(o=>(o.tipo_pedido||'').toLowerCase()===t).length}</span></div>`).join('')}
       </div>
     </div>
     <div class="card" style="padding:16px;margin-bottom:16px">
-      <div class="section-lbl" style="margin-bottom:12px">Pedidos por hora (últimas 8h)</div>
-      <div style="display:flex;align-items:flex-end;gap:8px;height:80px">
-        ${hourBars.map(({h,v})=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:100%;background:var(--fluxa-red,#D32F2F);border-radius:4px 4px 0 0;height:${Math.max(v/maxV*60,v>0?6:0)}px;transition:height .3s"></div><span style="font-size:9px;color:var(--text3)">${h}h</span></div>`).join('')}
+      <div class="section-lbl" style="margin-bottom:12px">Pedidos por hora${dashPeriod==='hoje'?' (últimas 8h)':' (por hora)'}</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:80px">
+        ${hourBars.map(({h,v})=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><div title="${v} pedidos" style="width:100%;background:#D32F2F;border-radius:3px 3px 0 0;min-height:${v>0?4:0}px;height:${Math.round(v/maxV*60)}px;opacity:${v>0?0.85+v/maxV*0.15:0.15};transition:height .3s"></div><span style="font-size:8px;color:var(--text3)">${h}h</span></div>`).join('')}
       </div>
     </div>
     <div class="card" style="padding:16px">
-      <div class="section-lbl" style="margin-bottom:10px">Origem dos pedidos hoje</div>
-      <div id="dash-inner-origem"></div>
+      <div class="section-lbl" style="margin-bottom:10px">Origem (${periodLabel})</div>
+      <div id="dash-full-origem"></div>
     </div>`;
-  // Origem
-  const origCount={};allHoje.forEach(o=>{const s=(o.order_source||'direto').toLowerCase();origCount[s]=(origCount[s]||0)+1;});
-  const origEl=document.getElementById('dash-inner-origem');
+  // Breakdown origem
+  const origCount={};pd.forEach(o=>{const s=(o.order_source||'direto').toLowerCase();origCount[s]=(origCount[s]||0)+1;});
+  const origEl=document.getElementById('dash-full-origem');
   if(origEl){
     const entries=Object.entries(origCount).sort((a,b)=>b[1]-a[1]);
-    origEl.innerHTML=entries.length?entries.map(([src,cnt])=>{const info=SRC_MAP[src]||{emoji:'📍',label:src};const pct=Math.round(cnt/allHoje.length*100);return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${info.emoji} ${info.label}</span><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:${pct}%;height:100%;background:#D32F2F;border-radius:2px"></div></div><span class="hl" style="font-size:12px;font-weight:700">${cnt}</span></div></div>`;}).join(''):'<span style="font-size:12px;color:var(--text3)">Sem dados</span>';
+    origEl.innerHTML=entries.length?entries.map(([src,cnt])=>{
+      const info=SRC_MAP[src]||{emoji:'📍',label:src};
+      const pct=Math.round(cnt/pd.length*100);
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px">${info.emoji} ${info.label}</span><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:${pct}%;height:100%;background:#D32F2F;border-radius:2px"></div></div><span class="hl" style="font-size:12px;font-weight:700">${cnt}</span></div></div>`;
+    }).join(''):'<span style="font-size:12px;color:var(--text3)">Sem dados no período</span>';
   }
 }
 
-// ══ FASE 2 — ADS VIEW ══
+// ══ FASE 3 — ADS TAB (nav principal) ══
 async function renderAdsView(){
-  const el=document.getElementById('ads-content');if(!el||!co)return;
-  el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--text3)"><div class="spin"></div></div>`;
+  const el=document.getElementById('ads-full-content');if(!el||!co)return;
+  el.innerHTML=`<div style="text-align:center;padding:32px"><div class="spin"></div></div>`;
   const today=new Date();today.setHours(0,0,0,0);
-  const{data:adsOrders}=await db.from('food_orders').select('*,food_order_items(*)').eq('company_id',co.id).eq('order_source','ads').gte('created_at',today.toISOString()).order('created_at',{ascending:false});
+  const[{data:adsOrders},{data:allDay}]=await Promise.all([
+    db.from('food_orders').select('*').eq('company_id',co.id).eq('order_source','ads').gte('created_at',today.toISOString()).order('created_at',{ascending:false}),
+    db.from('food_orders').select('id',{count:'exact',head:false}).eq('company_id',co.id).gte('created_at',today.toISOString())
+  ]);
   const ao=adsOrders||[];
-  const {data:allDay}=await db.from('food_orders').select('id',{count:'exact',head:false}).eq('company_id',co.id).gte('created_at',today.toISOString());
   const totalDay=allDay?.length||1;
-  const fat=ao.filter(o=>o.status==='entregue').reduce((a,o)=>a+Number(o.total||0),0);
-  const ticket=ao.filter(o=>o.status==='entregue').length?fat/ao.filter(o=>o.status==='entregue').length:0;
+  const entreguesAds=ao.filter(o=>o.status==='entregue');
+  const fat=entreguesAds.reduce((a,o)=>a+Number(o.total||0),0);
+  const ticket=entreguesAds.length?fat/entreguesAds.length:0;
   const conv=Math.round(ao.length/totalDay*100);
   el.innerHTML=`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-      <span style="font-size:20px">🎯</span>
-      <div class="hl" style="font-size:18px;font-weight:800">Pedidos via Ads</div>
-      <span style="font-size:11px;color:var(--text3)">— hoje</span>
-    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div class="ads-metric-card"><div class="ads-metric-lbl">Total pedidos</div><div class="ads-metric-val">${ao.length}</div></div>
-      <div class="ads-metric-card"><div class="ads-metric-lbl">Faturamento</div><div class="ads-metric-val">${fmtP(fat)}</div></div>
+      <div class="ads-metric-card"><div class="ads-metric-lbl">Faturamento ads</div><div class="ads-metric-val">${fmtP(fat)}</div></div>
       <div class="ads-metric-card"><div class="ads-metric-lbl">Ticket médio</div><div class="ads-metric-val">${ao.length?fmtP(ticket):'—'}</div></div>
-      <div class="ads-metric-card"><div class="ads-metric-lbl">Taxa conversão</div><div class="ads-metric-val">${conv}%</div></div>
+      <div class="ads-metric-card"><div class="ads-metric-lbl">Taxa de conversão</div><div class="ads-metric-val">${conv}%<span style="font-size:11px;font-weight:500;margin-left:3px">do dia</span></div></div>
     </div>
-    <div class="section-lbl" style="margin-bottom:8px">Pedidos Ads de hoje</div>
-    ${ao.length?ao.map(o=>{const sc=SL[o.status]||SL.recebido;return `<div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px"><div style="flex:1;min-width:0"><div class="hl" style="font-size:13px;font-weight:700">${o.cliente_nome}</div><div style="font-size:11px;color:var(--text2)">${o.order_number} · ${fmtTime(o.created_at)}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="status-pill" style="background:${sc.bg};color:${sc.c}">${SLB[o.status]||o.status}</span><span class="hl" style="font-size:12px;font-weight:700">${fmtP(Number(o.total||0))}</span></div></div>`;}).join(''):'<div style="text-align:center;padding:32px;color:var(--text3)"><span class="ms" style="font-size:32px;display:block;margin-bottom:8px">ads_click</span><div style="font-size:13px">Nenhum pedido via Ads hoje</div></div>'}`;
+    <div class="section-lbl" style="margin-bottom:8px">Pedidos via Ads — hoje</div>
+    ${ao.length?ao.map(o=>{const sc=SL[o.status]||SL.recebido;return `<div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:10px;background:rgba(14,165,233,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:16px">🎯</span></div><div style="flex:1;min-width:0"><div class="hl" style="font-size:13px;font-weight:700">${o.cliente_nome}</div><div style="font-size:11px;color:var(--text2)">${o.order_number} · ${fmtTime(o.created_at)}</div></div><div style="text-align:right;flex-shrink:0"><span class="status-pill" style="background:${sc.bg};color:${sc.c};display:block;margin-bottom:3px">${SLB[o.status]||o.status}</span><span class="hl" style="font-size:12px;font-weight:700">${fmtP(Number(o.total||0))}</span></div></div>`;}).join(''):`<div style="text-align:center;padding:40px;color:var(--text3)"><span style="font-size:40px;display:block;margin-bottom:10px">🎯</span><div class="hl" style="font-size:14px;font-weight:700">Sem pedidos via Ads hoje</div><div style="font-size:12px;margin-top:4px">Use ?src=ads na URL do cardápio</div></div>`}`;
 }
 
 // ══ FASE 2 — CLIENTES ══
@@ -1574,16 +1573,29 @@ function startRT(){
 function go(tab){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
+  const tabEl=document.getElementById('tab-'+tab);
+  if(!tabEl){console.warn('Tab não encontrada:',tab);return;}
+  tabEl.classList.add('active');
   const navEl=document.getElementById('nav-'+tab);if(navEl)navEl.classList.add('active');
   document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
-  // FAQ widget: só mostrar no app (não no founder)
   const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display=isFounder?'none':'flex';
-  if(tab==='pedidos')renderOrders();
-  if(tab==='cardapio')loadMenu();
-  if(tab==='elistats')renderStats();
+  // Carrega conteúdo específico de cada aba
+  if(tab==='pedidos')  renderOrders();
+  if(tab==='cardapio') loadMenu();
+  if(tab==='elistats') renderStats();
   if(tab==='historico')renderHist();
-  if(tab==='clientes')loadClientes();
+  if(tab==='dashboard')renderDashboardFull();
+  if(tab==='ads')      renderAdsView();
+  if(tab==='clientes') loadClientes();
+}
+
+// Período do Dashboard
+let dashPeriod='hoje';
+function setDashPeriod(p,btn){
+  dashPeriod=p;
+  document.querySelectorAll('#tab-dashboard .filter-pill').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderDashboardFull();
 }
 
 // ── ELI ──
@@ -1612,32 +1624,12 @@ async function loadOrders(){
   renderOrders();renderHist();
 }
 
-// V2/Fase2 — Troca de aba interna dos pedidos
+// Fase 3 — Filtro de tipo dentro da aba Pedidos (apenas Todos/Delivery/Retirada/Mesa)
 function setOrderTab(tab){
   orderTypeFil=tab;
   document.querySelectorAll('.order-tab').forEach(el=>el.classList.remove('active'));
   const el=document.getElementById('otab-'+tab);if(el)el.classList.add('active');
-
-  // Controla quais áreas ficam visíveis
-  const ordersArea=document.getElementById('pedidos-orders-area');
-  const dashArea=document.getElementById('pedidos-dashboard-area');
-  const adsArea=document.getElementById('pedidos-ads-area');
-  const topRow=document.getElementById('pedidos-top-row');
-  const hint=document.getElementById('pedidos-hint');
-
-  if(tab==='dashboard'){
-    ordersArea.style.display='none';adsArea.style.display='none';dashArea.style.display='block';
-    if(topRow)topRow.style.display='none';if(hint)hint.style.display='none';
-    renderDashboardInner();
-  }else if(tab==='ads'){
-    ordersArea.style.display='none';dashArea.style.display='none';adsArea.style.display='block';
-    if(topRow)topRow.style.display='none';if(hint)hint.style.display='none';
-    renderAdsView();
-  }else{
-    ordersArea.style.display='block';dashArea.style.display='none';adsArea.style.display='none';
-    if(topRow)topRow.style.display='';if(hint)hint.style.display='';
-    renderOrders();
-  }
+  renderOrders();
 }
 
 function renderOrders(){
