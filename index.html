@@ -472,8 +472,6 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
   main{padding-top:0 !important;padding-bottom:24px !important;flex:1;overflow-y:auto}
   .tab{padding:20px 28px !important;max-width:none !important}
 
-  /* Pedidos: coluna única, sem vazamento de conteúdo */
-  #tab-pedidos{display:block !important}
 }
 
 /* Dashboard + Ads tabs */
@@ -1604,7 +1602,7 @@ function go(tab){
   if(tab==='dashboard')renderDashboardFull();
   if(tab==='ads')      renderAdsView();
   if(tab==='clientes') loadClientes();
-  if(tab==='perfil'){loadBanners();loadPromos();}
+  if(tab==='perfil'){if(co)preencherPerfil(co);loadBanners();loadPromos();}
 }
 
 // Período do Dashboard
