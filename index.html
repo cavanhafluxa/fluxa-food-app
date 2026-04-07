@@ -862,7 +862,21 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
                     </div>
                   </div>
                 </div>
-                <button onclick="salvarPersonalizacao()" class="btn-p" style="width:100%">Aplicar Template</button>
+                <button onclick="salvarPersonalizacao()" class="btn-p" style="margin-bottom:16px;width:100%">Aplicar Template</button>
+
+                <!-- Card Promoção do Dia -->
+                <div style="border-top:1px solid var(--border);padding-top:14px;">
+                  <div class="hl" style="font-size:13px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                    <span class="ms" style="font-size:16px;color:var(--blue)">local_fire_department</span> Card Promoção do Dia
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:var(--bg4);border-radius:10px;margin-bottom:10px">
+                    <div style="font-size:12px;font-weight:600">Exibir card no cardápio</div>
+                    <button class="tog off" id="tog-promo-card" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+                  </div>
+                  <div><label>Título</label><input type="text" id="promo-card-title" placeholder="Ex: Promoção do Dia 🔥"/></div>
+                  <div style="margin-top:8px"><label>Subtítulo</label><input type="text" id="promo-card-sub" placeholder="Ex: X-Burguer por R$ 22,90"/></div>
+                  <button onclick="salvarPromoCard()" class="btn-p" style="margin-top:10px;width:100%">Salvar Card</button>
+                </div>
               </div>
 
             </div>
@@ -1936,6 +1950,10 @@ function preencherPerfil(data){
   
   document.getElementById('perfil-is-open').className=data.is_open!==false?'tog on':'tog off';
   initTemplatePills(data.theme_template||'light');
+  const togPC=document.getElementById('tog-promo-card');
+  if(togPC)togPC.className='tog '+(data.promo_card_active?'on':'off');
+  if(data.promo_card_title)document.getElementById('promo-card-title').value=data.promo_card_title;
+  if(data.promo_card_sub)document.getElementById('promo-card-sub').value=data.promo_card_sub;
 
   // Link do cardápio (campo original + card destaque no topo)
   const base=`https://fluxa-cardapio.vercel.app/${data.slug}`;
@@ -2366,6 +2384,18 @@ document.querySelector('main').addEventListener('scroll', (e) => {
 });
 
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+async function salvarPromoCard(){
+  const payload={
+    promo_card_active:document.getElementById('tog-promo-card').classList.contains('on'),
+    promo_card_title:document.getElementById('promo-card-title').value.trim()||null,
+    promo_card_sub:document.getElementById('promo-card-sub').value.trim()||null,
+  };
+  const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
+  if(error){toast('Erro: '+error.message);return;}
+  Object.assign(co,payload);
+  toast('Card de promoção salvo!');
+}
 
 async function salvarPersonalizacao(){
   const btn=document.querySelector('#pane-visual .btn-p');
