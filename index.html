@@ -723,7 +723,33 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
 
       <!-- PERFIL -->
       <div id="tab-perfil" class="tab">
-        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Perfil do Restaurante</h2>
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px">Perfil do Restaurante</h2>
+
+        <!-- ══ CARD LINK CARDÁPIO ══ -->
+        <div class="card" id="card-link-cardapio" style="margin-bottom:16px;border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(211,47,47,0.06),rgba(211,47,47,0.02))">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(211,47,47,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <span class="ms" style="font-size:20px;color:var(--accent)">restaurant_menu</span>
+            </div>
+            <div>
+              <div class="hl" style="font-size:14px;font-weight:800;color:var(--accent)">Cardápio Online</div>
+              <div style="font-size:11px;color:var(--text3)">Compartilhe com seus clientes</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <input type="text" id="perfil-link-top" readonly style="flex:1;font-size:11px;color:var(--accent);background:var(--bg3);border-color:var(--border);cursor:pointer;font-family:monospace" onclick="this.select();document.execCommand('copy');toast('Link copiado! 🔗')"/>
+            <button onclick="document.getElementById('perfil-link-top').select();document.execCommand('copy');toast('Copiado! 🔗')" class="btn-s" style="white-space:nowrap;font-size:11px;padding:8px 12px"><span class="ms" style="font-size:14px">content_copy</span></button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <a id="perfil-link-open" href="#" target="_blank" class="btn-p" style="display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:12px;padding:10px">
+              <span class="ms" style="font-size:16px;color:#fff">open_in_new</span>Visualizar
+            </a>
+            <button onclick="shareCardapioLink()" class="btn-s" style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:10px">
+              <span class="ms" style="font-size:16px">share</span>Compartilhar
+            </button>
+          </div>
+        </div>
+
         <div class="card" style="margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
             <div class="avatar-upload" id="perfil-avatar-btn" onclick="document.getElementById('perfil-photo-inp').click()">
@@ -1569,7 +1595,8 @@ function startRT(){
 
 // ── TABS ──
 function go(tab){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  // Esconde TODAS as tabs (sem exceção)
+  document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active');});
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const tabEl=document.getElementById('tab-'+tab);
   if(!tabEl){console.warn('Tab não encontrada:',tab);return;}
@@ -1577,6 +1604,8 @@ function go(tab){
   const navEl=document.getElementById('nav-'+tab);if(navEl)navEl.classList.add('active');
   document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
   const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display='none';
+  // Scroll ao topo ao trocar aba
+  const mainEl=document.querySelector('main');if(mainEl)mainEl.scrollTop=0;
   // Carrega conteúdo específico de cada aba
   if(tab==='pedidos')  renderOrders();
   if(tab==='cardapio') loadMenu();
@@ -2004,11 +2033,22 @@ function preencherPerfil(data){
   if(togPromos)togPromos.className='tog '+(data.show_promotions?'on':'off');
   if(data.promo_section_label)document.getElementById('perf-promo-label').value=data.promo_section_label;
 
-  // Link do cardápio
+  // Link do cardápio (campo original + card destaque no topo)
   const base=`https://fluxa-cardapio.vercel.app/${data.slug}`;
   const el=document.getElementById('perfil-link');
   if(el)el.value=base;
+  const elTop=document.getElementById('perfil-link-top');
+  if(elTop)elTop.value=base;
+  const elOpen=document.getElementById('perfil-link-open');
+  if(elOpen)elOpen.href=base;
 }
+
+function shareCardapioLink(){
+  const url=document.getElementById('perfil-link-top')?.value||document.getElementById('perfil-link')?.value||'';
+  if(!url)return;
+  if(navigator.share){navigator.share({title:'Cardápio '+co.name,url});}
+  else{navigator.clipboard?.writeText(url).then(()=>toast('Link copiado! 🔗')).catch(()=>{document.getElementById('perfil-link-top')?.select();document.execCommand('copy');toast('Link copiado! 🔗');});}}
+
 
 function updateMockup(color){
   document.getElementById('mock-cat').style.background=color;
