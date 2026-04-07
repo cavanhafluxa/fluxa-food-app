@@ -233,9 +233,6 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 .r-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .r-card.blocked{opacity:0.6;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.05)}
 .plan-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800;font-family:var(--hl);text-transform:uppercase;letter-spacing:0.05em}
-.perf-stab{flex:1;padding:10px 8px;border:none;border-radius:12px;font-size:12px;font-weight:700;font-family:var(--hl);cursor:pointer;background:var(--bg4);color:var(--text2);transition:all .3s cubic-bezier(0.16,1,0.3,1)}
-.perf-stab.active{background:var(--blue);color:#fff;box-shadow:0 4px 12px var(--blue-l)}
-.perf-pane{display:none;animation:appleFadeInBlur 0.4s ease forwards}.perf-pane.active{display:block}
 .perf-bg-btn{padding:10px 14px;border:1px solid var(--border);border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;background:var(--bg2);color:var(--text2);font-family:var(--hl);transition:all .2s;border:1px solid var(--border)}
 .perf-bg-btn.active{border-color:var(--blue);color:var(--blue);background:var(--blue-l);box-shadow:0 0 0 1px var(--blue)}
 .perf-style-btn{flex:1;padding:12px 8px;border:1px solid var(--border);border-radius:12px;font-size:11px;font-weight:700;cursor:pointer;background:var(--bg2);color:var(--text2);font-family:var(--hl);transition:all .2s;text-align:center;box-shadow:var(--shadow-sm)}
@@ -335,8 +332,6 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 [data-theme="light"] .order-tab{color:var(--text2)!important}
 [data-theme="light"] label{color:var(--text2)!important}
 [data-theme="light"] .hl{color:var(--text)!important}
-[data-theme="light"] .perf-stab{color:var(--text2)!important}
-[data-theme="light"] .perf-stab.active{color:#D32F2F!important;background:rgba(211,47,47,0.08)!important}
 [data-theme="light"] .order-tabs{background:transparent!important}
 [data-theme="light"] #faq-widget{display:none!important}
 [data-theme="light"] .metric-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
@@ -786,15 +781,8 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
             <!-- ══ 3 SUB-ABAS DE PERSONALIZAÇÃO VISUAL ══ -->
             <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;margin:8px 0">
               <div class="hl" style="font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span class="ms" style="color:var(--blue)">palette</span> Visual do Cardápio Online</div>
-              <!-- Sub-tab nav -->
-              <div style="display:flex;gap:4px;margin-bottom:14px;background:var(--bg4);border-radius:10px;padding:4px">
-                <button id="ptab-visual" class="perf-stab active" onclick="switchPerfilTab('visual')">Visual</button>
-                <button id="ptab-hero" class="perf-stab" onclick="switchPerfilTab('hero')">Hero</button>
-                <button id="ptab-promos" class="perf-stab" onclick="switchPerfilTab('promos')">Promoções</button>
-              </div>
-
               <!-- ── PANE VISUAL ── -->
-              <div id="pane-visual" class="perf-pane active">
+              <div id="pane-visual">
                 <input type="hidden" id="perfil-color" value="#0369a1"/>
                 <div style="display:flex;flex-direction:column;gap:12px">
                   <!-- TEMA VISUAL -->
@@ -876,7 +864,8 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               </div>
 
               <!-- ── PANE HERO / BANNERS ── -->
-              <div id="pane-hero" class="perf-pane">
+              <div id="pane-hero" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+                <div class="hl" style="font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="ms" style="color:var(--blue);font-size:16px">image</span> Hero &amp; Banners</div>
                 <div style="display:flex;flex-direction:column;gap:12px">
                   <div><label>Título do hero</label><input type="text" id="perf-banner-title" placeholder="Bem-vindo ao nosso cardápio!"/></div>
                   <div><label>Subtítulo</label><input type="text" id="perf-banner-sub" placeholder="Peça agora e receba em minutos"/></div>
@@ -902,7 +891,8 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               </div>
 
               <!-- ── PANE PROMOÇÕES ── -->
-              <div id="pane-promos" class="perf-pane">
+              <div id="pane-promos" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+                <div class="hl" style="font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="ms" style="color:var(--blue);font-size:16px">local_offer</span> Promoções</div>
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--bg4);border-radius:10px;margin-bottom:12px">
                   <div>
                     <div class="hl" style="font-size:13px;font-weight:700">Exibir seção de Promoções</div>
@@ -1614,6 +1604,7 @@ function go(tab){
   if(tab==='dashboard')renderDashboardFull();
   if(tab==='ads')      renderAdsView();
   if(tab==='clientes') loadClientes();
+  if(tab==='perfil'){loadBanners();loadPromos();}
 }
 
 // Período do Dashboard
@@ -2495,14 +2486,6 @@ document.querySelector('main').addEventListener('scroll', (e) => {
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 // ══ PERSONALIZAÇÃO VISUAL ══
-function switchPerfilTab(tab){
-  ['visual','hero','promos'].forEach(t=>{
-    document.getElementById('ptab-'+t).classList.toggle('active',t===tab);
-    document.getElementById('pane-'+t).classList.toggle('active',t===tab);
-  });
-  if(tab==='hero') loadBanners();
-  if(tab==='promos') loadPromos();
-}
 
 function selBg(btn,color){
   document.querySelectorAll('.perf-bg-btn').forEach(b=>b.classList.remove('active'));
