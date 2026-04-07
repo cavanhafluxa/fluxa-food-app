@@ -272,7 +272,7 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 /* ══ LIGHT MODE — WCAG AA+ ══ */
 [data-theme="light"] {
   --bg:#FFFFFF;--bg2:#F5F5F7;--bg3:#EAEAEC;--bg4:#E5E7EB;
-  --text:#1F2937;--text2:#6B7280;--text3:#9CA3AF;
+  --text:#1F2937;--text2:#4B5563;--text3:#6B7280;
   --border:#E5E7EB;
   --shadow-sm:0 1px 4px rgba(0,0,0,0.07);
   --shadow-md:0 4px 16px rgba(0,0,0,0.08);
@@ -328,7 +328,17 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 [data-theme="light"] .order-tabs{border-bottom-color:#E5E7EB!important}
 [data-theme="light"] .dash-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
 [data-theme="light"] .dash-status-row{border-bottom-color:#E5E7EB!important}
-[data-theme="light"] .section-lbl{color:#9CA3AF!important}
+[data-theme="light"] .section-lbl{color:#6B7280!important}
+[data-theme="light"] main{background:var(--bg)}
+[data-theme="light"] #app-body{background:var(--bg)}
+[data-theme="light"] .tab{background:var(--bg);color:var(--text)}
+[data-theme="light"] .order-tab{color:var(--text2)!important}
+[data-theme="light"] label{color:var(--text2)!important}
+[data-theme="light"] .hl{color:var(--text)!important}
+[data-theme="light"] .perf-stab{color:var(--text2)!important}
+[data-theme="light"] .perf-stab.active{color:#D32F2F!important;background:rgba(211,47,47,0.08)!important}
+[data-theme="light"] .order-tabs{background:transparent!important}
+[data-theme="light"] #faq-widget{display:none!important}
 [data-theme="light"] .metric-card{background:#FAFAFA!important;border-color:#E5E7EB!important}
 [data-theme="light"] .filter-pill:not(.active){background:#F5F5F7!important;color:#6B7280!important;border-color:#E5E7EB!important}
 [data-theme="light"] .filter-pill.active{background:#D32F2F!important;color:#FFF!important}
@@ -1566,7 +1576,7 @@ function go(tab){
   tabEl.classList.add('active');
   const navEl=document.getElementById('nav-'+tab);if(navEl)navEl.classList.add('active');
   document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
-  const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display=isFounder?'none':'flex';
+  const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display='none';
   // Carrega conteúdo específico de cada aba
   if(tab==='pedidos')  renderOrders();
   if(tab==='cardapio') loadMenu();
