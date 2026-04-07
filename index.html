@@ -781,84 +781,60 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               <div class="hl" style="font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span class="ms" style="color:var(--blue)">palette</span> Visual do Cardápio Online</div>
               <!-- ── PANE VISUAL ── -->
               <div id="pane-visual">
-                <input type="hidden" id="perfil-color" value="#0369a1"/>
-                <div style="display:flex;flex-direction:column;gap:12px">
-                  <!-- TEMA VISUAL -->
-                  <div>
-                    <label>Tema do Cardápio</label>
-                    <div id="theme-pills" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-                      <button class="theme-pill" data-theme="light" style="background:#F5F5F7;color:#1D1D1F;border:2px solid transparent;padding:10px 18px;border-radius:100px;font-weight:700;cursor:pointer">☀ Claro</button>
-                      <button class="theme-pill" data-theme="dark" style="background:#1C1C1E;color:#F5F5F7;border:2px solid transparent;padding:10px 18px;border-radius:100px;font-weight:700;cursor:pointer">🌙 Escuro</button>
-                      <button class="theme-pill" data-theme="colorful" style="background:#FFF8F0;color:#1A0A00;border:2px solid transparent;padding:10px 18px;border-radius:100px;font-weight:700;cursor:pointer">🎨 Colorido</button>
+                <!-- 4 TEMPLATES FIXOS -->
+                <label style="display:block;margin-bottom:10px">Tema do Cardápio</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+                  <div class="tpl-card" id="tpl-light" onclick="selTemplate('light')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
+                    <div style="background:#FFFFFF;padding:12px 10px;border-bottom:1px solid #eee">
+                      <div style="height:8px;border-radius:4px;background:#D32F2F;width:60%;margin-bottom:6px"></div>
+                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#F5F5F7"></div><div style="height:36px;flex:1;border-radius:8px;background:#F5F5F7"></div></div>
+                    </div>
+                    <div style="background:#F5F5F7;padding:8px 10px;font-size:11px;font-weight:700;color:#1A1A1A;display:flex;justify-content:space-between;align-items:center">
+                      <span>1 · Claro</span><span style="font-size:9px;color:#D32F2F">●</span>
                     </div>
                   </div>
-                  <!-- COR DE DESTAQUE -->
-                  <div>
-                    <label>Cor de Destaque (botões e preços)</label>
-                    <input type="color" id="perfil-accent" style="height:46px;width:100%;border-radius:8px;padding:4px;cursor:pointer;border:1px solid var(--border)" oninput="updateMockup(this.value);updateThemePreview(selectedTheme,this.value)"/>
-                  </div>
-                  <!-- TIPOGRAFIA -->
-                  <div>
-                    <label>Tipografia</label>
-                    <div id="font-pills" style="display:flex;gap:10px;flex-wrap:wrap">
-                      <button class="font-pill" data-font="moderno" style="font-family:Inter,sans-serif;padding:10px 18px;border-radius:100px;font-weight:700;cursor:pointer;border:2px solid transparent">Moderno</button>
-                      <button class="font-pill" data-font="classico" style="font-family:Georgia,serif;padding:10px 18px;border-radius:100px;font-weight:700;cursor:pointer;border:2px solid transparent">Clássico</button>
-                      <button class="font-pill" data-font="bold" style="font-family:'DM Sans',sans-serif;padding:10px 18px;border-radius:100px;font-weight:800;cursor:pointer;border:2px solid transparent">Bold</button>
+                  <div class="tpl-card" id="tpl-dark" onclick="selTemplate('dark')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
+                    <div style="background:#111118;padding:12px 10px;border-bottom:1px solid #222">
+                      <div style="height:8px;border-radius:4px;background:#FF6B35;width:60%;margin-bottom:6px"></div>
+                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#1C1C28"></div><div style="height:36px;flex:1;border-radius:8px;background:#1C1C28"></div></div>
+                    </div>
+                    <div style="background:#1C1C28;padding:8px 10px;font-size:11px;font-weight:700;color:#F2F2F7;display:flex;justify-content:space-between;align-items:center">
+                      <span>2 · Escuro</span><span style="font-size:9px;color:#FF6B35">●</span>
                     </div>
                   </div>
-                  <div>
-                    <label>Cor de fundo do cardápio</label>
-                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-                      <button class="perf-bg-btn active" onclick="selBg(this,'#FFFFFF')">Branco</button>
-                      <button class="perf-bg-btn" onclick="selBg(this,'#F5F0E8')">Bege</button>
-                      <button class="perf-bg-btn" onclick="selBg(this,'#1A1A1D')">Escuro</button>
-                      <input type="color" id="perf-bg-custom" title="Cor personalizada" style="width:44px;height:34px;padding:2px;border:1px solid var(--border);border-radius:8px;cursor:pointer" oninput="selBgCustom(this.value)"/>
+                  <div class="tpl-card" id="tpl-colorful" onclick="selTemplate('colorful')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
+                    <div style="background:#F0F7F4;padding:12px 10px;border-bottom:1px solid #dceee6">
+                      <div style="height:8px;border-radius:4px;background:#2E7D52;width:60%;margin-bottom:6px"></div>
+                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div></div>
                     </div>
-                    <input type="hidden" id="perf-bg" value="#FFFFFF"/>
-                  </div>
-                  <div>
-                    <label>Estilo dos cards</label>
-                    <div style="display:flex;gap:6px;margin-top:4px">
-                      <button class="perf-style-btn active" onclick="selStyle('card',this,'rounded')">Arredondado</button>
-                      <button class="perf-style-btn" onclick="selStyle('card',this,'soft')">Suave</button>
-                      <button class="perf-style-btn" onclick="selStyle('card',this,'sharp')">Reto</button>
+                    <div style="background:#FFFFFF;padding:8px 10px;font-size:11px;font-weight:700;color:#1A3028;display:flex;justify-content:space-between;align-items:center">
+                      <span>3 · Verde</span><span style="font-size:9px;color:#2E7D52">●</span>
                     </div>
-                    <input type="hidden" id="perf-card-style" value="rounded"/>
                   </div>
-                  <div>
-                    <label>Estilo de fonte</label>
-                    <div style="display:flex;gap:6px;margin-top:4px">
-                      <button class="perf-style-btn active" onclick="selStyle('font',this,'moderno')">Moderno</button>
-                      <button class="perf-style-btn" onclick="selStyle('font',this,'classico')">Clássico</button>
-                      <button class="perf-style-btn" onclick="selStyle('font',this,'bold')">Bold</button>
+                  <div class="tpl-card" id="tpl-bold" onclick="selTemplate('bold')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
+                    <div style="background:#FFF8F0;padding:12px 10px;border-bottom:1px solid #f0e4d0">
+                      <div style="height:8px;border-radius:4px;background:#D4791A;width:60%;margin-bottom:6px"></div>
+                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div></div>
                     </div>
-                    <input type="hidden" id="perf-font" value="moderno"/>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <div><label>Entrega mín (min)</label><input type="number" id="perf-del-min" placeholder="25" min="0"/></div>
-                    <div><label>Entrega máx (min)</label><input type="number" id="perf-del-max" placeholder="45" min="0"/></div>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <div><label>Taxa de Entrega (R$)</label><input type="number" step="0.01" id="perfil-delivery" placeholder="Ex: 5.50"/></div>
-                    <div><label>Pedido mínimo (R$)</label><input type="number" step="0.01" id="perf-min-order" placeholder="Ex: 20.00"/></div>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <div><label>Instagram</label><input type="text" id="perf-instagram" placeholder="@handle"/></div>
-                    <div><label>WhatsApp contato</label><input type="text" id="perf-whatsapp" placeholder="5547999..."/></div>
+                    <div style="background:#FFFFFF;padding:8px 10px;font-size:11px;font-weight:700;color:#2D1B00;display:flex;justify-content:space-between;align-items:center">
+                      <span>4 · Âmbar</span><span style="font-size:9px;color:#D4791A">●</span>
+                    </div>
                   </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
-                  <div style="background:var(--bg);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px">
-                    <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase">Preview</div>
-                    <div id="mock-box" style="width:80px;height:120px;background:#F5F5F7;border-radius:10px;box-shadow:inset 0 0 0 3px #e5e5e5;padding:8px 5px;display:flex;flex-direction:column;gap:6px;overflow:hidden;transition:background .3s">
-                      <div id="mock-cat" style="height:14px;border-radius:7px;background:var(--blue);transition:background .2s"></div>
-                      <div style="height:28px;border-radius:6px;background:rgba(0,0,0,0.07);margin-top:2px"></div>
-                      <div style="height:28px;border-radius:6px;background:rgba(0,0,0,0.07)"></div>
-                      <div id="mock-price" style="width:50%;height:8px;border-radius:4px;background:var(--blue);transition:background .2s;margin-top:auto"></div>
-                    </div>
-                  </div>
-                  <div style="flex:1"><button onclick="salvarPersonalizacao()" class="btn-p" style="width:100%">Salvar Visual</button></div>
+                <!-- ENTREGA E CONTATO -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+                  <div><label>Entrega mín (min)</label><input type="number" id="perf-del-min" placeholder="25" min="0"/></div>
+                  <div><label>Entrega máx (min)</label><input type="number" id="perf-del-max" placeholder="45" min="0"/></div>
                 </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+                  <div><label>Taxa de Entrega (R$)</label><input type="number" step="0.01" id="perfil-delivery" placeholder="Ex: 5.50"/></div>
+                  <div><label>Pedido mínimo (R$)</label><input type="number" step="0.01" id="perf-min-order" placeholder="Ex: 20.00"/></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+                  <div><label>Instagram</label><input type="text" id="perf-instagram" placeholder="@handle"/></div>
+                  <div><label>WhatsApp contato</label><input type="text" id="perf-whatsapp" placeholder="5547999..."/></div>
+                </div>
+                <button onclick="salvarPersonalizacao()" class="btn-p" style="width:100%">Salvar Visual</button>
               </div>
 
               <!-- ── PANE HERO / BANNERS ── -->
@@ -1130,7 +1106,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const db=supabase.createClient(SB_URL,SB_KEY);
 
 let co=null,isFounder=false,eliOn=true,menuFil='todos',histFil='todos',editId=null;
-let selectedTheme='light',selectedFont='moderno';
+
 let adics=[],alergs=[],photo=null,szCount=1,rtSub=null,statsPeriod='hoje';
 let orders=[],history=[],menuItems=[],clientes=[];
 let orderTypeFil='todos'; // V2: filtro por tipo de pedido
@@ -1977,34 +1953,9 @@ function preencherPerfil(data){
   document.getElementById('perfil-city').value=data.city||'';
   document.getElementById('perfil-wp').value=data.whatsapp_number||'';
   
-  const accent=data.accent_color||data.primary_color||'#0369a1';
-  document.getElementById('perfil-color').value=accent;
-  document.getElementById('perfil-accent').value=accent;
   document.getElementById('perfil-delivery').value=data.delivery_fee||'';
   document.getElementById('perfil-is-open').className=data.is_open!==false?'tog on':'tog off';
-  updateMockup(accent);
-  selectedTheme=data.theme_template||'light';
-  selectedFont=data.font_template||'moderno';
-  initThemePills();
-  // Restore bg_color selection
-  if(data.bg_color&&document.getElementById('perf-bg')){
-    document.getElementById('perf-bg').value=data.bg_color;
-    document.querySelectorAll('.perf-bg-btn').forEach(b=>{
-      const oc=b.getAttribute('onclick')||'';
-      b.classList.toggle('active',oc.includes("'"+data.bg_color+"'"));
-    });
-  }
-  // Restore card_style selection
-  if(data.card_style&&document.getElementById('perf-card-style')){
-    document.getElementById('perf-card-style').value=data.card_style;
-    document.querySelectorAll('[onclick*="selStyle(\'card\'"]').forEach(b=>{
-      b.classList.toggle('active',b.getAttribute('onclick').includes("'"+data.card_style+"'"));
-    });
-  }
-  // Sync font perf-style-btns
-  document.querySelectorAll('[onclick*="selStyle(\'font\'"]').forEach(b=>{
-    b.classList.toggle('active',b.getAttribute('onclick').includes("'"+selectedFont+"'"));
-  });
+  initTemplatePills(data.theme_template||'light');
   if(data.estimated_delivery_min)document.getElementById('perf-del-min').value=data.estimated_delivery_min;
   if(data.estimated_delivery_max)document.getElementById('perf-del-max').value=data.estimated_delivery_max;
   if(data.min_order_value)document.getElementById('perf-min-order').value=data.min_order_value;
@@ -2039,44 +1990,17 @@ function shareCardapioLink(){
   else{navigator.clipboard?.writeText(url).then(()=>toast('Link copiado! 🔗')).catch(()=>{document.getElementById('perfil-link-top')?.select();document.execCommand('copy');toast('Link copiado! 🔗');});}}
 
 
-function updateMockup(color){
-  document.getElementById('mock-cat').style.background=color;
-  document.getElementById('mock-price').style.background=color;
-}
-
-const THEME_PREVIEW_BG={light:'#F5F5F7',dark:'#111113',colorful:'#FFF8F0'};
-function updateThemePreview(theme,accent){
-  const bg=THEME_PREVIEW_BG[theme]||'#F5F5F7';
-  const box=document.getElementById('mock-box');
-  if(box)box.style.background=bg;
-  const mc=document.getElementById('mock-cat');
-  const mp=document.getElementById('mock-price');
-  if(mc)mc.style.background=accent||'var(--blue)';
-  if(mp)mp.style.background=accent||'var(--blue)';
-}
-function initThemePills(){
-  document.querySelectorAll('.theme-pill').forEach(btn=>{
-    btn.style.border=btn.dataset.theme===selectedTheme?'2px solid var(--blue)':'2px solid transparent';
-    btn.onclick=()=>{
-      selectedTheme=btn.dataset.theme;
-      document.querySelectorAll('.theme-pill').forEach(b=>
-        b.style.border=b.dataset.theme===selectedTheme?'2px solid var(--blue)':'2px solid transparent');
-      updateThemePreview(selectedTheme,document.getElementById('perfil-accent')?.value);
-    };
+let selectedTemplate='light';
+function selTemplate(key){
+  selectedTemplate=key;
+  document.querySelectorAll('.tpl-card').forEach(c=>{
+    const active=c.id==='tpl-'+key;
+    c.style.border=active?'2px solid var(--blue)':'2px solid transparent';
+    c.style.boxShadow=active?'0 0 0 3px var(--blue-l)':'none';
   });
-  updateThemePreview(selectedTheme,document.getElementById('perfil-accent')?.value);
-  document.querySelectorAll('.font-pill').forEach(btn=>{
-    btn.style.border=btn.dataset.font===selectedFont?'2px solid var(--blue)':'2px solid transparent';
-    btn.onclick=()=>{
-      selectedFont=btn.dataset.font;
-      document.querySelectorAll('.font-pill').forEach(b=>
-        b.style.border=b.dataset.font===selectedFont?'2px solid var(--blue)':'2px solid transparent');
-      // Sync perf-style-btn font buttons
-      document.querySelectorAll('[onclick*="selStyle(\'font\'"]').forEach(b=>{
-        b.classList.toggle('active',b.getAttribute('onclick').includes("'"+selectedFont+"'"));
-      });
-    };
-  });
+}
+function initTemplatePills(current){
+  selTemplate(current||'light');
 }
 
 async function salvarPerfil(){
@@ -2086,9 +2010,6 @@ async function salvarPerfil(){
   const nova=document.getElementById('perfil-senha').value.trim();
   if(nova)payload.password_hash=nova;
 
-  payload.accent_color=document.getElementById('perfil-accent').value;
-  payload.theme_template=selectedTheme;
-  payload.font_template=selectedFont;
   payload.is_open=document.getElementById('perfil-is-open').classList.contains('on');
   payload.delivery_fee=parseFloat(document.getElementById('perfil-delivery').value)||0;
   const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
@@ -2483,28 +2404,6 @@ document.querySelector('main').addEventListener('scroll', (e) => {
 
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-// ══ PERSONALIZAÇÃO VISUAL ══
-
-function selBg(btn,color){
-  document.querySelectorAll('.perf-bg-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('perf-bg').value=color;
-}
-function selBgCustom(color){
-  document.querySelectorAll('.perf-bg-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('perf-bg').value=color;
-}
-function selStyle(type,btn,val){
-  const group=btn.parentElement.querySelectorAll('.perf-style-btn');
-  group.forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('perf-'+(type==='card'?'card-style':'font')).value=val;
-  if(type==='font'){
-    selectedFont=val;
-    document.querySelectorAll('.font-pill').forEach(b=>b.style.border=b.dataset.font===val?'2px solid var(--blue)':'2px solid transparent');
-  }
-}
-
 async function salvarPersonalizacao(){
   const btn = document.querySelector('#pane-visual .btn-p');
   const originalTxt = btn.textContent;
@@ -2512,10 +2411,7 @@ async function salvarPersonalizacao(){
   btn.disabled = true;
 
   const payload={
-    accent_color:document.getElementById('perf-accent').value,
-    bg_color:document.getElementById('perf-bg').value,
-    card_style:document.getElementById('perf-card-style').value,
-    font_style:document.getElementById('perf-font').value,
+    theme_template: selectedTemplate,
     delivery_fee:parseFloat(document.getElementById('perfil-delivery')?.value)||0,
     estimated_delivery_min:parseInt(document.getElementById('perf-del-min').value)||null,
     estimated_delivery_max:parseInt(document.getElementById('perf-del-max').value)||null,
