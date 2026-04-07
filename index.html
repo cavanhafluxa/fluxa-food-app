@@ -781,109 +781,93 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               <div class="hl" style="font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span class="ms" style="color:var(--blue)">palette</span> Visual do Cardápio Online</div>
               <!-- ── PANE VISUAL ── -->
               <div id="pane-visual">
-                <!-- 4 TEMPLATES FIXOS -->
-                <label style="display:block;margin-bottom:10px">Tema do Cardápio</label>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-                  <div class="tpl-card" id="tpl-light" onclick="selTemplate('light')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
-                    <div style="background:#FFFFFF;padding:12px 10px;border-bottom:1px solid #eee">
-                      <div style="height:8px;border-radius:4px;background:#D32F2F;width:60%;margin-bottom:6px"></div>
-                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#F5F5F7"></div><div style="height:36px;flex:1;border-radius:8px;background:#F5F5F7"></div></div>
+                <p style="font-size:12px;color:var(--text3);margin-bottom:14px">Escolha o tema do seu cardápio online. Nenhum detalhe separado — o template já cuida de tudo.</p>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+                  <!-- MODO CLARO -->
+                  <div class="tpl-card" id="tpl-light" onclick="selTemplate('light')" style="cursor:pointer;border-radius:16px;overflow:hidden;border:2px solid transparent;transition:all .2s;display:flex;align-items:stretch">
+                    <div style="background:#F8F5F0;padding:16px 14px;flex:1;border-right:1px solid #eee">
+                      <div style="height:7px;border-radius:4px;background:#D62828;width:55%;margin-bottom:8px"></div>
+                      <div style="display:flex;gap:6px">
+                        <div style="flex:1;border-radius:10px;overflow:hidden;background:#fff">
+                          <div style="height:36px;background:#E8E4DE"></div>
+                          <div style="height:3px;background:#1F3D2B"></div>
+                          <div style="height:24px;background:#1C1C1C"></div>
+                        </div>
+                        <div style="flex:1;border-radius:10px;overflow:hidden;background:#fff">
+                          <div style="height:36px;background:#E8E4DE"></div>
+                          <div style="height:3px;background:#1F3D2B"></div>
+                          <div style="height:24px;background:#1C1C1C"></div>
+                        </div>
+                      </div>
                     </div>
-                    <div style="background:#F5F5F7;padding:8px 10px;font-size:11px;font-weight:700;color:#1A1A1A;display:flex;justify-content:space-between;align-items:center">
-                      <span>1 · Claro</span><span style="font-size:9px;color:#D32F2F">●</span>
+                    <div style="background:#fff;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:90px">
+                      <div style="font-size:12px;font-weight:800;color:#1A1A1A">Modo Claro</div>
+                      <div style="font-size:10px;color:#6B7280">Fundo bege, cards escuros</div>
+                      <div style="display:flex;gap:4px;margin-top:4px">
+                        <div style="width:12px;height:12px;border-radius:50%;background:#F8F5F0;border:1px solid #ddd"></div>
+                        <div style="width:12px;height:12px;border-radius:50%;background:#1C1C1C"></div>
+                        <div style="width:12px;height:12px;border-radius:50%;background:#D62828"></div>
+                      </div>
                     </div>
                   </div>
-                  <div class="tpl-card" id="tpl-dark" onclick="selTemplate('dark')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
-                    <div style="background:#111118;padding:12px 10px;border-bottom:1px solid #222">
-                      <div style="height:8px;border-radius:4px;background:#FF6B35;width:60%;margin-bottom:6px"></div>
-                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#1C1C28"></div><div style="height:36px;flex:1;border-radius:8px;background:#1C1C28"></div></div>
+                  <!-- MODO ESCURO -->
+                  <div class="tpl-card" id="tpl-dark" onclick="selTemplate('dark')" style="cursor:pointer;border-radius:16px;overflow:hidden;border:2px solid transparent;transition:all .2s;display:flex;align-items:stretch">
+                    <div style="background:#0D0D14;padding:16px 14px;flex:1;border-right:1px solid #1a1a28">
+                      <div style="height:7px;border-radius:4px;background:#FF6B35;width:55%;margin-bottom:8px"></div>
+                      <div style="display:flex;gap:6px">
+                        <div style="flex:1;border-radius:10px;overflow:hidden;background:#1a1a28">
+                          <div style="height:36px;background:#252538"></div>
+                          <div style="height:3px;background:#FF6B35"></div>
+                          <div style="height:24px;background:#111118"></div>
+                        </div>
+                        <div style="flex:1;border-radius:10px;overflow:hidden;background:#1a1a28">
+                          <div style="height:36px;background:#252538"></div>
+                          <div style="height:3px;background:#FF6B35"></div>
+                          <div style="height:24px;background:#111118"></div>
+                        </div>
+                      </div>
                     </div>
-                    <div style="background:#1C1C28;padding:8px 10px;font-size:11px;font-weight:700;color:#F2F2F7;display:flex;justify-content:space-between;align-items:center">
-                      <span>2 · Escuro</span><span style="font-size:9px;color:#FF6B35">●</span>
+                    <div style="background:#1C1C28;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:90px">
+                      <div style="font-size:12px;font-weight:800;color:#F2F2F7">Modo Escuro</div>
+                      <div style="font-size:10px;color:#8888A8">Fundo noturno, laranja</div>
+                      <div style="display:flex;gap:4px;margin-top:4px">
+                        <div style="width:12px;height:12px;border-radius:50%;background:#0D0D14;border:1px solid #333"></div>
+                        <div style="width:12px;height:12px;border-radius:50%;background:#1C1C28"></div>
+                        <div style="width:12px;height:12px;border-radius:50%;background:#FF6B35"></div>
+                      </div>
                     </div>
                   </div>
-                  <div class="tpl-card" id="tpl-colorful" onclick="selTemplate('colorful')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
-                    <div style="background:#F0F7F4;padding:12px 10px;border-bottom:1px solid #dceee6">
-                      <div style="height:8px;border-radius:4px;background:#2E7D52;width:60%;margin-bottom:6px"></div>
-                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div></div>
+                  <!-- VERDINHO -->
+                  <div class="tpl-card" id="tpl-colorful" onclick="selTemplate('colorful')" style="cursor:pointer;border-radius:16px;overflow:hidden;border:2px solid transparent;transition:all .2s;display:flex;align-items:stretch">
+                    <div style="background:#F0F7F4;padding:16px 14px;flex:1;border-right:1px solid #dceee6">
+                      <div style="height:7px;border-radius:4px;background:#1F3D2B;width:55%;margin-bottom:8px"></div>
+                      <div style="display:flex;gap:6px">
+                        <div style="flex:1;border-radius:10px;overflow:hidden;background:#fff">
+                          <div style="height:36px;background:#C8E6D4"></div>
+                          <div style="height:3px;background:#1F3D2B"></div>
+                          <div style="height:24px;background:#1C1C1C"></div>
+                        </div>
+                        <div style="flex:1;border-radius:10px;overflow:hidden;background:#fff">
+                          <div style="height:36px;background:#C8E6D4"></div>
+                          <div style="height:3px;background:#1F3D2B"></div>
+                          <div style="height:24px;background:#1C1C1C"></div>
+                        </div>
+                      </div>
                     </div>
-                    <div style="background:#FFFFFF;padding:8px 10px;font-size:11px;font-weight:700;color:#1A3028;display:flex;justify-content:space-between;align-items:center">
-                      <span>3 · Verde</span><span style="font-size:9px;color:#2E7D52">●</span>
-                    </div>
-                  </div>
-                  <div class="tpl-card" id="tpl-bold" onclick="selTemplate('bold')" style="cursor:pointer;border-radius:14px;overflow:hidden;border:2px solid transparent;transition:all .2s">
-                    <div style="background:#FFF8F0;padding:12px 10px;border-bottom:1px solid #f0e4d0">
-                      <div style="height:8px;border-radius:4px;background:#D4791A;width:60%;margin-bottom:6px"></div>
-                      <div style="display:flex;gap:5px"><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div><div style="height:36px;flex:1;border-radius:8px;background:#FFFFFF"></div></div>
-                    </div>
-                    <div style="background:#FFFFFF;padding:8px 10px;font-size:11px;font-weight:700;color:#2D1B00;display:flex;justify-content:space-between;align-items:center">
-                      <span>4 · Âmbar</span><span style="font-size:9px;color:#D4791A">●</span>
+                    <div style="background:#fff;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:90px">
+                      <div style="font-size:12px;font-weight:800;color:#1A3028">Verdinho</div>
+                      <div style="font-size:10px;color:#6B7280">Fundo verde, cards escuros</div>
+                      <div style="display:flex;gap:4px;margin-top:4px">
+                        <div style="width:12px;height:12px;border-radius:50%;background:#F0F7F4;border:1px solid #ddd"></div>
+                        <div style="width:12px;height:12px;border-radius:50%;background:#1F3D2B"></div>
+                        <div style="width:12px;height:12px;border-radius:50%;background:#D62828"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <!-- ENTREGA E CONTATO -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-                  <div><label>Entrega mín (min)</label><input type="number" id="perf-del-min" placeholder="25" min="0"/></div>
-                  <div><label>Entrega máx (min)</label><input type="number" id="perf-del-max" placeholder="45" min="0"/></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-                  <div><label>Taxa de Entrega (R$)</label><input type="number" step="0.01" id="perfil-delivery" placeholder="Ex: 5.50"/></div>
-                  <div><label>Pedido mínimo (R$)</label><input type="number" step="0.01" id="perf-min-order" placeholder="Ex: 20.00"/></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-                  <div><label>Instagram</label><input type="text" id="perf-instagram" placeholder="@handle"/></div>
-                  <div><label>WhatsApp contato</label><input type="text" id="perf-whatsapp" placeholder="5547999..."/></div>
-                </div>
-                <button onclick="salvarPersonalizacao()" class="btn-p" style="width:100%">Salvar Visual</button>
+                <button onclick="salvarPersonalizacao()" class="btn-p" style="width:100%">Aplicar Template</button>
               </div>
 
-              <!-- ── PANE HERO / BANNERS ── -->
-              <div id="pane-hero" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
-                <div class="hl" style="font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="ms" style="color:var(--blue);font-size:16px">image</span> Hero &amp; Banners</div>
-                <div style="display:flex;flex-direction:column;gap:12px">
-                  <div><label>Título do hero</label><input type="text" id="perf-banner-title" placeholder="Bem-vindo ao nosso cardápio!"/></div>
-                  <div><label>Subtítulo</label><input type="text" id="perf-banner-sub" placeholder="Peça agora e receba em minutos"/></div>
-                  <div>
-                    <label>Imagem de fundo do hero</label>
-                    <div class="photo-up" onclick="document.getElementById('perf-hero-inp').click()" style="height:100px">
-                      <img id="perf-hero-prev" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:12px"/>
-                      <div class="photo-over"><span class="ms" style="color:white;font-size:20px">photo_camera</span></div>
-                      <span class="ms" style="color:var(--text3);font-size:24px" id="perf-hero-icon">image</span>
-                      <span style="font-size:11px;color:var(--text3)" id="perf-hero-txt">Selecionar imagem</span>
-                    </div>
-                    <input type="file" id="perf-hero-inp" accept="image/*" style="display:none" onchange="handleHeroBanner(this)"/>
-                  </div>
-                </div>
-                <button onclick="salvarHero()" class="btn-p" style="margin-top:12px;width:100%">Salvar Hero</button>
-                <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                    <div class="hl" style="font-size:14px;font-weight:700">Banners adicionais</div>
-                    <button onclick="openBannerMod()" style="background:var(--blue-l);color:var(--blue);border:none;border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--hl)">+ Adicionar</button>
-                  </div>
-                  <div id="banners-list"><div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Carregando...</div></div>
-                </div>
-              </div>
-
-              <!-- ── PANE PROMOÇÕES ── -->
-              <div id="pane-promos" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
-                <div class="hl" style="font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="ms" style="color:var(--blue);font-size:16px">local_offer</span> Promoções</div>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--bg4);border-radius:10px;margin-bottom:12px">
-                  <div>
-                    <div class="hl" style="font-size:13px;font-weight:700">Exibir seção de Promoções</div>
-                    <div style="font-size:11px;color:var(--text3)">Aparece acima das categorias no cardápio</div>
-                  </div>
-                  <button class="tog off" id="tog-show-promos" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
-                </div>
-                <div><label>Nome da seção</label><input type="text" id="perf-promo-label" placeholder="Promoções 🔥"/></div>
-                <button onclick="salvarPersonalizacaoPromos()" class="btn-p" style="margin-top:10px;width:100%">Salvar configurações</button>
-                <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                    <div class="hl" style="font-size:14px;font-weight:700">Cards de promoção</div>
-                    <button onclick="openPromoMod()" style="background:var(--blue-l);color:var(--blue);border:none;border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--hl)">+ Nova</button>
-                  </div>
-                  <div id="promos-list"><div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Carregando...</div></div>
-                </div>
-              </div>
             </div>
             <div>
               <label>Link do cardápio digital</label>
@@ -1578,7 +1562,7 @@ function go(tab){
   if(tab==='dashboard')renderDashboardFull();
   if(tab==='ads')      renderAdsView();
   if(tab==='clientes') loadClientes();
-  if(tab==='perfil'){if(co)preencherPerfil(co);loadBanners();loadPromos();}
+  if(tab==='perfil'){if(co)preencherPerfil(co);}
 }
 
 // Período do Dashboard
@@ -1953,25 +1937,8 @@ function preencherPerfil(data){
   document.getElementById('perfil-city').value=data.city||'';
   document.getElementById('perfil-wp').value=data.whatsapp_number||'';
   
-  document.getElementById('perfil-delivery').value=data.delivery_fee||'';
   document.getElementById('perfil-is-open').className=data.is_open!==false?'tog on':'tog off';
   initTemplatePills(data.theme_template||'light');
-  if(data.estimated_delivery_min)document.getElementById('perf-del-min').value=data.estimated_delivery_min;
-  if(data.estimated_delivery_max)document.getElementById('perf-del-max').value=data.estimated_delivery_max;
-  if(data.min_order_value)document.getElementById('perf-min-order').value=data.min_order_value;
-  if(data.social_instagram)document.getElementById('perf-instagram').value=data.social_instagram;
-  if(data.social_whatsapp)document.getElementById('perf-whatsapp').value=data.social_whatsapp;
-  if(data.banner_title)document.getElementById('perf-banner-title').value=data.banner_title;
-  if(data.banner_subtitle)document.getElementById('perf-banner-sub').value=data.banner_subtitle;
-  if(data.banner_url){
-    const prev=document.getElementById('perf-hero-prev');
-    prev.src=data.banner_url;prev.style.display='block';
-    document.getElementById('perf-hero-icon').style.display='none';
-    document.getElementById('perf-hero-txt').style.display='none';
-  }
-  const togPromos=document.getElementById('tog-show-promos');
-  if(togPromos)togPromos.className='tog '+(data.show_promotions?'on':'off');
-  if(data.promo_section_label)document.getElementById('perf-promo-label').value=data.promo_section_label;
 
   // Link do cardápio (campo original + card destaque no topo)
   const base=`https://fluxa-cardapio.vercel.app/${data.slug}`;
@@ -2011,7 +1978,6 @@ async function salvarPerfil(){
   if(nova)payload.password_hash=nova;
 
   payload.is_open=document.getElementById('perfil-is-open').classList.contains('on');
-  payload.delivery_fee=parseFloat(document.getElementById('perfil-delivery').value)||0;
   const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
   if(error){toast('Erro ao salvar');return;}
   Object.assign(co,payload);
@@ -2405,44 +2371,21 @@ document.querySelector('main').addEventListener('scroll', (e) => {
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 async function salvarPersonalizacao(){
-  const btn = document.querySelector('#pane-visual .btn-p');
-  const originalTxt = btn.textContent;
-  btn.textContent = 'Salvando...';
-  btn.disabled = true;
-
-  const payload={
-    theme_template: selectedTemplate,
-    delivery_fee:parseFloat(document.getElementById('perfil-delivery')?.value)||0,
-    estimated_delivery_min:parseInt(document.getElementById('perf-del-min').value)||null,
-    estimated_delivery_max:parseInt(document.getElementById('perf-del-max').value)||null,
-    min_order_value:parseFloat(document.getElementById('perf-min-order').value)||null,
-    social_instagram:document.getElementById('perf-instagram').value.trim()||null,
-    social_whatsapp:document.getElementById('perf-whatsapp').value.trim()||null,
-  };
-
-  try {
-    const { error } = await db.from('food_companies').update(payload).eq('id', co.id);
-    if (error) { toast('Erro ao salvar: ' + error.message); return; }
-    Object.assign(co, payload);
-    toast('Visual e configurações atualizados!');
-  } catch (e) {
+  const btn=document.querySelector('#pane-visual .btn-p');
+  const originalTxt=btn.textContent;
+  btn.textContent='Aplicando...';
+  btn.disabled=true;
+  try{
+    const{error}=await db.from('food_companies').update({theme_template:selectedTemplate}).eq('id',co.id);
+    if(error){toast('Erro ao salvar: '+error.message);return;}
+    co.theme_template=selectedTemplate;
+    toast('Template aplicado!');
+  }catch(e){
     toast('Erro inesperado ao salvar');
-  } finally {
-    btn.textContent = originalTxt;
-    btn.disabled = false;
+  }finally{
+    btn.textContent=originalTxt;
+    btn.disabled=false;
   }
-}
-
-async function salvarPersonalizacaoPromos(){
-  const togEl=document.getElementById('tog-show-promos');
-  const payload={
-    show_promotions:togEl.classList.contains('on'),
-    promo_section_label:document.getElementById('perf-promo-label').value.trim()||'Promoções 🔥',
-  };
-  const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
-  if(error){toast('Erro: '+error.message);return;}
-  Object.assign(co,payload);
-  toast('Promoções salvas!');
 }
 
 // ── HERO BANNER ──
