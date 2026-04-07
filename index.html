@@ -1215,18 +1215,6 @@ async function renderDashboardFull(){
   const entregues=pd.filter(o=>o.status==='entregue');
   const fat=entregues.reduce((a,o)=>a+Number(o.total||0),0);
   const ticket=entregues.length?fat/entregues.length:0;
-  const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
-  const entregueHoje=history.filter(o=>o.status==='entregue');
-  const fat=entregueHoje.reduce((a,o)=>a+getTotal(o),0);
-  const ticket=entregueHoje.length?fat/entregueHoje.length:0;
-  const allHoje=[...active,...entregueHoje];
-  // Pedidos por hora (últimas 8h simplificado)
-  const byHour={};allHoje.forEach(o=>{const h=new Date(o.created_at).getHours();byHour[h]=(byHour[h]||0)+1;});
-  const hourBars=Array.from({length:8},(_,i)=>{const h=(new Date().getHours()-7+i+24)%24;const v=byHour[h]||0;return{h,v};});
-  const maxV=Math.max(...hourBars.map(x=>x.v),1);
-  // Por tipo
-  const porTipo={'delivery':0,'retirada':0,'mesa':0,'?':0};
-  active.forEach(o=>{const t=(o.tipo_pedido||'').toLowerCase();porTipo[t]=(porTipo[t]!==undefined?porTipo[t]:0)+1;if(!porTipo[t])porTipo['?']++;});
   // Gráfico de barras por hora
   const byHour={};pd.forEach(o=>{const h=new Date(o.created_at).getHours();byHour[h]=(byHour[h]||0)+1;});
   const slots=dashPeriod==='hoje'?8:12;
