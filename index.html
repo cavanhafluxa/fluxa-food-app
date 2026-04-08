@@ -363,7 +363,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
 
 <!-- APP RESTAURANTE -->
 <div id="app">
-  <nav class="sidenav">
+  <nav class="sidenav" style="overflow-x:auto; scrollbar-width:none; justify-content:flex-start;">
     <div id="sidenav-logo">
       <span class="ms" style="color:var(--blue);font-size:18px">local_fire_department</span>
       <span class="hl" style="font-size:13px;font-weight:800;letter-spacing:-0.02em" id="sn-name">Kitchen</span>
@@ -374,6 +374,18 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     </button>
     <button class="nav-item" id="nav-cardapio" onclick="go('cardapio')">
       <span class="ms">menu_book</span><span class="nav-lbl">Cardápio</span>
+    </button>
+    <button class="nav-item" id="nav-ifood" onclick="go('ifood')">
+      <span class="ms">moped</span><span class="nav-lbl">iFood</span>
+    </button>
+    <button class="nav-item" id="nav-logistica" onclick="go('logistica')">
+      <span class="ms">route</span><span class="nav-lbl">Logística</span>
+    </button>
+    <button class="nav-item" id="nav-fechamento" onclick="go('fechamento')">
+      <span class="ms">point_of_sale</span><span class="nav-lbl">Caixa</span>
+    </button>
+    <button class="nav-item" id="nav-rede" onclick="go('rede')">
+      <span class="ms">apartment</span><span class="nav-lbl">Redes</span>
     </button>
     <button class="nav-item" id="nav-elistats" onclick="go('elistats')">
       <span class="ms">bar_chart</span><span class="nav-lbl">Eli Stats</span>
@@ -477,6 +489,85 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <button class="filter-pill" onclick="fHist('cancelado',this)">Cancelados</button>
         </div>
         <div class="card" id="h-list"><div style="text-align:center;padding:28px;color:var(--text3)"><span class="ms" style="font-size:30px;display:block;margin-bottom:8px">receipt_long</span><div style="font-size:13px">Nenhum registro ainda</div></div></div>
+      </div>
+
+      <!-- IFOOD -->
+      <div id="tab-ifood" class="tab">
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Injeção iFood</h2>
+        <div class="card" style="text-align:center;padding:40px;margin-bottom:12px;border:1px solid rgba(234, 29, 44, 0.3)">
+           <span class="ms" style="font-size:40px;color:var(--text);margin-bottom:10px;background:#ea1d2c;border-radius:12px;padding:12px">storefront</span>
+           <div class="hl" style="font-size:16px;font-weight:700">Conecte sua chave iFood</div>
+           <p style="font-size:12px;color:var(--text3);margin-top:5px;max-width:300px;margin-inline:auto">Receba pedidos automaticamente direto no Kanban do Flüxa, sem precisar do Gestor de Pedidos aberto. Tudo no mesmo ecossistema financeiro.</p>
+           <button class="btn-p" style="margin-top:20px;background:#ea1d2c;color:white;width:auto;padding:12px 24px">Autenticar Restaurante</button>
+        </div>
+      </div>
+
+      <!-- LOGÍSTICA -->
+      <div id="tab-logistica" class="tab">
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Despacho & Roteirização</h2>
+        <div class="card" style="padding:0;overflow:hidden;border:1px dashed var(--blue);margin-bottom:12px">
+           <div style="height:200px;background:rgba(59, 130, 246, 0.05);display:flex;flex-direction:column;align-items:center;justify-content:center">
+             <span class="ms" style="font-size:40px;color:var(--blue);margin-bottom:10px">map</span>
+             <div class="hl" style="font-size:16px;font-weight:700">Mapa Visual (Em breve)</div>
+             <p style="font-size:12px;color:var(--blue);margin-top:5px">Agrupamento inteligente de entregas</p>
+           </div>
+           <div style="padding:16px">
+             <div class="section-lbl">Entregadores Ativos</div>
+             <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:12px">
+               <div style="width:40px;height:40px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center"><span class="ms">motorcycle</span></div>
+               <div style="flex:1">
+                 <div class="hl" style="font-size:14px;font-weight:700">João Silva</div>
+                 <div style="font-size:11px;color:var(--blue)">3 entregas em rota</div>
+               </div>
+               <button class="btn-s" style="padding:8px 12px;width:auto;font-size:11px">Localizar</button>
+             </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- FECHAMENTO DE CAIXA -->
+      <div id="tab-fechamento" class="tab">
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Fechamento de Caixa</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div class="card" style="padding:16px;border-left:3px solid var(--amber)"><div class="section-lbl">Motoboys (A Pagar)</div><div class="hl" style="font-size:20px;font-weight:800">R$ 145,00</div></div>
+          <div class="card" style="padding:16px;border-left:3px solid var(--green)"><div class="section-lbl">Garçons (A Pagar)</div><div class="hl" style="font-size:20px;font-weight:800">R$ 80,00</div></div>
+        </div>
+        <div class="card">
+          <div class="section-lbl" style="margin-bottom:12px">Acertos Pendentes</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div class="hl" style="font-size:14px;font-weight:700">Taxas de Entrega - João</div>
+              <div style="font-size:11px;color:var(--text3)">15 entregas concluídas hoje</div>
+            </div>
+            <button class="btn-p" style="width:auto;padding:8px 16px;font-size:11px">Liquidar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REDE / FRANQUIAS -->
+      <div id="tab-rede" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Master Dashboard</h2>
+          <span class="plan-badge" style="background:var(--blue);color:white">Rede</span>
+        </div>
+        <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)">
+          <div class="section-lbl">Faturamento Global</div>
+          <div class="hl" style="font-size:32px;font-weight:800;color:var(--blue);margin-bottom:4px">R$ 14.590,00</div>
+          <div style="font-size:11px;color:var(--text3)">Consolidado de 3 unidades hoje</div>
+        </div>
+        <div class="section-lbl" style="margin-top:20px;margin-bottom:12px">Suas Unidades</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+            <span class="ms" style="color:var(--green)">store</span>
+            <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:700">Matriz - Centro</div><div style="font-size:11px;color:var(--text3)">R$ 8.240,00 • 120 Pedidos</div></div>
+            <span class="ms" style="font-size:16px;color:var(--text3)">chevron_right</span>
+          </div>
+          <div class="card" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer">
+            <span class="ms" style="color:var(--amber)">store</span>
+            <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:700">Filial - Norte</div><div style="font-size:11px;color:var(--text3)">R$ 6.350,00 • 85 Pedidos</div></div>
+            <span class="ms" style="font-size:16px;color:var(--text3)">chevron_right</span>
+          </div>
+        </div>
       </div>
 
       <!-- PERFIL -->
