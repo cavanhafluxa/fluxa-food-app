@@ -84,10 +84,38 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 /* ══ TABLET ≥ 768px ══ */
 @media(min-width:768px){
   html,body{background:var(--bg)}
-  #app.on{flex-direction:column !important}
-  #app-body{order:2 !important;flex:1 !important;min-width:0 !important;padding-top:84px !important}
+  #app.on{flex-direction:row !important; padding: 12px; gap: 12px; height: 100vh;}
+  
+  .sidenav{
+    position:static !important;
+    transform:none !important;
+    flex-direction:column;
+    height:100% !important;
+    max-height:100% !important;
+    width: 220px !important;
+    padding: 24px 12px !important;
+    justify-content: flex-start !important;
+    border-radius: 24px;
+    align-items: stretch;
+    box-shadow: var(--shadow-sm);
+  }
+  #sidenav-logo{display:flex;align-items:center;padding:0 12px 24px 12px;gap:8px}
+  .sidenav.shrunk{padding: 24px 12px; border-radius: 24px; background: rgba(20,20,22,0.7); box-shadow: var(--shadow-sm)}
+  .sidenav:not(.shrunk) .nav-item {
+     flex-direction: row;
+     justify-content: flex-start;
+     padding: 12px 16px;
+     gap: 12px;
+     border-radius: 12px;
+  }
+  .sidenav:not(.shrunk) .nav-item .nav-lbl{
+     font-size: 13px;
+     height: auto;
+  }
+  #app-body{order:2 !important;flex:1 !important;min-width:0 !important;padding-top:0 !important; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; margin-top:0}
+  
   main{padding-bottom:24px !important;padding-top:20px !important}
-  .tab{padding:24px 28px !important}
+  .tab{padding:24px 28px !important; max-width: none !important; margin: 0 !important;}
 
   #menu-grid{grid-template-columns:repeat(3,1fr) !important;gap:20px !important}
   .metric-grid{grid-template-columns:repeat(3,1fr) !important}
@@ -100,9 +128,11 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
   #toast{left:50% !important;bottom:40px !important;transform:translateX(-50%) !important}
   .drag-h{display:none !important}
 }
+@media(min-width:1024px){
+  .sidenav{ width: 260px !important; }
+}
 @media(min-width:1200px){
   :root{--nav-w:240px}
-  .tab{max-width:960px;margin:0 auto;padding:28px 32px !important}
   #menu-grid{grid-template-columns:repeat(4,1fr) !important}
 }
 @media(hover:hover){
