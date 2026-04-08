@@ -84,10 +84,10 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 /* ══ TABLET ≥ 768px ══ */
 @media(min-width:768px){
   html,body{background:var(--bg)}
-  #app.on{flex-direction:row !important; padding: 12px; gap: 12px; height: 100vh;}
+  #app.on{flex-direction:row !important; padding: 0; gap: 0; height: 100vh;}
   
   .sidenav{
-    position:static !important;
+    position:sticky !important;top:0 !important;left:0 !important;
     transform:none !important;
     flex-direction:column;
     height:100% !important;
@@ -95,12 +95,14 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
     width: 220px !important;
     padding: 24px 12px !important;
     justify-content: flex-start !important;
-    border-radius: 24px;
+    border-radius: 0;
     align-items: stretch;
-    box-shadow: var(--shadow-sm);
+    border-right: 1px solid var(--border);
+    box-shadow: none;
+    background:rgba(20,20,22,0.95) !important;
   }
   #sidenav-logo{display:flex;align-items:center;padding:0 12px 24px 12px;gap:8px}
-  .sidenav.shrunk{padding: 24px 12px; border-radius: 24px; background: rgba(20,20,22,0.7); box-shadow: var(--shadow-sm)}
+  .sidenav.shrunk{padding: 24px 12px; border-radius: 0; background: rgba(20,20,22,0.95); box-shadow: none}
   .sidenav:not(.shrunk) .nav-item {
      flex-direction: row;
      justify-content: flex-start;
@@ -112,9 +114,9 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
      font-size: 13px;
      height: auto;
   }
-  #app-body{order:2 !important;flex:1 !important;min-width:0 !important;padding-top:0 !important; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; margin-top:0}
+  #app-body{order:2 !important;flex:1 !important;min-width:0 !important;padding-top:0 !important; background: var(--bg); border-radius: 0; border: none; overflow: hidden; margin-top:0}
   
-  main{padding-bottom:24px !important;padding-top:20px !important}
+  main{padding-bottom:24px !important;padding-top:20px !important; width: 100%; max-width: 1200px; margin: 0 auto;}
   .tab{padding:24px 28px !important; max-width: none !important; margin: 0 !important;}
 
   #menu-grid{grid-template-columns:repeat(3,1fr) !important;gap:20px !important}
@@ -129,7 +131,7 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
   .drag-h{display:none !important}
 }
 @media(min-width:1024px){
-  .sidenav{ width: 260px !important; }
+  .sidenav{ width: 240px !important; }
 }
 @media(min-width:1200px){
   :root{--nav-w:240px}
@@ -569,43 +571,43 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       <span class="ms" style="color:var(--blue);font-size:18px">local_fire_department</span>
       <span class="hl" style="font-size:13px;font-weight:800;letter-spacing:-0.02em" id="sn-name">Kitchen</span>
     </div>
-    <button class="nav-item active" id="nav-pedidos" onclick="go('pedidos')">
-      <span class="nav-badge" id="nav-badge">0</span>
-      <span class="ms">shopping_bag</span><span class="nav-lbl">Pedidos</span>
-    </button>
-    <button class="nav-item" id="nav-cardapio" onclick="go('cardapio')">
-      <span class="ms">menu_book</span><span class="nav-lbl">Cardápio</span>
-    </button>
-    <button class="nav-item" id="nav-ifood" onclick="go('ifood')">
-      <span class="ms">moped</span><span class="nav-lbl">iFood</span>
-    </button>
-    <button class="nav-item" id="nav-logistica" onclick="go('logistica')">
-      <span class="ms">route</span><span class="nav-lbl">Logística</span>
-    </button>
-    <button class="nav-item" id="nav-fechamento" onclick="go('fechamento')">
-      <span class="ms">point_of_sale</span><span class="nav-lbl">Caixa</span>
-    </button>
-    <button class="nav-item" id="nav-rede" onclick="go('rede')">
-      <span class="ms">apartment</span><span class="nav-lbl">Redes</span>
-    </button>
-    <button class="nav-item" id="nav-elistats" onclick="go('elistats')">
-      <span class="ms">bar_chart</span><span class="nav-lbl">Eli Stats</span>
-    </button>
-    <button class="nav-item" id="nav-historico" onclick="go('historico')">
-      <span class="ms">history</span><span class="nav-lbl">Histórico</span>
-    </button>
-    <button class="nav-item" id="nav-dashboard" onclick="go('dashboard')">
-      <span class="ms">bar_chart</span><span class="nav-lbl">Dashboard</span>
-    </button>
-    <button class="nav-item" id="nav-clientes" onclick="go('clientes')">
-      <span class="ms">group</span><span class="nav-lbl">Clientes</span>
-    </button>
-    <button class="nav-item" id="nav-ads" onclick="go('ads')">
-      <span class="ms">ads_click</span><span class="nav-lbl">Ads</span>
-    </button>
-    <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
-      <span class="ms">person</span><span class="nav-lbl">Perfil</span>
-    </button>
+      <button class="nav-item" id="nav-dashboard" onclick="go('dashboard')">
+        <span class="ms">bar_chart</span><span class="nav-lbl">Dashboard</span>
+      </button>
+      <button class="nav-item active" id="nav-pedidos" onclick="go('pedidos')">
+        <span class="nav-badge" id="nav-badge">0</span>
+        <span class="ms">shopping_bag</span><span class="nav-lbl">Pedidos</span>
+      </button>
+      <button class="nav-item" id="nav-cardapio" onclick="go('cardapio')">
+        <span class="ms">menu_book</span><span class="nav-lbl">Cardápio</span>
+      </button>
+      <button class="nav-item" id="nav-ifood" onclick="go('ifood')">
+        <span class="ms">moped</span><span class="nav-lbl">iFood</span>
+      </button>
+      <button class="nav-item" id="nav-clientes" onclick="go('clientes')">
+        <span class="ms">group</span><span class="nav-lbl">Clientes</span>
+      </button>
+      <button class="nav-item" id="nav-logistica" onclick="go('logistica')">
+        <span class="ms">route</span><span class="nav-lbl">Logística</span>
+      </button>
+      <button class="nav-item" id="nav-fechamento" onclick="go('fechamento')">
+        <span class="ms">point_of_sale</span><span class="nav-lbl">Caixa</span>
+      </button>
+      <button class="nav-item" id="nav-hist-perfil" onclick="go('historico')">
+        <span class="ms">history</span><span class="nav-lbl">Histórico</span>
+      </button>
+      <button class="nav-item" id="nav-ads" onclick="go('ads')">
+        <span class="ms">ads_click</span><span class="nav-lbl">Ads</span>
+      </button>
+      <button class="nav-item" id="nav-elistats" onclick="go('elistats')">
+        <span class="ms">analytics</span><span class="nav-lbl">Eli Stats</span>
+      </button>
+      <button class="nav-item" id="nav-rede" onclick="go('rede')">
+        <span class="ms">apartment</span><span class="nav-lbl">Redes</span>
+      </button>
+      <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
+        <span class="ms">person</span><span class="nav-lbl">Perfil</span>
+      </button>
   </nav>
 
   <div id="app-body">
@@ -983,22 +985,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
                     </div>
                   </div>
                 </div>
-                <button onclick="salvarPersonalizacao()" class="btn-p" style="margin-bottom:16px;width:100%">Aplicar Template</button>
-
-                <!-- Card Promoção do Dia -->
-                <div style="border-top:1px solid var(--border);padding-top:14px;">
-                  <div class="hl" style="font-size:13px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px">
-                    <span class="ms" style="font-size:16px;color:var(--blue)">local_fire_department</span> Card Promoção do Dia
-                  </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:var(--bg4);border-radius:10px;margin-bottom:10px">
-                    <div style="font-size:12px;font-weight:600">Exibir card no cardápio</div>
-                    <button class="tog off" id="tog-promo-card" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
-                  </div>
-                  <div><label>Título</label><input type="text" id="promo-card-title" placeholder="Ex: Promoção do Dia 🔥"/></div>
-                  <div style="margin-top:8px"><label>Subtítulo</label><input type="text" id="promo-card-sub" placeholder="Ex: X-Burguer por R$ 22,90"/></div>
                 </div>
-                <button onclick="salvarPromoCard()" class="btn-p" style="margin-top:10px;width:100%">Salvar Card</button>
-              </div>
 
               <!-- ── INTEGRAÇÕES ── -->
               <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
@@ -1029,9 +1016,9 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               </div>
 
               <!-- ── FECHAMENTO DE CAIXA ── -->
-              <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
-                <button class="btn-p" style="width:100%;background:var(--card);color:var(--text);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px" onclick="toast('Gerando relatório de fechamento...')">
-                  <span class="ms">account_balance_wallet</span> Fechamento de Caixa
+              <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;display:flex;justify-content:flex-end">
+                <button class="btn-s" style="width:auto;padding:8px 16px;font-size:11px;display:flex;align-items:center;gap:6px" onclick="toast('Gerando relatório de fechamento...')">
+                  <span class="ms" style="font-size:14px">account_balance_wallet</span> Fechamento de Caixa
                 </button>
               </div>
             </div>
@@ -1046,9 +1033,8 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               <p style="font-size:10px;color:var(--text3);margin-top:4px">Compartilhe com seus clientes</p>
             </div>
           </div>
-          <button class="btn-p" onclick="salvarPerfil()" style="margin-top:16px">Salvar alterações</button>
+          <button class="btn-p" onclick="salvarTudo()" style="margin-top:16px">Salvar alterações</button>
         </div>
-        <button class="btn-d" onclick="doLogout()" style="width:100%">Sair da conta</button>
       </div>
     </main>
   </div>
@@ -2142,13 +2128,44 @@ function initTemplatePills(current){
   selTemplate(current||'light');
 }
 
+async function salvarTudo(){
+  const btn=document.querySelector('#tab-perfil .btn-p');
+  const oldTxt=btn.textContent;
+  btn.textContent='Salvando...';
+  btn.disabled=true;
+  try{
+    const nome=document.getElementById('perfil-nome').value.trim();
+    if(!nome){toast('Nome obrigatório');btn.textContent=oldTxt;btn.disabled=false;return;}
+    const payload={
+      name:nome,
+      description:document.getElementById('perfil-desc').value.trim(),
+      horario_trabalho:document.getElementById('perfil-horario').value.trim(),
+      phone:document.getElementById('perfil-tel').value.trim(),
+      city:document.getElementById('perfil-city').value.trim(),
+      whatsapp_number:document.getElementById('perfil-wp').value.trim(),
+      theme_template:selectedTemplate,
+      is_open:document.getElementById('perfil-is-open').classList.contains('on')
+    };
+    const nova=document.getElementById('perfil-senha').value.trim();
+    if(nova)payload.password_hash=nova;
+    const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
+    if(error){toast('Erro: '+error.message);return;}
+    Object.assign(co,payload);
+    document.getElementById('tp-name').textContent=co.name;
+    document.getElementById('sn-name').textContent=co.name;
+    document.getElementById('perfil-nome-display').textContent=co.name;
+    document.getElementById('perfil-senha').value='';
+    toast('Alterações salvas!');
+    logActivity('perfil_completo','company',co.id,{name:co.name});
+  }catch(e){toast('Erro de conexão');}finally{btn.textContent=oldTxt;btn.disabled=false;}
+}
+
 async function salvarPerfil(){
   const nome=document.getElementById('perfil-nome').value.trim();
   if(!nome){toast('Nome obrigatório');return;}
   const payload={name:nome,description:document.getElementById('perfil-desc').value.trim(),horario_trabalho:document.getElementById('perfil-horario').value.trim(),phone:document.getElementById('perfil-tel').value.trim(),city:document.getElementById('perfil-city').value.trim(),whatsapp_number:document.getElementById('perfil-wp').value.trim()};
   const nova=document.getElementById('perfil-senha').value.trim();
   if(nova)payload.password_hash=nova;
-
   payload.is_open=document.getElementById('perfil-is-open').classList.contains('on');
   const{error}=await db.from('food_companies').update(payload).eq('id',co.id);
   if(error){toast('Erro ao salvar');return;}
