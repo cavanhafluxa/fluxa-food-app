@@ -996,9 +996,45 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
                   </div>
                   <div><label>Título</label><input type="text" id="promo-card-title" placeholder="Ex: Promoção do Dia 🔥"/></div>
                   <div style="margin-top:8px"><label>Subtítulo</label><input type="text" id="promo-card-sub" placeholder="Ex: X-Burguer por R$ 22,90"/></div>
-                  <button onclick="salvarPromoCard()" class="btn-p" style="margin-top:10px;width:100%">Salvar Card</button>
+                </div>
+                <button onclick="salvarPromoCard()" class="btn-p" style="margin-top:10px;width:100%">Salvar Card</button>
+              </div>
+
+              <!-- ── INTEGRAÇÕES ── -->
+              <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+                <div class="hl" style="font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span class="ms" style="color:var(--amber)">hub</span> Integrações Externas</div>
+                
+                <div class="card" style="padding:16px;background:rgba(211,47,47,0.04);border:1px solid rgba(211,47,47,0.1);margin-bottom:10px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="width:32px;height:32px;background:#D32F2F;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">i</div>
+                      <div class="hl" style="font-size:14px;font-weight:800">iFood Nativo</div>
+                    </div>
+                    <button class="tog off" id="tog-ifood" onclick="this.classList.toggle('on');this.classList.toggle('off');toast('iFood Sync: '+ (this.classList.contains('on')?'Ativado':'Desativado'))"><div class="tog-dot"></div></button>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.4">Conecte sua loja diretamente ao iFood para sincronizar cardápio, estoque e pedidos em tempo real.</div>
+                  <button class="btn-s" style="width:100%;font-size:12px;padding:8px" onclick="toast('Em breve: Configuração da API iFood')"><span class="ms" style="font-size:16px">settings</span> Configurar Manualmente</button>
+                </div>
+
+                <div class="card" style="padding:16px;background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.1)">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="width:32px;height:32px;background:#2563EB;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px"><span class="ms" style="font-size:18px">smart_toy</span></div>
+                      <div class="hl" style="font-size:14px;font-weight:800">WhatsApp Bot (Eli)</div>
+                    </div>
+                    <button class="tog on" id="tog-wp-bot"><div class="tog-dot"></div></button>
+                  </div>
+                  <div style="font-size:11px;color:var(--text3);line-height:1.4">Atendimento automático via WhatsApp para recebimento de pedidos sem intervenção humana.</div>
                 </div>
               </div>
+
+              <!-- ── FECHAMENTO DE CAIXA ── -->
+              <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+                <button class="btn-p" style="width:100%;background:var(--card);color:var(--text);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px" onclick="toast('Gerando relatório de fechamento...')">
+                  <span class="ms">account_balance_wallet</span> Fechamento de Caixa
+                </button>
+              </div>
+            </div>
 
             </div>
             <div>
