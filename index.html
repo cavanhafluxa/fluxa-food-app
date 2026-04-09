@@ -694,6 +694,29 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <button class="tog on" id="eli-tog" onclick="toggleEli()"><div class="tog-dot"></div></button>
         </div>
         <div class="metric-grid" id="s-metrics"></div>
+
+        <!-- ── FRP — RETENÇÃO ── -->
+        <div class="card" style="margin:16px 0;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(37,99,235,0.02));border:1px solid rgba(37,99,235,0.1)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff"><span class="ms" style="font-size:18px">loyalty</span></div>
+              <div>
+                <div class="hl" style="font-size:14px;font-weight:800">FRP — Programa de Retenção</div>
+                <div style="font-size:11px;color:var(--text3)">Recupere clientes inativos (> 7 dias)</div>
+              </div>
+            </div>
+            <button class="btn-s" style="width:auto;padding:8px 12px;font-size:11px" onclick="runFRPAudit()" id="btn-audit-frp">Auditar</button>
+          </div>
+          <div id="frp-results" style="display:none">
+            <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:12px;border:1px solid var(--border)">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:12px;color:var(--text2)" id="frp-count">0 clientes detectados</span>
+                <span style="font-size:10px;font-weight:800;color:var(--blue);background:var(--blue-l);padding:2px 8px;border-radius:10px">CUPOM: VOLTA20</span>
+              </div>
+            </div>
+            <button class="btn-p" style="background:var(--blue);color:white" onclick="triggerFRP()" id="btn-trigger-frp">Disparar Campanha WhatsApp</button>
+          </div>
+        </div>
         <div class="card" style="margin-bottom:12px"><div class="section-lbl">Avaliações recentes</div><div id="s-ratings"><p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhuma avaliação ainda</p></div></div>
         <div class="card" style="margin-bottom:12px"><div class="section-lbl">Horários de pico</div><div id="s-peaks"><p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Sem dados suficientes</p></div></div>
         <div class="card"><div class="section-lbl">Mais pedidos</div><div id="s-top"><p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhum pedido ainda</p></div></div>
@@ -1250,7 +1273,7 @@ let orders=[],history=[],menuItems=[],clientes=[];
 let orderTypeFil='todos'; // V2: filtro por tipo de pedido
 let clientesFil='todos';  // Fase 2: filtro de clientes
 // Fase 2: N8N webhook URL (configurar no Perfil ou via co.n8n_webhook)
-const N8N_NOTIFICATIONS_WEBHOOK=''; // Deixar vazio até configurar N8N
+const N8N_NOTIFICATIONS_WEBHOOK='https://n8n-n8n.uhcnbw.easypanel.host/webhook/6eec0901-63fe-4c4f-a583-ede7a698386c';
 
 // V2 — Cores de status conforme spec Fluxa
 const SL={
@@ -1655,6 +1678,7 @@ function doLogout(){
 
 // ── REALTIME ──
 function startRT(){
+  if(rtSub){db.removeChannel(rtSub);rtSub=null;}
   rtSub=db.channel('food_rt_'+co.id)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'food_orders',filter:'company_id=eq.'+co.id},async p=>{
       console.log('[RT] Novo pedido recebido:', p.new); // DEBUG
@@ -1880,8 +1904,11 @@ async function sendEliNotification(order,newStatus){
         cliente_telefone:order.cliente_telefone,
         status:newStatus,
         message:msgInfo.text,
-        restaurant:co.name,
-        whatsapp:co.whatsapp_number
+        restaurant_id:co.id,
+        restaurant_name:co.name,
+        whatsapp_instance:co.whatsapp_instance,
+        whatsapp_number:co.whatsapp_number,
+        total:order.total
       })
     });
     // Log visual rápido
@@ -2052,6 +2079,102 @@ async function renderStats(){
   const srt=Object.entries(cnts).sort((a,b)=>b[1]-a[1]).slice(0,5);const mx2=srt[0]?srt[0][1]:1;
   document.getElementById('s-top').innerHTML=srt.length?srt.map(([n,c],i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:${i<srt.length-1?'0.5px solid var(--border)':'none'}"><span class="hl" style="font-size:13px;font-weight:800;color:var(--text3);width:16px">${i+1}</span><div style="flex:1"><div style="font-size:12px;font-weight:600">${n}</div><div class="rank-bar"><div class="rank-fill" style="width:${Math.round(c/mx2*100)}%"></div></div></div><span style="font-size:12px;color:var(--text2);font-weight:600">${c}x</span></div>`).join(''):'<p style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Nenhum pedido ainda</p>';
 }
+
+// ── FRP ACTIONS ──
+let frpCandidates = [];
+
+async function runFRPAudit() {
+  if(!co) return;
+  const btn = document.getElementById('btn-audit-frp');
+  btn.innerHTML = '<span class="spin-s"></span>';
+  btn.disabled = true;
+
+  try {
+    const cutoff = new Date(Date.now() - 7 * 864e5).toISOString();
+    
+    // Busca todos os pedidos para agrupar por cliente
+    const { data: orders, error } = await db.from('food_orders')
+      .select('cliente_nome, cliente_telefone, created_at')
+      .eq('company_id', co.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Encontra a última compra de cada cliente (telefone como chave única)
+    const lastOrders = {};
+    (orders || []).forEach(o => {
+      if (o.cliente_telefone && !lastOrders[o.cliente_telefone]) {
+        lastOrders[o.cliente_telefone] = o;
+      }
+    });
+
+    // Filtra quem não pede há mais de 7 dias
+    frpCandidates = Object.values(lastOrders).filter(o => o.created_at < cutoff);
+
+    document.getElementById('frp-count').textContent = `${frpCandidates.length} cliente${frpCandidates.length!==1?'s':''} detectado${frpCandidates.length!==1?'s':''}`;
+    document.getElementById('frp-results').style.display = 'block';
+    
+    if (frpCandidates.length === 0) {
+      document.getElementById('btn-trigger-frp').disabled = true;
+      document.getElementById('btn-trigger-frp').style.opacity = '0.5';
+    } else {
+      document.getElementById('btn-trigger-frp').disabled = false;
+      document.getElementById('btn-trigger-frp').style.opacity = '1';
+    }
+
+  } catch (e) {
+    console.error('[FRP]', e);
+    toast('Erro na auditoria FRP');
+  } finally {
+    btn.innerHTML = 'Auditar';
+    btn.disabled = false;
+  }
+}
+
+async function triggerFRP() {
+  if (!frpCandidates.length) return;
+  if (!confirm(`Deseja disparar a campanha para ${frpCandidates.length} clientes via WhatsApp?`)) return;
+
+  const btn = document.getElementById('btn-trigger-frp');
+  const oldTxt = btn.innerText;
+  btn.innerHTML = '<span class="spin-s"></span> Enviando...';
+  btn.disabled = true;
+
+  try {
+    const payload = {
+      event_type: 'frp_retention',
+      restaurant_id: co.id,
+      restaurant_name: co.name,
+      whatsapp_instance: co.whatsapp_instance,
+      campaign_name: 'Fidelidade 7 Dias',
+      coupon_code: 'VOLTA20',
+      discount_label: '20% OFF',
+      customers: frpCandidates.map(c => ({
+        nome: c.cliente_nome,
+        telefone: c.cliente_telefone,
+        ultima_compra: c.created_at
+      }))
+    };
+
+    const res = await fetch(N8N_NOTIFICATIONS_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error('Falha no webhook');
+
+    toast('🎉 Campanha enviada ao N8N!');
+    document.getElementById('frp-results').style.display = 'none';
+    frpCandidates = [];
+  } catch (e) {
+    console.error('[FRP-SEND]', e);
+    toast('Erro ao disparar campanha');
+  } finally {
+    btn.innerText = oldTxt;
+    btn.disabled = false;
+  }
+}
 function fStats(el,p){document.querySelectorAll('#tab-elistats .filter-pill').forEach(x=>x.classList.remove('active'));el.classList.add('active');statsPeriod=p;renderStats();}
 
 // ── HISTÓRICO ──
@@ -2179,7 +2302,24 @@ async function salvarPerfil(){
 }
 
 async function uploadAvatarRestaurante(inp){
-  const f=inp.files[0];if(!f||!co)return;
+  let f=inp.files[0];if(!f||!co)return;
+  
+  // Bugfix Etapa 3: Suporte para HEIC/HEIF (iOS)
+  if(f.name.toLowerCase().match(/\.(heic|heif)$/)){
+    try {
+      toast('Processando imagem do iOS...');
+      if(typeof heic2any==='undefined'){
+        await new Promise(r=>{
+          const s=document.createElement('script');
+          s.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+          s.onload=r; document.head.appendChild(s);
+        });
+      }
+      const blob=await heic2any({blob:f,toType:'image/jpeg',quality:0.6});
+      f=new File([blob],f.name.replace(/\.(heic|heif)$/i,'.jpg'),{type:'image/jpeg'});
+    } catch(e){ console.warn('[HEIC] Erro na conversão:',e); }
+  }
+
   toast('Enviando foto...');
   // Tentar food-images primeiro, fallback para logos
   const ext=(f.type.split('/')[1]||'jpg').replace('jpeg','jpg');
