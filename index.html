@@ -783,19 +783,26 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
 
       <!-- FECHAMENTO DE CAIXA -->
       <div id="tab-fechamento" class="tab">
-        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Fechamento de Caixa</h2>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-          <div class="card" style="padding:16px;border-left:3px solid var(--amber)"><div class="section-lbl">Motoboys (A Pagar)</div><div class="hl" style="font-size:20px;font-weight:800">R$ 145,00</div></div>
-          <div class="card" style="padding:16px;border-left:3px solid var(--green)"><div class="section-lbl">Garçons (A Pagar)</div><div class="hl" style="font-size:20px;font-weight:800">R$ 80,00</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Fechamento de Caixa</h2>
+          <button onclick="gerarPDFFechamento()" style="display:flex;align-items:center;gap:6px;background:var(--blue-l);color:var(--blue);border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--hl)">
+            <span class="ms" style="font-size:16px">picture_as_pdf</span>Exportar PDF
+          </button>
         </div>
-        <div class="card">
-          <div class="section-lbl" style="margin-bottom:12px">Acertos Pendentes</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
-            <div>
-              <div class="hl" style="font-size:14px;font-weight:700">Taxas de Entrega - João</div>
-              <div style="font-size:11px;color:var(--text3)">15 entregas concluídas hoje</div>
-            </div>
-            <button class="btn-p" style="width:auto;padding:8px 16px;font-size:11px">Liquidar</button>
+        <div id="fechamento-content">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+            <div class="card" style="padding:16px;border-left:3px solid var(--green)"><div class="section-lbl">Faturamento Hoje</div><div class="hl" style="font-size:20px;font-weight:800" id="fc-faturamento">—</div></div>
+            <div class="card" style="padding:16px;border-left:3px solid var(--blue)"><div class="section-lbl">Pedidos</div><div class="hl" style="font-size:20px;font-weight:800" id="fc-pedidos">—</div></div>
+            <div class="card" style="padding:16px;border-left:3px solid var(--amber)"><div class="section-lbl">Ticket Médio</div><div class="hl" style="font-size:20px;font-weight:800" id="fc-ticket">—</div></div>
+            <div class="card" style="padding:16px;border-left:3px solid var(--red)"><div class="section-lbl">Cancelados</div><div class="hl" style="font-size:20px;font-weight:800" id="fc-cancelados">—</div></div>
+          </div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="section-lbl" style="margin-bottom:12px">Pedidos por Tipo</div>
+            <div id="fc-tipos" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+          <div class="card">
+            <div class="section-lbl" style="margin-bottom:12px">Últimos pedidos do dia</div>
+            <div id="fc-lista" style="font-size:12px"></div>
           </div>
         </div>
       </div>
@@ -803,26 +810,13 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       <!-- REDE / FRANQUIAS -->
       <div id="tab-rede" class="tab">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Master Dashboard</h2>
-          <span class="plan-badge" style="background:var(--blue);color:white">Rede</span>
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Redes / Filiais</h2>
+          <button onclick="abrirModalNovaFilial()" style="display:flex;align-items:center;gap:6px;background:var(--blue);color:white;border:none;border-radius:12px;padding:10px 16px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+            <span class="ms" style="font-size:16px;color:white">add_business</span>Nova Filial
+          </button>
         </div>
-        <div class="card" style="margin-bottom:12px;background:linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)">
-          <div class="section-lbl">Faturamento Global</div>
-          <div class="hl" style="font-size:32px;font-weight:800;color:var(--blue);margin-bottom:4px">R$ 14.590,00</div>
-          <div style="font-size:11px;color:var(--text3)">Consolidado de 3 unidades hoje</div>
-        </div>
-        <div class="section-lbl" style="margin-top:20px;margin-bottom:12px">Suas Unidades</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div class="card" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer">
-            <span class="ms" style="color:var(--green)">store</span>
-            <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:700">Matriz - Centro</div><div style="font-size:11px;color:var(--text3)">R$ 8.240,00 • 120 Pedidos</div></div>
-            <span class="ms" style="font-size:16px;color:var(--text3)">chevron_right</span>
-          </div>
-          <div class="card" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer">
-            <span class="ms" style="color:var(--amber)">store</span>
-            <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:700">Filial - Norte</div><div style="font-size:11px;color:var(--text3)">R$ 6.350,00 • 85 Pedidos</div></div>
-            <span class="ms" style="font-size:16px;color:var(--text3)">chevron_right</span>
-          </div>
+        <div id="rede-list">
+          <div style="text-align:center;padding:40px;color:var(--text3)"><div class="spin"></div></div>
         </div>
       </div>
 
@@ -1901,6 +1895,8 @@ function go(tab){
   if(tab==='clientes') loadClientes();
   if(tab==='perfil'){preencherPerfilStaff();if(currentStaff?.role==='dono'&&co)preencherPerfil(co);}
   if(tab==='colaboradores')loadColaboradores();
+  if(tab==='rede')loadRede();
+  if(tab==='fechamento')loadFechamento();
 }
 
 // Período do Dashboard
@@ -1977,8 +1973,9 @@ function renderOrders(){
   }
   wrap.innerHTML=filtered.map(o=>{
     const sc=SL[o.status]||SL.recebido,bc=BC[o.status]||'#9E9E9E',nxt=SN[o.status]||'Entregar';
-    const tot=getTotal(o),ttl=getTitle(o),tim=o.timer_minutes||0;
+    const tot=getTotal(o),ttl=getTitle(o),tim=getOrderAge(o);
     const tc=tim>15?'t-late':tim>8?'t-warn':'t-ok',icon=tim>15?'warning':'schedule';
+    const orderTs=o.created_at?new Date(o.created_at).getTime():Date.now();
     // Badge de tipo de pedido
     const tipoLabel={delivery:'🛵 Delivery',retirada:'🏪 Retirada',mesa:'🪑 Mesa'}[(o.tipo_pedido||'').toLowerCase()]||'';
     // Badge de origem
@@ -1997,7 +1994,7 @@ function renderOrders(){
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
             <span class="hl" style="font-size:13px;font-weight:700">${o.cliente_nome}</span>
-            <div class="timer ${tc}"><span class="ms" style="font-size:12px">${icon}</span>${tim}m</div>
+            <div class="timer ${tc}" data-order-time="${orderTs}"><span class="ms" style="font-size:12px">${icon}</span>${tim}m</div>
           </div>
           <div style="font-size:11px;color:var(--text2);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ttl}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap">
@@ -2630,7 +2627,7 @@ function abrirModalNovoColaborador(){
   document.getElementById('colab-role').value='funcionario';
   document.getElementById('colab-ativo').className='tog on';
   document.getElementById('colab-del-btn').style.display='none';
-  document.getElementById('mod-colab').classList.add('on');
+  openMod('mod-colab');
 }
 
 function editarColaborador(id){
@@ -2645,7 +2642,7 @@ function editarColaborador(id){
   document.getElementById('colab-role').value=s.food_roles?.name||'funcionario';
   document.getElementById('colab-ativo').className='tog '+(s.ativo&&!s.bloqueado?'on':'off');
   document.getElementById('colab-del-btn').style.display='block';
-  document.getElementById('mod-colab').classList.add('on');
+  openMod('mod-colab');
 }
 
 async function salvarColaborador(){
@@ -2688,6 +2685,73 @@ async function deletarColaborador(){
   closeMod('mod-colab');
   toast('Colaborador removido');
   await loadColaboradores();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// REDES / FILIAIS
+// ══════════════════════════════════════════════════════════════════
+
+async function loadRede(){
+  const list=document.getElementById('rede-list');
+  if(!list)return;
+  list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3)"><div class="spin"></div></div>';
+  const{data,error}=await db.from('food_companies').select('*').order('name');
+  if(error||!data){list.innerHTML='<div style="text-align:center;padding:20px;color:#EF4444">Erro ao carregar</div>';return;}
+  if(!data.length){
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:8px">add_business</span>Nenhuma filial cadastrada</div>';
+    return;
+  }
+  list.innerHTML=data.map(r=>{
+    const ativo=r.active!==false&&!r.blocked;
+    const isCurrent=co&&r.id===co.id;
+    return `<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="openEditFilial('${r.id}')">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+        ${r.logo_url?`<img src="${r.logo_url}" style="width:100%;height:100%;object-fit:cover"/>`:`<span class="ms" style="font-size:20px;color:var(--blue)">store</span>`}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="hl" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div>
+          ${isCurrent?'<span style="font-size:9px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 6px;border-radius:10px;font-family:var(--hl)">ATUAL</span>':''}
+        </div>
+        <div style="font-size:11px;color:var(--text3)">@${r.slug}${r.city?' • '+r.city:''}</div>
+      </div>
+      <div style="width:8px;height:8px;border-radius:50%;background:${ativo?'var(--green)':'#9CA3AF'};flex-shrink:0"></div>
+    </div>`;
+  }).join('');
+}
+
+let redeCompanies=[];
+
+async function abrirModalNovaFilial(){
+  // Reutiliza mod-restaurant do sistema founder
+  document.getElementById('rest-id').value='';
+  document.getElementById('rest-title').textContent='Nova Filial';
+  ['rest-name','rest-slug','rest-pass','rest-phone','rest-city','rest-wp','rest-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const plan=document.getElementById('rest-plan');if(plan)plan.value='trial';
+  const tog=document.getElementById('rest-active-tog');if(tog)tog.className='tog on';
+  const del=document.getElementById('rest-del');if(del)del.style.display='none';
+  // Override save para recarregar aba rede
+  window._redeMode=true;
+  openMod('mod-restaurant');
+}
+
+async function openEditFilial(id){
+  const{data:r}=await db.from('food_companies').select('*').eq('id',id).single();
+  if(!r)return;
+  document.getElementById('rest-id').value=r.id;
+  document.getElementById('rest-title').textContent='Editar Filial';
+  document.getElementById('rest-name').value=r.name||'';
+  document.getElementById('rest-slug').value=r.slug||'';
+  document.getElementById('rest-pass').value=r.password_hash||'';
+  const phone=document.getElementById('rest-phone');if(phone)phone.value=r.phone||'';
+  const city=document.getElementById('rest-city');if(city)city.value=r.city||'';
+  const wp=document.getElementById('rest-wp');if(wp)wp.value=r.whatsapp_number||'';
+  const notes=document.getElementById('rest-notes');if(notes)notes.value=r.notes||'';
+  const plan=document.getElementById('rest-plan');if(plan)plan.value=r.plan||'trial';
+  const tog=document.getElementById('rest-active-tog');if(tog)tog.className='tog '+(r.active?'on':'off');
+  const del=document.getElementById('rest-del');if(del)del.style.display='block';
+  window._redeMode=true;
+  openMod('mod-restaurant');
 }
 
 // ── ACTIVITY LOGS ──
@@ -2896,7 +2960,9 @@ async function saveRestaurant(){
   else{({error}=await db.from('food_companies').insert(payload));}
   btn.textContent='Salvar';btn.disabled=false;
   if(error){toast('Erro: '+(error.message.includes('unique')?'Slug já existe':error.message));return;}
-  closeMod('mod-restaurant');await loadFounder();toast(id?'Atualizado!':'Restaurante criado!');
+  closeMod('mod-restaurant');
+  if(window._redeMode){window._redeMode=false;await loadRede();toast(id?'Filial atualizada!':'Filial criada!');}
+  else{await loadFounder();toast(id?'Atualizado!':'Restaurante criado!');}
 }
 
 async function deleteRestaurant(){
@@ -2981,8 +3047,119 @@ function faqAnswer(key){
   },400);
 }
 
-// ── TIMER ──
-function startTick(){setInterval(()=>{if(!co||isFounder)return;orders.forEach(o=>{o.timer_minutes=(o.timer_minutes||0)+1;});if(document.getElementById('nav-pedidos')&&document.getElementById('nav-pedidos').classList.contains('active'))renderOrders();},60000);}
+// ── TIMER (Etapa 4: usa created_at real) ──
+function getOrderAge(o){
+  if(!o.created_at)return o.timer_minutes||0;
+  return Math.floor((Date.now()-new Date(o.created_at).getTime())/60000);
+}
+
+function updateOrderTimers(){
+  document.querySelectorAll('[data-order-time]').forEach(el=>{
+    const ms=Date.now()-parseInt(el.dataset.orderTime);
+    const mins=Math.floor(ms/60000);
+    const secs=Math.floor(ms/1000)%60;
+    const icon=el.querySelector('.ms');
+    // Atualiza texto sem re-render
+    if(icon){el.innerHTML=`<span class="ms" style="font-size:12px">${mins>15?'warning':'schedule'}</span>${mins>0?mins+'m':secs+'s'}`;}
+    el.className='timer '+(mins>15?'t-late':mins>8?'t-warn':'t-ok');
+    el.dataset.orderTime=el.dataset.orderTime; // mantém atributo
+  });
+}
+
+function startTick(){
+  // Atualiza timers a cada 30s (exibição mais precisa)
+  setInterval(()=>{
+    updateOrderTimers();
+    // Re-render completo a cada 60s para atualizar cores
+    if(!co||isFounder)return;
+    if(document.getElementById('nav-pedidos')&&document.getElementById('nav-pedidos').classList.contains('active'))renderOrders();
+  },30000);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 5: Fechamento de Caixa + PDF
+// ══════════════════════════════════════════════════════════════════
+
+async function loadFechamento(){
+  if(!co)return;
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const{data}=await db.from('food_orders')
+    .select('*')
+    .eq('company_id',co.id)
+    .gte('created_at',hoje.toISOString())
+    .order('created_at',{ascending:false});
+  if(!data)return;
+  const entregues=data.filter(o=>o.status==='entregue');
+  const cancelados=data.filter(o=>o.status==='cancelado');
+  const fat=entregues.reduce((s,o)=>s+(Number(o.total)||0),0);
+  const ticket=entregues.length?fat/entregues.length:0;
+  document.getElementById('fc-faturamento').textContent=fmtP(fat);
+  document.getElementById('fc-pedidos').textContent=entregues.length;
+  document.getElementById('fc-ticket').textContent=fmtP(ticket);
+  document.getElementById('fc-cancelados').textContent=cancelados.length;
+  // Tipos
+  const tipos={delivery:0,retirada:0,mesa:0};
+  entregues.forEach(o=>{const t=(o.tipo_pedido||'').toLowerCase();if(tipos[t]!==undefined)tipos[t]++;});
+  document.getElementById('fc-tipos').innerHTML=Object.entries(tipos).map(([k,v])=>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px">${{delivery:'🛵 Delivery',retirada:'🏪 Retirada',mesa:'🪑 Mesa'}[k]||k}</span>
+      <span class="hl" style="font-size:13px;font-weight:700">${v} pedido${v!==1?'s':''}</span>
+    </div>`).join('');
+  // Lista
+  document.getElementById('fc-lista').innerHTML=data.slice(0,20).map(o=>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <span class="hl" style="font-size:12px;font-weight:700">${o.cliente_nome}</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:6px">${o.order_number}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="status-pill" style="background:${(SL[o.status]||SL.recebido).bg};color:${(SL[o.status]||SL.recebido).c}">${SLB[o.status]||o.status}</span>
+        <span class="hl" style="font-size:12px;font-weight:700">${fmtP(Number(o.total)||0)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function gerarPDFFechamento(){
+  const hoje=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const fat=document.getElementById('fc-faturamento')?.textContent||'—';
+  const peds=document.getElementById('fc-pedidos')?.textContent||'—';
+  const ticket=document.getElementById('fc-ticket')?.textContent||'—';
+  const cancel=document.getElementById('fc-cancelados')?.textContent||'—';
+  const tipos=document.getElementById('fc-tipos')?.innerText||'';
+  const lista=document.getElementById('fc-lista')?.innerText||'';
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8">
+    <title>Fechamento ${hoje} — ${co?.name||''}</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:24px;color:#1a1a1a;max-width:600px;margin:0 auto}
+      h1{font-size:20px;margin-bottom:4px}
+      .sub{font-size:12px;color:#666;margin-bottom:24px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+      .kpi{border:1px solid #e5e5e5;border-radius:8px;padding:12px}
+      .kpi-lbl{font-size:10px;text-transform:uppercase;color:#888;margin-bottom:4px}
+      .kpi-val{font-size:22px;font-weight:800}
+      table{width:100%;border-collapse:collapse;font-size:11px}
+      th{background:#f5f5f5;padding:8px;text-align:left;font-size:10px}
+      td{padding:7px 8px;border-bottom:1px solid #eee}
+      @media print{body{padding:0}}
+    </style></head><body>
+    <h1>Fechamento de Caixa</h1>
+    <div class="sub">${co?.name||''} — ${hoje} — Gerado por ${(typeof currentStaff!=='undefined'&&currentStaff)?currentStaff.nome_completo:'—'}</div>
+    <div class="grid">
+      <div class="kpi"><div class="kpi-lbl">Faturamento</div><div class="kpi-val">${fat}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Pedidos Entregues</div><div class="kpi-val">${peds}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Ticket Médio</div><div class="kpi-val">${ticket}</div></div>
+      <div class="kpi"><div class="kpi-lbl">Cancelados</div><div class="kpi-val">${cancel}</div></div>
+    </div>
+    <h3 style="font-size:13px;margin-bottom:8px">Pedidos por Tipo</h3>
+    <pre style="font-size:11px;background:#f9f9f9;padding:10px;border-radius:6px">${tipos}</pre>
+    <h3 style="font-size:13px;margin:16px 0 8px">Histórico do Dia</h3>
+    <pre style="font-size:10px">${lista}</pre>
+  </body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),400);
+}
 
 // Pull-to-refresh na aba Pedidos
 (function initPTR(){
