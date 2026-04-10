@@ -535,32 +535,36 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
 <div class="screen" id="s-login">
   <div class="food-cascade" id="food-cascade"></div>
   <div class="login-box">
-    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase">FLÜXA KITCHENS</div>
-    <h1 style="font-size:28px;font-weight:700;margin-bottom:8px">Login</h1>
-    <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:32px">Acesso seguro exclusivo para credenciados.</p>
-    
+    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;text-transform:uppercase">FLÜXA KIOSQUE</div>
+    <h1 style="font-size:28px;font-weight:700;margin-bottom:8px">Acesso</h1>
+    <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:32px">Email e senha do operador</p>
+
     <div style="display:flex;gap:12px;margin-bottom:24px;justify-content:center">
-      <button class="social-btn"><span class="ms" style="font-size:22px;color:#fff">local_pizza</span></button>
-      <button class="social-btn"><span class="ms" style="font-size:22px;color:#fff">lunch_dining</span></button>
-      <button class="social-btn"><span class="ms" style="font-size:22px;color:#fff">local_cafe</span></button>
+      <button class="social-btn" onclick="setLoginMode('dono')" title="Dono"><span class="ms" style="font-size:22px;color:#fff">admin_panel_settings</span></button>
+      <button class="social-btn" onclick="setLoginMode('funcionario')" title="Funcionário"><span class="ms" style="font-size:22px;color:#fff">person</span></button>
+      <button class="social-btn" onclick="setLoginMode('motoboy')" title="Motoboy"><span class="ms" style="font-size:22px;color:#fff">two_wheeler</span></button>
     </div>
-    
-    <div class="auth-divider">PROTOCOLO DE ACESSO</div>
-    
+
+    <div class="auth-divider">CREDENCIAIS</div>
+
     <div style="margin-bottom:16px">
-      <label class="dark-label">NOME DO RESTAURANTE</label>
-      <input type="text" id="lg-slug" class="dark-input" placeholder="quiosque" autocomplete="username"/>
+      <label class="dark-label">EMAIL DO OPERADOR</label>
+      <input type="email" id="lg-email" class="dark-input" placeholder="admin@kiosque" autocomplete="email"/>
     </div>
     <div style="margin-bottom:24px">
       <label class="dark-label">SENHA</label>
       <input type="password" id="lg-pass" class="dark-input" placeholder="••••••••••" autocomplete="current-password"/>
     </div>
-    
-    <div id="lg-err" style="font-size:12px;color:#EF4444;display:none;text-align:center;background:rgba(239,68,68,0.1);padding:8px;border-radius:12px;margin-bottom:24px">Credenciais inválidas ou acesso bloqueado</div>
-    
+
+    <div id="lg-err" style="font-size:12px;color:#EF4444;display:none;text-align:center;background:rgba(239,68,68,0.1);padding:8px;border-radius:12px;margin-bottom:24px">Credenciais inválidas</div>
+
     <button class="btn-glow-white" id="lg-btn" onclick="doLogin()">
-      INICIAR CONEXÃO <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>
+      ENTRAR <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>
     </button>
+
+    <div id="lg-hint" style="font-size:10px;color:rgba(255,255,255,0.3);text-align:center;margin-top:16px">
+      Exemplo: admin@kiosque
+    </div>
   </div>
 </div>
 
@@ -1267,6 +1271,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const db=supabase.createClient(SB_URL,SB_KEY);
 
 let co=null,isFounder=false,eliOn=true,menuFil='todos',histFil='todos',editId=null;
+let currentStaff=null,loginMode='dono';
 
 let adics=[],alergs=[],photo=null,szCount=1,rtSub=null,statsPeriod='hoje';
 let orders=[],history=[],menuItems=[],clientes=[];
@@ -1522,64 +1527,38 @@ function openCliente(c){
 
 // BOOT ÚNICO — offline-first: usa cache local imediatamente, valida em background
 (async () => {
-  // 1. URL params (founder abrindo restaurante em nova aba)
-  const p = new URLSearchParams(window.location.search);
-  const sl = p.get('slug'), ps = p.get('pass');
-  if (sl && ps) {
-    document.getElementById('lg-slug').value = sl;
-    document.getElementById('lg-pass').value = ps;
-    await doLogin();
-    return;
-  }
-
-  // 2. Session salva no localStorage
-  const saved = localStorage.getItem('food_session');
+  // Etapa 2: Checar sessão de staff (kiosque_session)
+  const saved = localStorage.getItem('kiosque_session');
   if (!saved) { show('s-login'); return; }
 
   let session;
-  try { session = JSON.parse(saved); } catch(e) { localStorage.removeItem('food_session'); show('s-login'); return; }
-  const { slug, pass, cachedData } = session;
-  if (!slug || !pass) { localStorage.removeItem('food_session'); show('s-login'); return; }
+  try { session = JSON.parse(saved); } catch(e) { localStorage.removeItem('kiosque_session'); show('s-login'); return; }
+  if (!session.staffId || !session.companyId) { localStorage.removeItem('kiosque_session'); show('s-login'); return; }
 
-  // 2a. Se temos dados em cache, iniciar app IMEDIATAMENTE sem aguardar rede
-  if (cachedData) {
-    co = cachedData;
-    isFounder = !!cachedData.is_founder;
-    if (isFounder) { show('founder'); loadFounder(); }
-    else { show('app'); bootApp(cachedData); }
-
-    // Revalidar em background (não bloqueia o boot)
-    db.from('food_companies').select('*').eq('slug', slug).single().then(({ data, error }) => {
-      if (error) return; // rede indisponível — manter sessão atual
-      if (!data || (data.password_hash !== pass && data.founder_password !== pass) || (data.blocked && !data.is_founder)) {
-        // Credenciais explicitamente rejeitadas pelo servidor
-        doLogout();
-        return;
-      }
-      // Atualizar cache com dados frescos
-      co = data;
-      localStorage.setItem('food_session', JSON.stringify({ slug, pass, cachedData: data }));
-    });
-    return;
-  }
-
-  // 2b. Sem cache — buscar na rede (primeira vez ou cache apagado)
+  // Revalidar staff no backend
   show('s-loading');
   try {
-    const { data } = await db.from('food_companies').select('*').eq('slug', slug).single();
-    if (data && (data.password_hash === pass || data.founder_password === pass) && (!data.blocked || data.is_founder)) {
-      co = data; isFounder = !!data.is_founder;
-      localStorage.setItem('food_session', JSON.stringify({ slug, pass, cachedData: data }));
-      if (isFounder) { show('founder'); await loadFounder(); }
-      else { show('app'); await bootApp(data); }
-      return;
-    }
-    // Credenciais inválidas
-    localStorage.removeItem('food_session');
-  } catch(e) {
-    // Falha de rede sem cache — não há o que fazer, mostrar login
+    const { data: staff, error } = await db
+      .from('food_staff')
+      .select('*, food_roles(name), company:company_id(*)')
+      .eq('id', session.staffId)
+      .single();
+
+    if (error || !staff || !staff.ativo || staff.bloqueado) throw new Error('Sessão inválida');
+
+    currentStaff = staff;
+    currentStaff.role = staff.food_roles?.name || 'funcionario';
+    co = staff.company;
+
+    show('app');
+    await bootApp(staff.company);
+    setupRoleBasedAccess(currentStaff.role);
+
+  } catch(err) {
+    console.error('[BOOT]', err);
+    localStorage.removeItem('kiosque_session');
+    show('s-login');
   }
-  show('s-login');
 })();
 
 function initFoodCascade(){
@@ -1635,23 +1614,55 @@ function show(id){
   else{const el=document.getElementById(id);if(el)el.classList.add('on');}
 }
 
-// ── LOGIN ──
+// ── LOGIN (Etapa 2: email + role) ──
 async function doLogin(){
-  const slug=document.getElementById('lg-slug').value.trim().toLowerCase();
+  const email=document.getElementById('lg-email').value.trim().toLowerCase();
   const pass=document.getElementById('lg-pass').value.trim();
   const btn=document.getElementById('lg-btn');
-  btn.textContent='Entrando...';btn.disabled=true;
+  const errEl=document.getElementById('lg-err');
+
+  if(!email||!pass){toast('Preencha email e senha');return;}
+
+  btn.innerHTML='Entrando...';btn.disabled=true;
+  errEl.style.display='none';
   show('s-loading');
-  const{data,error}=await db.from('food_companies').select('*').eq('slug',slug).single();
-  btn.textContent='Entrar';btn.disabled=false;
-  if(error||!data){show('s-login');document.getElementById('lg-err').style.display='block';return;}
-  if(data.password_hash!==pass&&data.founder_password!==pass){show('s-login');document.getElementById('lg-err').style.display='block';return;}
-  if(data.blocked&&!data.is_founder){show('s-login');document.getElementById('lg-err').style.display='block';document.getElementById('lg-err').textContent='Acesso bloqueado. Entre em contato com a Flüxa.';return;}
-  document.getElementById('lg-err').style.display='none';
-  localStorage.setItem('food_session', JSON.stringify({slug: data.slug || slug, pass, cachedData: data}));
-  co=data;isFounder=!!data.is_founder;
-  if(isFounder){show('founder');loadFounder();}
-  else{show('app');await bootApp(data);}
+
+  try{
+    const{data:staff,error:staffError}=await db
+      .from('food_staff')
+      .select('*, food_roles(name), company:company_id(*)')
+      .eq('email',email)
+      .single();
+
+    if(staffError||!staff) throw new Error('Email não encontrado');
+    if(staff.password_hash!==pass) throw new Error('Senha incorreta');
+    if(!staff.ativo||staff.bloqueado) throw new Error(staff.bloqueado_motivo||'Acesso bloqueado');
+
+    const session={staffId:staff.id,email:staff.email,name:staff.nome_completo,role:staff.food_roles?.name||'funcionario',companyId:staff.company_id,lastLogin:new Date().toISOString()};
+    localStorage.setItem('kiosque_session',JSON.stringify(session));
+
+    // fire-and-forget: last_login + audit log
+    db.from('food_staff').update({last_login:new Date().toISOString()}).eq('id',staff.id);
+    db.from('food_staff_activity_log').insert({company_id:staff.company_id,staff_id:staff.id,action:'login',ip_address:'browser',user_agent:navigator.userAgent});
+
+    currentStaff=staff;
+    currentStaff.role=staff.food_roles?.name||'funcionario';
+    co=staff.company;
+
+    errEl.style.display='none';
+    show('app');
+    await bootApp(staff.company);
+    setupRoleBasedAccess(currentStaff.role);
+
+  }catch(err){
+    console.error('[LOGIN]',err);
+    show('s-login');
+    errEl.textContent=err.message||'Credenciais inválidas';
+    errEl.style.display='block';
+  }finally{
+    btn.innerHTML='ENTRAR <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>';
+    btn.disabled=false;
+  }
 }
 
 async function bootApp(data){
@@ -1669,11 +1680,44 @@ async function bootApp(data){
 }
 
 function doLogout(){
-  localStorage.removeItem('food_session');
+  // Log de auditoria antes de limpar
+  if(currentStaff){
+    db.from('food_staff_activity_log').insert({company_id:currentStaff.company_id,staff_id:currentStaff.id,action:'logout',ip_address:'browser',user_agent:navigator.userAgent});
+  }
+  localStorage.removeItem('kiosque_session');
   if(rtSub){db.removeChannel(rtSub);rtSub=null;}
-  co=null;isFounder=false;orders=[];history=[];menuItems=[];
+  currentStaff=null;co=null;isFounder=false;orders=[];history=[];menuItems=[];
   document.getElementById('demo-btn').style.display='none';
+  document.getElementById('lg-email').value='';
+  document.getElementById('lg-pass').value='';
   show('s-login');
+}
+
+// ── HELPERS DE ROLE (Etapa 2) ──
+function setLoginMode(mode){
+  loginMode=mode;
+  const hints={'dono':'Exemplo: admin@kiosque','funcionario':'Exemplo: funcionario@kiosque','motoboy':'Exemplo: entregador@kiosque'};
+  const el=document.getElementById('lg-hint');
+  if(el)el.textContent=hints[mode]||'Insira seu email';
+}
+
+async function hasPermission(permissionName){
+  if(!currentStaff)return false;
+  if(currentStaff.role==='dono')return true;
+  const{data}=await db.from('food_role_permissions').select('food_permissions(name)').eq('role_id',currentStaff.role_id);
+  return data?.some(p=>p.food_permissions?.name===permissionName)||false;
+}
+
+async function requirePermission(permissionName){
+  const has=await hasPermission(permissionName);
+  if(!has){toast('Você não tem permissão para isto');go('pedidos');return false;}
+  return true;
+}
+
+// ── PLACEHOLDER ETAPA 3 ──
+function setupRoleBasedAccess(role){
+  console.log('[ROLE SETUP] Role:',role);
+  // Implementado na Etapa 3
 }
 
 // ── REALTIME ──
