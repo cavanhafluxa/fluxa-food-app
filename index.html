@@ -594,10 +594,10 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       <button class="nav-item" id="nav-logistica" onclick="go('logistica')">
         <span class="ms">route</span><span class="nav-lbl">Logística</span>
       </button>
-      <button class="nav-item" id="nav-fechamento" onclick="go('fechamento')">
+      <button class="nav-item" id="nav-caixa" onclick="go('fechamento')">
         <span class="ms">point_of_sale</span><span class="nav-lbl">Caixa</span>
       </button>
-      <button class="nav-item" id="nav-hist-perfil" onclick="go('historico')">
+      <button class="nav-item" id="nav-historico" onclick="go('historico')">
         <span class="ms">history</span><span class="nav-lbl">Histórico</span>
       </button>
       <button class="nav-item" id="nav-ads" onclick="go('ads')">
@@ -608,6 +608,9 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       </button>
       <button class="nav-item" id="nav-rede" onclick="go('rede')">
         <span class="ms">apartment</span><span class="nav-lbl">Redes</span>
+      </button>
+      <button class="nav-item" id="nav-colaboradores" onclick="go('colaboradores')">
+        <span class="ms">badge</span><span class="nav-lbl">Equipe</span>
       </button>
       <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
         <span class="ms">person</span><span class="nav-lbl">Perfil</span>
@@ -864,11 +867,88 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
         <div id="clientes-list"><div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:36px;display:block;margin-bottom:10px">group</span><div style="font-size:13px">Carregando clientes...</div></div></div>
       </div>
 
+      <!-- COLABORADORES (só dono) -->
+      <div id="tab-colaboradores" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Equipe</h2>
+          <button onclick="abrirModalNovoColaborador()" style="display:flex;align-items:center;gap:6px;background:var(--accent);color:white;border:none;border-radius:12px;padding:10px 16px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+            <span class="ms" style="font-size:16px;color:white">person_add</span>Adicionar
+          </button>
+        </div>
+        <div id="colab-list">
+          <div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:8px">badge</span>Nenhum colaborador cadastrado</div>
+        </div>
+      </div>
+
+      <!-- MODAL NOVO/EDITAR COLABORADOR -->
+      <div class="modal-overlay" id="mod-colab" onclick="closeMod('mod-colab',event)">
+        <div class="modal-sheet">
+          <div class="drag-h"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h3 class="hl" style="font-size:17px;font-weight:800" id="mod-colab-title">Novo Colaborador</h3>
+            <button onclick="closeMod('mod-colab')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <input type="hidden" id="colab-edit-id"/>
+            <div><label>Nome completo *</label><input type="text" id="colab-nome" placeholder="Ex: João Silva"/></div>
+            <div><label>Email *</label><input type="email" id="colab-email" placeholder="joao@kiosque"/></div>
+            <div><label>Senha *</label><input type="password" id="colab-senha" placeholder="Senha de acesso"/></div>
+            <div>
+              <label>Cargo *</label>
+              <select id="colab-role" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--hl);font-size:13px">
+                <option value="funcionario">Funcionário</option>
+                <option value="motoboy">Motoboy</option>
+                <option value="dono">Dono / Gestor</option>
+              </select>
+            </div>
+            <div><label>Telefone</label><input type="text" id="colab-tel" placeholder="(47) 9xxxx-xxxx"/></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px">
+              <div>
+                <div class="hl" style="font-size:13px;font-weight:700">Ativo</div>
+                <div style="font-size:11px;color:var(--text3)">Permite acesso ao sistema</div>
+              </div>
+              <button class="tog on" id="colab-ativo" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button id="colab-del-btn" onclick="deletarColaborador()" style="display:none;flex:1;padding:12px;border-radius:12px;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:#EF4444;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--hl)">Excluir</button>
+              <button onclick="salvarColaborador()" class="btn-p" style="flex:2;padding:12px">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- PERFIL -->
       <div id="tab-perfil" class="tab">
-        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px">Perfil do Restaurante</h2>
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px">Perfil</h2>
 
-        <!-- ══ CARD LINK CARDÁPIO ══ -->
+        <!-- ══ CARD DO OPERADOR LOGADO ══ -->
+        <div class="card" id="card-staff-perfil" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(var(--blue-rgb,59,130,246),0.06),transparent)">
+          <div style="font-size:10px;font-weight:800;letter-spacing:0.08em;color:var(--text3);margin-bottom:12px;text-transform:uppercase">Meu Perfil</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <div class="avatar-upload" id="staff-avatar-btn" style="width:64px;height:64px;flex-shrink:0" onclick="document.getElementById('staff-photo-inp').click()">
+              <img id="staff-avatar-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%"/>
+              <div class="avatar-over" style="border-radius:50%"><span class="ms" style="color:white;font-size:16px">photo_camera</span></div>
+              <span class="ms" style="color:var(--text3);font-size:28px" id="staff-avatar-icon">person</span>
+            </div>
+            <input type="file" id="staff-photo-inp" accept="image/*" style="display:none" onchange="uploadAvatarStaff(this)"/>
+            <div>
+              <div class="hl" style="font-size:17px;font-weight:800" id="staff-nome-display">—</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:2px" id="staff-email-display">—</div>
+              <div style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 10px;border-radius:20px;background:var(--blue-l)">
+                <span class="ms" style="font-size:13px;color:var(--blue)" id="staff-role-icon">badge</span>
+                <span style="font-size:11px;font-weight:700;color:var(--blue);font-family:var(--hl)" id="staff-role-display">—</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div><label>Meu nome</label><input type="text" id="staff-nome-inp" placeholder="Seu nome completo"/></div>
+            <div><label>Nova senha (deixe em branco para não alterar)</label><input type="password" id="staff-senha-inp" placeholder="••••••"/></div>
+            <button onclick="salvarPerfilStaff()" class="btn-p" style="margin-top:4px">Salvar meu perfil</button>
+          </div>
+        </div>
+
+        <!-- ══ CARD LINK CARDÁPIO (visível só para dono) ══ -->
+        <div id="card-link-cardapio-wrap">
         <div class="card" id="card-link-cardapio" style="margin-bottom:16px;border:1.5px solid var(--accent);background:linear-gradient(135deg,rgba(211,47,47,0.06),rgba(211,47,47,0.02))">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
             <div style="width:36px;height:36px;border-radius:10px;background:rgba(211,47,47,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -892,7 +972,9 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
             </button>
           </div>
         </div>
+        </div><!-- /card-link-cardapio-wrap -->
 
+        <div id="perfil-restaurante-section">
         <div class="card" style="margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
             <div class="avatar-upload" id="perfil-avatar-btn" onclick="document.getElementById('perfil-photo-inp').click()">
@@ -1062,6 +1144,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           </div>
           <button class="btn-p" onclick="salvarTudo()" style="margin-top:16px">Salvar alterações</button>
         </div>
+        </div><!-- /perfil-restaurante-section -->
       </div>
     </main>
   </div>
@@ -1714,10 +1797,42 @@ async function requirePermission(permissionName){
   return true;
 }
 
-// ── PLACEHOLDER ETAPA 3 ──
+// ── ETAPA 3: Navegação por Role ──
 function setupRoleBasedAccess(role){
-  console.log('[ROLE SETUP] Role:',role);
-  // Implementado na Etapa 3
+  if(!role){console.error('[NAV] Role undefined');return;}
+  console.log('[NAV SETUP] Role:',role);
+
+  const navVisibility={
+    'dono':        ['nav-dashboard','nav-pedidos','nav-cardapio','nav-caixa','nav-historico','nav-ads','nav-elistats','nav-rede','nav-colaboradores','nav-perfil'],
+    'funcionario': ['nav-pedidos','nav-cardapio','nav-caixa','nav-historico','nav-perfil'],
+    'motoboy':     ['nav-pedidos','nav-caixa','nav-perfil']
+  };
+
+  const screenAccess={
+    'dono':        ['dashboard','pedidos','cardapio','fechamento','historico','ads','elistats','rede','colaboradores','perfil','clientes','logistica','ifood'],
+    'funcionario': ['pedidos','cardapio','fechamento','historico','perfil'],
+    'motoboy':     ['pedidos','fechamento','perfil']
+  };
+
+  // 1. Esconde todos os nav items
+  document.querySelectorAll('[id^="nav-"]').forEach(el=>el.style.display='none');
+
+  // 2. Mostra só o permitido para o role
+  (navVisibility[role]||[]).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='flex';
+  });
+
+  // 3. Sempre mostra nav-perfil
+  const np=document.getElementById('nav-perfil');
+  if(np)np.style.display='flex';
+
+  // 4. Guarda telas permitidas globalmente
+  window.allowedScreens=screenAccess[role]||[];
+
+  // 5. Navega para tela inicial do role
+  const homeScreen={dono:'pedidos',funcionario:'pedidos',motoboy:'pedidos'};
+  go(homeScreen[role]||'pedidos');
 }
 
 // ── REALTIME ──
@@ -1784,7 +1899,8 @@ function go(tab){
   if(tab==='dashboard')renderDashboardFull();
   if(tab==='ads')      renderAdsView();
   if(tab==='clientes') loadClientes();
-  if(tab==='perfil'){if(co)preencherPerfil(co);}
+  if(tab==='perfil'){preencherPerfilStaff();if(currentStaff?.role==='dono'&&co)preencherPerfil(co);}
+  if(tab==='colaboradores')loadColaboradores();
 }
 
 // Período do Dashboard
@@ -2401,6 +2517,177 @@ function _applyAvatar(url){
   document.getElementById('perfil-avatar-img').style.display='block';
   document.getElementById('perfil-avatar-icon').style.display='none';
   document.getElementById('logo-avatar').innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 3: Perfil do Staff (foto pessoal, nome, cargo)
+// ══════════════════════════════════════════════════════════════════
+
+const ROLE_LABELS={dono:'Gestor / Dono',funcionario:'Funcionário',motoboy:'Motoboy'};
+const ROLE_ICONS={dono:'admin_panel_settings',funcionario:'person',motoboy:'two_wheeler'};
+
+function preencherPerfilStaff(){
+  if(!currentStaff)return;
+  const role=currentStaff.role||'funcionario';
+  document.getElementById('staff-nome-display').textContent=currentStaff.nome_completo||'—';
+  document.getElementById('staff-email-display').textContent=currentStaff.email||'—';
+  document.getElementById('staff-role-display').textContent=ROLE_LABELS[role]||role;
+  document.getElementById('staff-role-icon').textContent=ROLE_ICONS[role]||'badge';
+  document.getElementById('staff-nome-inp').value=currentStaff.nome_completo||'';
+  if(currentStaff.avatar_url){
+    document.getElementById('staff-avatar-img').src=currentStaff.avatar_url;
+    document.getElementById('staff-avatar-img').style.display='block';
+    document.getElementById('staff-avatar-icon').style.display='none';
+  }else{
+    document.getElementById('staff-avatar-img').style.display='none';
+    document.getElementById('staff-avatar-icon').style.display='block';
+  }
+  // Seção do restaurante só para dono
+  const wrap=document.getElementById('card-link-cardapio-wrap');
+  if(wrap)wrap.style.display=role==='dono'?'block':'none';
+  const restSection=document.getElementById('perfil-restaurante-section');
+  if(restSection)restSection.style.display=role==='dono'?'block':'none';
+}
+
+async function salvarPerfilStaff(){
+  if(!currentStaff)return;
+  const nome=document.getElementById('staff-nome-inp').value.trim();
+  const senha=document.getElementById('staff-senha-inp').value.trim();
+  if(!nome){toast('Nome obrigatório');return;}
+  const payload={nome_completo:nome,updated_at:new Date().toISOString()};
+  if(senha)payload.password_hash=senha;
+  const{error}=await db.from('food_staff').update(payload).eq('id',currentStaff.id);
+  if(error){toast('Erro: '+error.message);return;}
+  currentStaff.nome_completo=nome;
+  document.getElementById('staff-nome-display').textContent=nome;
+  document.getElementById('staff-senha-inp').value='';
+  toast('Perfil atualizado!');
+}
+
+async function uploadAvatarStaff(inp){
+  const f=inp.files[0];if(!f||!currentStaff)return;
+  toast('Enviando foto...');
+  const ext=(f.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+  const fname='staff/'+currentStaff.id+'/avatar.'+ext;
+  let url=null;
+  for(const bucket of['food-images','logos']){
+    const{data:up,error}=await db.storage.from(bucket).upload(fname,f,{upsert:true,contentType:f.type});
+    if(!error&&up){const{data:ud}=db.storage.from(bucket).getPublicUrl(fname);url=ud.publicUrl+'?t='+Date.now();break;}
+  }
+  if(!url){toast('Erro ao enviar foto');return;}
+  await db.from('food_staff').update({avatar_url:url}).eq('id',currentStaff.id);
+  currentStaff.avatar_url=url;
+  document.getElementById('staff-avatar-img').src=url;
+  document.getElementById('staff-avatar-img').style.display='block';
+  document.getElementById('staff-avatar-icon').style.display='none';
+  toast('Foto atualizada!');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 3: Colaboradores (só dono)
+// ══════════════════════════════════════════════════════════════════
+
+let staffList=[];
+
+async function loadColaboradores(){
+  if(!co)return;
+  const list=document.getElementById('colab-list');
+  list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3)">Carregando...</div>';
+  const{data,error}=await db.from('food_staff').select('*,food_roles(name)').eq('company_id',co.id).order('nome_completo');
+  if(error||!data){list.innerHTML='<div style="text-align:center;padding:20px;color:#EF4444">Erro ao carregar</div>';return;}
+  staffList=data;
+  if(!data.length){
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:8px">badge</span>Nenhum colaborador cadastrado</div>';
+    return;
+  }
+  list.innerHTML=data.map(s=>{
+    const role=s.food_roles?.name||'funcionario';
+    const ativo=s.ativo&&!s.bloqueado;
+    return `<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="editarColaborador('${s.id}')">
+      <div style="width:42px;height:42px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+        ${s.avatar_url?`<img src="${s.avatar_url}" style="width:100%;height:100%;object-fit:cover"/>`:`<span class="ms" style="font-size:22px;color:var(--blue)">${ROLE_ICONS[role]||'person'}</span>`}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="hl" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.nome_completo}</div>
+        <div style="font-size:11px;color:var(--text3)">${s.email}</div>
+        <div style="display:inline-flex;align-items:center;gap:3px;margin-top:4px;padding:2px 8px;border-radius:20px;background:var(--blue-l)">
+          <span class="ms" style="font-size:12px;color:var(--blue)">${ROLE_ICONS[role]||'badge'}</span>
+          <span style="font-size:10px;font-weight:700;color:var(--blue);font-family:var(--hl)">${ROLE_LABELS[role]||role}</span>
+        </div>
+      </div>
+      <div style="width:8px;height:8px;border-radius:50%;background:${ativo?'var(--green)':'#9CA3AF'};flex-shrink:0"></div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModalNovoColaborador(){
+  document.getElementById('mod-colab-title').textContent='Novo Colaborador';
+  document.getElementById('colab-edit-id').value='';
+  document.getElementById('colab-nome').value='';
+  document.getElementById('colab-email').value='';
+  document.getElementById('colab-senha').value='';
+  document.getElementById('colab-tel').value='';
+  document.getElementById('colab-role').value='funcionario';
+  document.getElementById('colab-ativo').className='tog on';
+  document.getElementById('colab-del-btn').style.display='none';
+  document.getElementById('mod-colab').classList.add('on');
+}
+
+function editarColaborador(id){
+  const s=staffList.find(x=>x.id===id);
+  if(!s)return;
+  document.getElementById('mod-colab-title').textContent='Editar Colaborador';
+  document.getElementById('colab-edit-id').value=s.id;
+  document.getElementById('colab-nome').value=s.nome_completo||'';
+  document.getElementById('colab-email').value=s.email||'';
+  document.getElementById('colab-senha').value='';
+  document.getElementById('colab-tel').value=s.telefone||'';
+  document.getElementById('colab-role').value=s.food_roles?.name||'funcionario';
+  document.getElementById('colab-ativo').className='tog '+(s.ativo&&!s.bloqueado?'on':'off');
+  document.getElementById('colab-del-btn').style.display='block';
+  document.getElementById('mod-colab').classList.add('on');
+}
+
+async function salvarColaborador(){
+  const editId=document.getElementById('colab-edit-id').value;
+  const nome=document.getElementById('colab-nome').value.trim();
+  const email=document.getElementById('colab-email').value.trim().toLowerCase();
+  const senha=document.getElementById('colab-senha').value.trim();
+  const tel=document.getElementById('colab-tel').value.trim();
+  const roleNome=document.getElementById('colab-role').value;
+  const ativo=document.getElementById('colab-ativo').classList.contains('on');
+
+  if(!nome||!email){toast('Nome e email são obrigatórios');return;}
+  if(!editId&&!senha){toast('Senha obrigatória para novo colaborador');return;}
+
+  const{data:roleData}=await db.from('food_roles').select('id').eq('name',roleNome).single();
+  if(!roleData){toast('Role não encontrado');return;}
+
+  const payload={nome_completo:nome,email,telefone:tel||null,role_id:roleData.id,ativo,bloqueado:false,updated_at:new Date().toISOString()};
+  if(senha)payload.password_hash=senha;
+
+  let error;
+  if(editId){
+    ({error}=await db.from('food_staff').update(payload).eq('id',editId));
+  }else{
+    payload.company_id=co.id;
+    ({error}=await db.from('food_staff').insert(payload));
+  }
+  if(error){toast('Erro: '+error.message);return;}
+  closeMod('mod-colab');
+  toast(editId?'Colaborador atualizado!':'Colaborador cadastrado!');
+  await loadColaboradores();
+}
+
+async function deletarColaborador(){
+  const editId=document.getElementById('colab-edit-id').value;
+  if(!editId)return;
+  if(!confirm('Excluir este colaborador?'))return;
+  const{error}=await db.from('food_staff').delete().eq('id',editId);
+  if(error){toast('Erro: '+error.message);return;}
+  closeMod('mod-colab');
+  toast('Colaborador removido');
+  await loadColaboradores();
 }
 
 // ── ACTIVITY LOGS ──
