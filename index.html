@@ -606,6 +606,18 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       <button class="nav-item" id="nav-elistats" onclick="go('elistats')">
         <span class="ms">analytics</span><span class="nav-lbl">Eli Stats</span>
       </button>
+      <button class="nav-item" id="nav-pdv" onclick="go('pdv')">
+        <span class="ms">point_of_sale</span><span class="nav-lbl">PDV</span>
+      </button>
+      <button class="nav-item" id="nav-mesas" onclick="go('mesas')">
+        <span class="ms">table_restaurant</span><span class="nav-lbl">Mesas</span>
+      </button>
+      <button class="nav-item" id="nav-estoque" onclick="go('estoque')">
+        <span class="ms">inventory_2</span><span class="nav-lbl">Estoque</span>
+      </button>
+      <button class="nav-item" id="nav-fiscal" onclick="go('fiscal')">
+        <span class="ms">receipt_long</span><span class="nav-lbl">Fiscal</span>
+      </button>
       <button class="nav-item" id="nav-rede" onclick="go('rede')">
         <span class="ms">apartment</span><span class="nav-lbl">Redes</span>
       </button>
@@ -803,6 +815,204 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <div class="card">
             <div class="section-lbl" style="margin-bottom:12px">Últimos pedidos do dia</div>
             <div id="fc-lista" style="font-size:12px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PDV ══ -->
+      <div id="tab-pdv" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">PDV</h2>
+          <div id="pdv-session-badge" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:var(--green-l);color:var(--green);font-family:var(--hl)">Caixa Fechado</div>
+        </div>
+        <div id="pdv-open-section">
+          <div class="card" style="margin-bottom:16px;text-align:center;padding:32px 16px">
+            <span class="ms" style="font-size:48px;color:var(--text3);display:block;margin-bottom:12px">point_of_sale</span>
+            <div class="hl" style="font-size:16px;font-weight:700;margin-bottom:8px">Caixa Fechado</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Abra o caixa para registrar transações</div>
+            <div style="margin-bottom:16px"><label>Troco inicial (R$)</label><input type="number" id="pdv-troco-ini" placeholder="0,00" step="0.01" min="0" style="max-width:200px;margin:8px auto 0"/></div>
+            <button onclick="abrirCaixa()" class="btn-p" style="max-width:200px;margin:0 auto">Abrir Caixa</button>
+          </div>
+        </div>
+        <div id="pdv-active-section" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+            <div class="card" style="padding:16px;border-left:3px solid var(--green)"><div class="section-lbl">Total do Turno</div><div class="hl" style="font-size:22px;font-weight:800" id="pdv-total-turno">R$ 0,00</div></div>
+            <div class="card" style="padding:16px;border-left:3px solid var(--blue)"><div class="section-lbl">Transações</div><div class="hl" style="font-size:22px;font-weight:800" id="pdv-count-turno">0</div></div>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-lbl" style="margin-bottom:12px">Nova Transação</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><label>Descrição</label><input type="text" id="pdv-desc" placeholder="Ex: Pedido #001, Venda avulsa..."/></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div><label>Valor (R$)</label><input type="number" id="pdv-valor" placeholder="0,00" step="0.01" min="0"/></div>
+                <div><label>Forma de Pagamento</label>
+                  <select id="pdv-forma" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--hl);font-size:13px">
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">Pix</option>
+                    <option value="debito">Débito</option>
+                    <option value="credito">Crédito</option>
+                  </select>
+                </div>
+              </div>
+              <button onclick="registrarTransacao()" class="btn-p">Registrar</button>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-lbl" style="margin-bottom:8px">Transações do Turno</div>
+            <div id="pdv-lista-transacoes"></div>
+          </div>
+          <button onclick="fecharCaixa()" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:#EF4444;font-weight:700;font-size:14px;cursor:pointer;font-family:var(--hl)">Fechar Caixa</button>
+        </div>
+      </div>
+
+      <!-- ══ MESAS ══ -->
+      <div id="tab-mesas" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Mesas</h2>
+          <button onclick="adicionarMesa()" style="display:flex;align-items:center;gap:6px;background:var(--accent);color:white;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+            <span class="ms" style="font-size:16px;color:white">add</span>Nova Mesa
+          </button>
+        </div>
+        <div id="mesas-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
+      </div>
+
+      <!-- ══ MODAL MESA ══ -->
+      <div class="modal-overlay" id="mod-mesa" onclick="closeMod('mod-mesa',event)">
+        <div class="modal-sheet">
+          <div class="drag-h"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h3 class="hl" style="font-size:17px;font-weight:800" id="mod-mesa-title">Mesa</h3>
+            <button onclick="closeMod('mod-mesa')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+          </div>
+          <div id="mod-mesa-body"></div>
+        </div>
+      </div>
+
+      <!-- ══ ESTOQUE ══ -->
+      <div id="tab-estoque" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Estoque</h2>
+          <button onclick="abrirModalNovoItem()" style="display:flex;align-items:center;gap:6px;background:var(--accent);color:white;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+            <span class="ms" style="font-size:16px;color:white">add</span>Novo Item
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+          <div class="card" style="padding:12px;text-align:center"><div class="section-lbl">Total itens</div><div class="hl" style="font-size:20px;font-weight:800" id="est-total-itens">—</div></div>
+          <div class="card" style="padding:12px;text-align:center;border-left:3px solid var(--amber)"><div class="section-lbl">Baixo estoque</div><div class="hl" style="font-size:20px;font-weight:800" id="est-baixo">—</div></div>
+          <div class="card" style="padding:12px;text-align:center;border-left:3px solid var(--red)"><div class="section-lbl">Zerados</div><div class="hl" style="font-size:20px;font-weight:800" id="est-zerado">—</div></div>
+        </div>
+        <div id="estoque-lista"></div>
+      </div>
+
+      <!-- ══ MODAL ESTOQUE ITEM ══ -->
+      <div class="modal-overlay" id="mod-estoque-item" onclick="closeMod('mod-estoque-item',event)">
+        <div class="modal-sheet">
+          <div class="drag-h"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h3 class="hl" style="font-size:17px;font-weight:800" id="mod-est-title">Novo Item</h3>
+            <button onclick="closeMod('mod-estoque-item')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <input type="hidden" id="est-edit-id"/>
+            <div><label>Nome do item *</label><input type="text" id="est-nome" placeholder="Ex: Farinha de trigo"/></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Quantidade atual *</label><input type="number" id="est-qtd" placeholder="0" min="0" step="0.01"/></div>
+              <div><label>Unidade</label>
+                <select id="est-unidade" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--hl);font-size:13px">
+                  <option value="un">Unidade (un)</option>
+                  <option value="kg">Quilograma (kg)</option>
+                  <option value="g">Grama (g)</option>
+                  <option value="l">Litro (l)</option>
+                  <option value="ml">Mililitro (ml)</option>
+                  <option value="cx">Caixa (cx)</option>
+                  <option value="pct">Pacote (pct)</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Estoque mínimo</label><input type="number" id="est-minimo" placeholder="0" min="0" step="0.01"/></div>
+              <div><label>Custo unitário (R$)</label><input type="number" id="est-custo" placeholder="0,00" min="0" step="0.01"/></div>
+            </div>
+            <div><label>Categoria</label><input type="text" id="est-categoria" placeholder="Ex: Insumos, Bebidas, Embalagens..."/></div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button id="est-del-btn" onclick="deletarItemEstoque()" style="display:none;flex:1;padding:12px;border-radius:12px;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:#EF4444;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--hl)">Excluir</button>
+              <button onclick="salvarItemEstoque()" class="btn-p" style="flex:2;padding:12px">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ FISCAL ══ -->
+      <div id="tab-fiscal" class="tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Fiscal</h2>
+          <button onclick="openMod('mod-fiscal-config')" style="display:flex;align-items:center;gap:6px;background:var(--blue-l);color:var(--blue);border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--hl)">
+            <span class="ms" style="font-size:16px">settings</span>Configurar
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+          <div class="card" style="padding:12px;text-align:center"><div class="section-lbl">Emitidas hoje</div><div class="hl" style="font-size:20px;font-weight:800" id="nfe-hoje">—</div></div>
+          <div class="card" style="padding:12px;text-align:center;border-left:3px solid var(--amber)"><div class="section-lbl">Pendentes</div><div class="hl" style="font-size:20px;font-weight:800" id="nfe-pendentes">—</div></div>
+          <div class="card" style="padding:12px;text-align:center;border-left:3px solid var(--red)"><div class="section-lbl">Rejeitadas</div><div class="hl" style="font-size:20px;font-weight:800" id="nfe-rejeitadas">—</div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="section-lbl">NF-e Emitidas</div>
+            <button onclick="emitirNFeManual()" style="display:flex;align-items:center;gap:6px;background:var(--accent);color:white;border:none;border-radius:10px;padding:8px 14px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--hl)">
+              <span class="ms" style="font-size:14px;color:white">add</span>Emitir NF-e
+            </button>
+          </div>
+          <div id="nfe-lista"></div>
+        </div>
+        <div class="card" id="card-fiscal-status" style="background:linear-gradient(135deg,rgba(59,130,246,0.06),transparent)">
+          <div class="section-lbl" style="margin-bottom:8px">Status da Configuração</div>
+          <div id="fiscal-status-body" style="font-size:12px;color:var(--text3)">Carregando...</div>
+        </div>
+      </div>
+
+      <!-- ══ MODAL CONFIG FISCAL ══ -->
+      <div class="modal-overlay" id="mod-fiscal-config" onclick="closeMod('mod-fiscal-config',event)">
+        <div class="modal-sheet" style="max-height:90vh;overflow-y:auto">
+          <div class="drag-h"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h3 class="hl" style="font-size:17px;font-weight:800">Configuração Fiscal</h3>
+            <button onclick="closeMod('mod-fiscal-config')" style="border:none;background:none;cursor:pointer"><span class="ms" style="color:var(--text3)">close</span></button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div><label>Razão Social *</label><input type="text" id="fc-razao" placeholder="Nome completo da empresa"/></div>
+            <div><label>CNPJ *</label><input type="text" id="fc-cnpj" placeholder="00.000.000/0001-00" maxlength="18"/></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Inscrição Estadual</label><input type="text" id="fc-ie" placeholder="000.000.000.000"/></div>
+              <div><label>Regime Tributário</label>
+                <select id="fc-regime" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--hl);font-size:13px">
+                  <option value="simples">Simples Nacional</option>
+                  <option value="lucro_presumido">Lucro Presumido</option>
+                  <option value="lucro_real">Lucro Real</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px">
+              <div><label>Logradouro</label><input type="text" id="fc-end" placeholder="Rua, Av..."/></div>
+              <div><label>Número</label><input type="text" id="fc-num" placeholder="123"/></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Município</label><input type="text" id="fc-municipio" placeholder="Blumenau"/></div>
+              <div><label>UF</label><input type="text" id="fc-uf" placeholder="SC" maxlength="2"/></div>
+            </div>
+            <div><label>CEP</label><input type="text" id="fc-cep" placeholder="00000-000" maxlength="9"/></div>
+            <div>
+              <label>Ambiente SEFAZ</label>
+              <select id="fc-ambiente" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:var(--hl);font-size:13px">
+                <option value="homologacao">Homologação (Teste)</option>
+                <option value="producao">Produção (Real)</option>
+              </select>
+            </div>
+            <div><label>Webhook N8N para NF-e</label><input type="url" id="fc-webhook" placeholder="https://n8n.seu-dominio.com/webhook/nfe"/></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:12px">
+              <div><div class="hl" style="font-size:13px;font-weight:700">Emissão automática</div><div style="font-size:11px;color:var(--text3)">Emite NF-e ao marcar pedido como entregue</div></div>
+              <button class="tog off" id="fc-auto" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="tog-dot"></div></button>
+            </div>
+            <button onclick="salvarConfigFiscal()" class="btn-p" style="margin-top:4px">Salvar Configuração</button>
           </div>
         </div>
       </div>
@@ -1797,14 +2007,14 @@ function setupRoleBasedAccess(role){
   console.log('[NAV SETUP] Role:',role);
 
   const navVisibility={
-    'dono':        ['nav-dashboard','nav-pedidos','nav-cardapio','nav-caixa','nav-historico','nav-ads','nav-elistats','nav-rede','nav-colaboradores','nav-perfil'],
-    'funcionario': ['nav-pedidos','nav-cardapio','nav-caixa','nav-historico','nav-perfil'],
+    'dono':        ['nav-dashboard','nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-estoque','nav-caixa','nav-historico','nav-fiscal','nav-ads','nav-elistats','nav-rede','nav-colaboradores','nav-perfil'],
+    'funcionario': ['nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-caixa','nav-historico','nav-perfil'],
     'motoboy':     ['nav-pedidos','nav-caixa','nav-perfil']
   };
 
   const screenAccess={
-    'dono':        ['dashboard','pedidos','cardapio','fechamento','historico','ads','elistats','rede','colaboradores','perfil','clientes','logistica','ifood'],
-    'funcionario': ['pedidos','cardapio','fechamento','historico','perfil'],
+    'dono':        ['dashboard','pedidos','cardapio','pdv','mesas','estoque','fechamento','historico','fiscal','ads','elistats','rede','colaboradores','perfil','clientes','logistica','ifood'],
+    'funcionario': ['pedidos','cardapio','pdv','mesas','fechamento','historico','perfil'],
     'motoboy':     ['pedidos','fechamento','perfil']
   };
 
@@ -1897,6 +2107,10 @@ function go(tab){
   if(tab==='colaboradores')loadColaboradores();
   if(tab==='rede')loadRede();
   if(tab==='fechamento')loadFechamento();
+  if(tab==='pdv')loadPDV();
+  if(tab==='mesas')loadMesas();
+  if(tab==='estoque')loadEstoque();
+  if(tab==='fiscal')loadFiscal();
 }
 
 // Período do Dashboard
@@ -3159,6 +3373,463 @@ function gerarPDFFechamento(){
   w.document.write(html);
   w.document.close();
   setTimeout(()=>w.print(),400);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 10a: PDV — Ponto de Venda
+// ══════════════════════════════════════════════════════════════════
+
+let pdvSession=null;
+
+async function loadPDV(){
+  if(!co)return;
+  // Busca sessão aberta
+  const{data}=await db.from('food_pdv_sessions')
+    .select('*')
+    .eq('company_id',co.id)
+    .eq('status','aberta')
+    .order('created_at',{ascending:false})
+    .limit(1);
+  pdvSession=data&&data[0]?data[0]:null;
+  renderPDVState();
+}
+
+function renderPDVState(){
+  const open=document.getElementById('pdv-open-section');
+  const active=document.getElementById('pdv-active-section');
+  const badge=document.getElementById('pdv-session-badge');
+  if(pdvSession){
+    open.style.display='none';active.style.display='block';
+    badge.style.background='var(--green-l)';badge.style.color='var(--green)';badge.textContent='Caixa Aberto';
+    loadTransacoesTurno();
+  }else{
+    open.style.display='block';active.style.display='none';
+    badge.style.background='rgba(239,68,68,0.1)';badge.style.color='#EF4444';badge.textContent='Caixa Fechado';
+  }
+}
+
+async function abrirCaixa(){
+  if(!co||!currentStaff)return;
+  const troco=parseFloat(document.getElementById('pdv-troco-ini').value)||0;
+  const{data,error}=await db.from('food_pdv_sessions').insert({
+    company_id:co.id,
+    staff_id:currentStaff.id,
+    troco_inicial:troco,
+    status:'aberta',
+    opened_at:new Date().toISOString()
+  }).select().single();
+  if(error){toast('Erro ao abrir caixa: '+error.message);return;}
+  pdvSession=data;
+  renderPDVState();
+  toast('Caixa aberto!');
+}
+
+async function loadTransacoesTurno(){
+  if(!pdvSession)return;
+  const{data}=await db.from('food_pdv_transactions')
+    .select('*')
+    .eq('session_id',pdvSession.id)
+    .order('created_at',{ascending:false});
+  const list=document.getElementById('pdv-lista-transacoes');
+  if(!data||!data.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Nenhuma transação ainda</div>';document.getElementById('pdv-total-turno').textContent='R$ 0,00';document.getElementById('pdv-count-turno').textContent='0';return;}
+  const total=data.reduce((s,t)=>s+(Number(t.valor)||0),0);
+  document.getElementById('pdv-total-turno').textContent=fmtP(total);
+  document.getElementById('pdv-count-turno').textContent=data.length;
+  const formaLabel={dinheiro:'💵 Dinheiro',pix:'📲 Pix',debito:'💳 Débito',credito:'💳 Crédito'};
+  list.innerHTML=data.map(t=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div class="hl" style="font-size:13px;font-weight:600">${t.descricao||'—'}</div>
+        <div style="font-size:10px;color:var(--text3)">${formaLabel[t.forma_pagamento]||t.forma_pagamento} · ${new Date(t.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      <span class="hl" style="font-size:13px;font-weight:800;color:var(--green)">${fmtP(Number(t.valor))}</span>
+    </div>`).join('');
+}
+
+async function registrarTransacao(){
+  if(!pdvSession||!co||!currentStaff)return;
+  const desc=document.getElementById('pdv-desc').value.trim();
+  const valor=parseFloat(document.getElementById('pdv-valor').value)||0;
+  const forma=document.getElementById('pdv-forma').value;
+  if(!desc||valor<=0){toast('Preencha descrição e valor');return;}
+  const{error}=await db.from('food_pdv_transactions').insert({
+    session_id:pdvSession.id,
+    company_id:co.id,
+    staff_id:currentStaff.id,
+    descricao:desc,
+    valor,
+    forma_pagamento:forma,
+    created_at:new Date().toISOString()
+  });
+  if(error){toast('Erro: '+error.message);return;}
+  document.getElementById('pdv-desc').value='';
+  document.getElementById('pdv-valor').value='';
+  await loadTransacoesTurno();
+  toast('Transação registrada!');
+}
+
+async function fecharCaixa(){
+  if(!pdvSession)return;
+  if(!confirm('Fechar o caixa agora?'))return;
+  const{data:txs}=await db.from('food_pdv_transactions').select('valor').eq('session_id',pdvSession.id);
+  const totalFinal=txs?txs.reduce((s,t)=>s+(Number(t.valor)||0),0):0;
+  await db.from('food_pdv_sessions').update({status:'fechada',closed_at:new Date().toISOString(),total_final:totalFinal}).eq('id',pdvSession.id);
+  pdvSession=null;
+  renderPDVState();
+  toast('Caixa fechado! Total: '+fmtP(totalFinal));
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 10b: Mesas
+// ══════════════════════════════════════════════════════════════════
+
+let mesasList=[];
+
+async function loadMesas(){
+  if(!co)return;
+  const grid=document.getElementById('mesas-grid');
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px"><div class="spin"></div></div>';
+  const{data,error}=await db.from('food_tables').select('*').eq('company_id',co.id).order('numero');
+  if(error||!data){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:#EF4444">Erro ao carregar</div>';return;}
+  mesasList=data;
+  if(!data.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:8px">table_restaurant</span>Nenhuma mesa cadastrada.<br>Clique em "Nova Mesa" para adicionar.</div>';return;}
+  const statusColor={livre:'var(--green)',ocupada:'var(--amber)',conta_solicitada:'var(--red)',reservada:'var(--blue)'};
+  const statusLabel={livre:'Livre',ocupada:'Ocupada',conta_solicitada:'Conta',reservada:'Reservada'};
+  grid.innerHTML=data.map(m=>`
+    <div class="card" style="padding:16px;text-align:center;cursor:pointer;border-top:3px solid ${statusColor[m.status]||'var(--border)'}" onclick="abrirMesa('${m.id}')">
+      <div class="hl" style="font-size:22px;font-weight:800">${m.numero}</div>
+      <div style="font-size:10px;font-weight:700;color:${statusColor[m.status]||'var(--text3)'};margin-top:4px">${statusLabel[m.status]||m.status}</div>
+      ${m.status!=='livre'&&m.capacidade?`<div style="font-size:10px;color:var(--text3);margin-top:2px">${m.capacidade} lugares</div>`:''}
+      ${m.status==='ocupada'&&m.opened_at?`<div style="font-size:9px;color:var(--text3);margin-top:2px">${Math.floor((Date.now()-new Date(m.opened_at).getTime())/60000)}m</div>`:''}
+    </div>`).join('');
+}
+
+async function adicionarMesa(){
+  if(!co)return;
+  const num=prompt('Número da mesa:');
+  if(!num||isNaN(parseInt(num)))return;
+  const cap=prompt('Capacidade (número de lugares):','4');
+  const{error}=await db.from('food_tables').insert({company_id:co.id,numero:parseInt(num),capacidade:parseInt(cap)||4,status:'livre'});
+  if(error){toast('Erro: '+(error.message.includes('unique')?'Número já existe':error.message));return;}
+  toast('Mesa '+num+' criada!');
+  await loadMesas();
+}
+
+async function abrirMesa(id){
+  const mesa=mesasList.find(m=>m.id===id);if(!mesa)return;
+  const statusLabel={livre:'Livre',ocupada:'Ocupada',conta_solicitada:'Conta Solicitada',reservada:'Reservada'};
+  const statusColor={livre:'var(--green)',ocupada:'var(--amber)',conta_solicitada:'var(--red)',reservada:'var(--blue)'};
+  const body=document.getElementById('mod-mesa-body');
+  document.getElementById('mod-mesa-title').textContent='Mesa '+mesa.numero;
+  const acoes=mesa.status==='livre'
+    ?`<button onclick="mudarStatusMesa('${id}','ocupada');closeMod('mod-mesa')" class="btn-p" style="margin-bottom:8px">Abrir Mesa</button>`
+    :mesa.status==='ocupada'
+    ?`<button onclick="mudarStatusMesa('${id}','conta_solicitada');closeMod('mod-mesa')" class="btn-p" style="margin-bottom:8px;background:var(--amber)">Solicitar Conta</button>
+      <button onclick="mudarStatusMesa('${id}','livre');closeMod('mod-mesa')" style="width:100%;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:var(--hl);font-size:13px;font-weight:600;margin-bottom:8px">Liberar Mesa</button>`
+    :mesa.status==='conta_solicitada'
+    ?`<button onclick="mudarStatusMesa('${id}','livre');closeMod('mod-mesa')" class="btn-p" style="margin-bottom:8px;background:var(--green)">Fechar Conta / Liberar</button>`
+    :`<button onclick="mudarStatusMesa('${id}','livre');closeMod('mod-mesa')" class="btn-p" style="margin-bottom:8px">Liberar Mesa</button>`;
+  body.innerHTML=`
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:60px;height:60px;border-radius:50%;background:${statusColor[mesa.status]||'var(--border)'}22;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+        <span class="ms" style="font-size:30px;color:${statusColor[mesa.status]||'var(--text3)'}">table_restaurant</span>
+      </div>
+      <div class="hl" style="font-size:16px;font-weight:800">Mesa ${mesa.numero}</div>
+      <div style="font-size:12px;color:${statusColor[mesa.status]||'var(--text3)'};font-weight:700;margin-top:4px">${statusLabel[mesa.status]||mesa.status}</div>
+      ${mesa.capacidade?`<div style="font-size:11px;color:var(--text3);margin-top:2px">${mesa.capacidade} lugares</div>`:''}
+    </div>
+    ${acoes}
+    <button onclick="excluirMesa('${id}')" style="width:100%;padding:10px;border-radius:12px;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);color:#EF4444;font-weight:600;font-size:12px;cursor:pointer;font-family:var(--hl)">Excluir Mesa</button>`;
+  openMod('mod-mesa');
+}
+
+async function mudarStatusMesa(id,status){
+  const payload={status};
+  if(status==='ocupada')payload.opened_at=new Date().toISOString();
+  if(status==='livre')payload.opened_at=null;
+  const{error}=await db.from('food_tables').update(payload).eq('id',id);
+  if(error){toast('Erro: '+error.message);return;}
+  toast('Mesa atualizada!');
+  await loadMesas();
+}
+
+async function excluirMesa(id){
+  if(!confirm('Excluir esta mesa?'))return;
+  await db.from('food_tables').delete().eq('id',id);
+  closeMod('mod-mesa');
+  toast('Mesa removida');
+  await loadMesas();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 10c: Estoque
+// ══════════════════════════════════════════════════════════════════
+
+let estoqueList=[];
+
+async function loadEstoque(){
+  if(!co)return;
+  const lista=document.getElementById('estoque-lista');
+  lista.innerHTML='<div style="text-align:center;padding:20px"><div class="spin"></div></div>';
+  const{data,error}=await db.from('food_inventory_items').select('*').eq('company_id',co.id).order('nome');
+  if(error||!data){lista.innerHTML='<div style="text-align:center;padding:20px;color:#EF4444">Erro ao carregar</div>';return;}
+  estoqueList=data;
+  const baixo=data.filter(i=>i.quantidade_atual<=i.estoque_minimo&&i.quantidade_atual>0).length;
+  const zerado=data.filter(i=>Number(i.quantidade_atual)===0).length;
+  document.getElementById('est-total-itens').textContent=data.length;
+  document.getElementById('est-baixo').textContent=baixo;
+  document.getElementById('est-zerado').textContent=zerado;
+  if(!data.length){lista.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><span class="ms" style="font-size:40px;display:block;margin-bottom:8px">inventory_2</span>Nenhum item no estoque</div>';return;}
+  // Agrupa por categoria
+  const cats={};
+  data.forEach(i=>{const c=i.categoria||'Geral';if(!cats[c])cats[c]=[];cats[c].push(i);});
+  lista.innerHTML=Object.entries(cats).map(([cat,items])=>`
+    <div style="margin-bottom:16px">
+      <div class="section-lbl" style="margin-bottom:8px">${cat}</div>
+      ${items.map(i=>{
+        const pct=i.estoque_minimo>0?Math.min(i.quantidade_atual/i.estoque_minimo,2):1;
+        const cor=i.quantidade_atual<=0?'var(--red)':pct<=1?'var(--amber)':'var(--green)';
+        return `<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer" onclick="editarItemEstoque('${i.id}')">
+          <div style="width:40px;height:40px;border-radius:10px;background:${cor}22;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="ms" style="font-size:20px;color:${cor}">inventory_2</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="hl" style="font-size:13px;font-weight:700">${i.nome}</div>
+            <div style="font-size:11px;color:var(--text3)">${i.quantidade_atual} ${i.unidade||'un'} ${i.estoque_minimo>0?'· mín: '+i.estoque_minimo:''}</div>
+          </div>
+          ${i.custo_unitario?`<div class="hl" style="font-size:12px;font-weight:700">${fmtP(Number(i.custo_unitario))}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+function abrirModalNovoItem(){
+  document.getElementById('mod-est-title').textContent='Novo Item';
+  document.getElementById('est-edit-id').value='';
+  document.getElementById('est-nome').value='';
+  document.getElementById('est-qtd').value='';
+  document.getElementById('est-unidade').value='un';
+  document.getElementById('est-minimo').value='';
+  document.getElementById('est-custo').value='';
+  document.getElementById('est-categoria').value='';
+  document.getElementById('est-del-btn').style.display='none';
+  openMod('mod-estoque-item');
+}
+
+function editarItemEstoque(id){
+  const i=estoqueList.find(x=>x.id===id);if(!i)return;
+  document.getElementById('mod-est-title').textContent='Editar Item';
+  document.getElementById('est-edit-id').value=i.id;
+  document.getElementById('est-nome').value=i.nome||'';
+  document.getElementById('est-qtd').value=i.quantidade_atual||0;
+  document.getElementById('est-unidade').value=i.unidade||'un';
+  document.getElementById('est-minimo').value=i.estoque_minimo||0;
+  document.getElementById('est-custo').value=i.custo_unitario||'';
+  document.getElementById('est-categoria').value=i.categoria||'';
+  document.getElementById('est-del-btn').style.display='block';
+  openMod('mod-estoque-item');
+}
+
+async function salvarItemEstoque(){
+  const editId=document.getElementById('est-edit-id').value;
+  const nome=document.getElementById('est-nome').value.trim();
+  const qtd=parseFloat(document.getElementById('est-qtd').value)||0;
+  if(!nome){toast('Nome obrigatório');return;}
+  const payload={
+    nome,quantidade_atual:qtd,
+    unidade:document.getElementById('est-unidade').value,
+    estoque_minimo:parseFloat(document.getElementById('est-minimo').value)||0,
+    custo_unitario:parseFloat(document.getElementById('est-custo').value)||null,
+    categoria:document.getElementById('est-categoria').value.trim()||null,
+    updated_at:new Date().toISOString()
+  };
+  let error;
+  if(editId){
+    // Registra movimentação se houve mudança de quantidade
+    const antigo=estoqueList.find(x=>x.id===editId);
+    if(antigo&&antigo.quantidade_atual!==qtd){
+      const diff=qtd-antigo.quantidade_atual;
+      await db.from('food_inventory_movements').insert({company_id:co.id,item_id:editId,tipo:diff>0?'entrada':'saida',quantidade:Math.abs(diff),staff_id:currentStaff?.id,created_at:new Date().toISOString()});
+    }
+    ({error}=await db.from('food_inventory_items').update(payload).eq('id',editId));
+  }else{
+    payload.company_id=co.id;payload.created_at=new Date().toISOString();
+    ({error}=await db.from('food_inventory_items').insert(payload));
+  }
+  if(error){toast('Erro: '+error.message);return;}
+  closeMod('mod-estoque-item');
+  toast(editId?'Item atualizado!':'Item adicionado!');
+  await loadEstoque();
+}
+
+async function deletarItemEstoque(){
+  const editId=document.getElementById('est-edit-id').value;
+  if(!editId||!confirm('Excluir este item do estoque?'))return;
+  await db.from('food_inventory_items').delete().eq('id',editId);
+  closeMod('mod-estoque-item');
+  toast('Item removido');
+  await loadEstoque();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ETAPA 7+8: Fiscal — Painel + Emissão NF-e via N8N
+// ══════════════════════════════════════════════════════════════════
+
+let fiscalConfig=null;
+
+async function loadFiscal(){
+  if(!co)return;
+  // Config
+  const{data:cfg}=await db.from('food_fiscal_config').select('*').eq('company_id',co.id).single();
+  fiscalConfig=cfg||null;
+  renderFiscalStatus();
+  // NF-e emitidas
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const{data:docs}=await db.from('food_fiscal_docs').select('*').eq('company_id',co.id).order('created_at',{ascending:false}).limit(50);
+  if(docs){
+    const hoje_docs=docs.filter(d=>new Date(d.created_at)>=hoje);
+    document.getElementById('nfe-hoje').textContent=hoje_docs.filter(d=>d.status==='autorizada').length;
+    document.getElementById('nfe-pendentes').textContent=docs.filter(d=>d.status==='pendente').length;
+    document.getElementById('nfe-rejeitadas').textContent=docs.filter(d=>d.status==='rejeitada').length;
+    const lista=document.getElementById('nfe-lista');
+    if(!docs.length){lista.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">Nenhuma NF-e emitida</div>';return;}
+    const stColor={autorizada:'var(--green)',pendente:'var(--amber)',rejeitada:'var(--red)',cancelada:'#9CA3AF'};
+    lista.innerHTML=docs.slice(0,20).map(d=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div class="hl" style="font-size:13px;font-weight:700">${d.destinatario_nome||'Consumidor Final'}</div>
+          <div style="font-size:10px;color:var(--text3)">NF-e ${d.numero_nfe||'—'} · ${new Date(d.created_at).toLocaleDateString('pt-BR')}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;font-weight:700">${fmtP(Number(d.valor_total)||0)}</span>
+          <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:${stColor[d.status]||'#9CA3AF'}22;color:${stColor[d.status]||'#9CA3AF'}">${d.status}</span>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function renderFiscalStatus(){
+  const body=document.getElementById('fiscal-status-body');
+  if(!fiscalConfig){
+    body.innerHTML=`<div style="display:flex;align-items:center;gap:8px;color:var(--amber)"><span class="ms">warning</span>Configuração fiscal não encontrada. Clique em "Configurar" para começar.</div>`;
+    return;
+  }
+  const checks=[
+    {ok:!!fiscalConfig.cnpj,label:'CNPJ'},
+    {ok:!!fiscalConfig.certificado_url,label:'Certificado Digital'},
+    {ok:!!fiscalConfig.n8n_webhook_nfe,label:'Webhook N8N'},
+  ];
+  body.innerHTML=checks.map(c=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
+      <span class="ms" style="color:${c.ok?'var(--green)':'var(--amber)'};font-size:16px">${c.ok?'check_circle':'radio_button_unchecked'}</span>
+      <span style="font-size:12px">${c.label}</span>
+    </div>`).join('')+
+    `<div style="margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--bg3);font-size:11px">
+      Ambiente: <b>${fiscalConfig.ambiente==='producao'?'🔴 Produção':'🟡 Homologação'}</b>
+      · Emissão automática: <b>${fiscalConfig.emissao_automatica?'Ativa':'Inativa'}</b>
+    </div>`;
+  // Preenche modal de config
+  ['razao','cnpj','ie','end','num','municipio','uf','cep','webhook'].forEach(f=>{
+    const map={razao:'razao_social',cnpj:'cnpj',ie:'inscricao_estadual',end:'endereco_logradouro',num:'endereco_numero',municipio:'endereco_municipio',uf:'endereco_uf',cep:'endereco_cep',webhook:'n8n_webhook_nfe'};
+    const el=document.getElementById('fc-'+f);
+    if(el&&fiscalConfig[map[f]])el.value=fiscalConfig[map[f]];
+  });
+  const regEl=document.getElementById('fc-regime');if(regEl)regEl.value=fiscalConfig.regime_tributario||'simples';
+  const ambEl=document.getElementById('fc-ambiente');if(ambEl)ambEl.value=fiscalConfig.ambiente||'homologacao';
+  const autoEl=document.getElementById('fc-auto');if(autoEl)autoEl.className='tog '+(fiscalConfig.emissao_automatica?'on':'off');
+}
+
+async function salvarConfigFiscal(){
+  if(!co)return;
+  const payload={
+    company_id:co.id,
+    razao_social:document.getElementById('fc-razao').value.trim()||null,
+    cnpj:document.getElementById('fc-cnpj').value.replace(/\D/g,'')||null,
+    inscricao_estadual:document.getElementById('fc-ie').value.trim()||null,
+    regime_tributario:document.getElementById('fc-regime').value,
+    endereco_logradouro:document.getElementById('fc-end').value.trim()||null,
+    endereco_numero:document.getElementById('fc-num').value.trim()||null,
+    endereco_municipio:document.getElementById('fc-municipio').value.trim()||null,
+    endereco_uf:document.getElementById('fc-uf').value.trim().toUpperCase()||null,
+    endereco_cep:document.getElementById('fc-cep').value.replace(/\D/g,'')||null,
+    ambiente:document.getElementById('fc-ambiente').value,
+    n8n_webhook_nfe:document.getElementById('fc-webhook').value.trim()||null,
+    emissao_automatica:document.getElementById('fc-auto').classList.contains('on'),
+    updated_at:new Date().toISOString()
+  };
+  const{error}=await db.from('food_fiscal_config').upsert(payload,{onConflict:'company_id'});
+  if(error){toast('Erro: '+error.message);return;}
+  closeMod('mod-fiscal-config');
+  toast('Configuração fiscal salva!');
+  await loadFiscal();
+}
+
+async function emitirNFeManual(){
+  if(!fiscalConfig?.n8n_webhook_nfe){toast('Configure o Webhook N8N primeiro');openMod('mod-fiscal-config');return;}
+  const numero=prompt('Número do pedido ou descrição da venda:');
+  if(!numero)return;
+  const valor=prompt('Valor total (R$):');
+  if(!valor||isNaN(parseFloat(valor)))return;
+  const destinatario=prompt('Nome do destinatário (ou deixe em branco para Consumidor Final):','');
+  // Cria registro pendente
+  const{data:doc,error}=await db.from('food_fiscal_docs').insert({
+    company_id:co.id,
+    destinatario_nome:destinatario||'Consumidor Final',
+    valor_total:parseFloat(valor),
+    status:'pendente',
+    ambiente:fiscalConfig.ambiente,
+    emitido_por:currentStaff?.id
+  }).select().single();
+  if(error){toast('Erro: '+error.message);return;}
+  // Dispara webhook N8N (Etapa 8)
+  try{
+    await fetch(fiscalConfig.n8n_webhook_nfe,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        nf_id:doc.id,
+        company_id:co.id,
+        cnpj_emitente:fiscalConfig.cnpj,
+        razao_social:fiscalConfig.razao_social,
+        destinatario:destinatario||'Consumidor Final',
+        valor_total:parseFloat(valor),
+        ambiente:fiscalConfig.ambiente,
+        descricao:numero
+      })
+    });
+    toast('NF-e enviada para processamento!');
+  }catch(e){
+    toast('NF-e criada — webhook falhou: '+e.message);
+  }
+  await loadFiscal();
+}
+
+// Etapa 8: Emissão automática ao entregar pedido
+async function emitirNFeAutomatica(order){
+  if(!fiscalConfig?.emissao_automatica||!fiscalConfig?.n8n_webhook_nfe)return;
+  const{data:doc}=await db.from('food_fiscal_docs').insert({
+    company_id:co.id,
+    order_id:order.id,
+    destinatario_nome:order.cliente_nome||'Consumidor Final',
+    valor_total:getTotal(order),
+    status:'pendente',
+    ambiente:fiscalConfig.ambiente,
+    emitido_por:currentStaff?.id
+  }).select().single();
+  if(!doc)return;
+  try{
+    await fetch(fiscalConfig.n8n_webhook_nfe,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        nf_id:doc.id,company_id:co.id,order_id:order.id,
+        cnpj_emitente:fiscalConfig.cnpj,razao_social:fiscalConfig.razao_social,
+        destinatario:order.cliente_nome,destinatario_telefone:order.cliente_telefone,
+        valor_total:getTotal(order),ambiente:fiscalConfig.ambiente,
+        items:order._items||[]
+      })
+    });
+  }catch(e){console.warn('[NF-e AUTO]',e);}
 }
 
 // Pull-to-refresh na aba Pedidos
