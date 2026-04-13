@@ -1,5 +1,5 @@
-// Flüxa Kitchen SW — Etapa 5 (Performance)
-const CACHE = 'fluxa-kitchen-v3';
+// Flüxa Kitchen SW — Etapa 7 (PWA Polimento)
+const CACHE = 'fluxa-kitchen-v4';
 const ASSETS = [
   '/',
   '/index.html',
@@ -71,4 +71,23 @@ self.addEventListener('fetch', e => {
       return cached || fresh;
     })
   );
+});
+
+// Push Notifications (Etapa 7)
+self.addEventListener('push', e => {
+  const data = e.data ? e.data.json() : { title: 'Flüxa Kitchen', body: 'Novo pedido recebido!' };
+  e.waitUntil(
+    self.registration.showNotification(data.title || 'Flüxa Kitchen', {
+      body: data.body || 'Novo pedido!',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      vibrate: [200, 100, 200],
+      data: { url: data.url || '/' }
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.openWindow(e.notification.data?.url || '/'));
 });

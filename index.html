@@ -518,7 +518,7 @@ label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);display:block;m
 </style>
 </head>
 <body>
-<button id="theme-tog" onclick="toggleTheme()" style="position:fixed;bottom:24px;left:24px;background:rgba(120,120,135,0.15);border:1px solid rgba(120,120,135,0.1);color:var(--text);border-radius:24px;padding:6px 14px;font-size:10px;font-weight:800;cursor:pointer;z-index:999;display:flex;align-items:center;gap:6px;backdrop-filter:blur(20px);box-shadow:0 4px 10px rgba(0,0,0,0.1)"><span class="ms" id="theme-ic" style="font-size:14px">light_mode</span><span id="theme-lbl">LIGHT</span></button>
+<button id="theme-tog" onclick="toggleThemeAndSave()" style="position:fixed;bottom:24px;left:24px;background:rgba(120,120,135,0.15);border:1px solid rgba(120,120,135,0.1);color:var(--text);border-radius:24px;padding:6px 14px;font-size:10px;font-weight:800;cursor:pointer;z-index:999;display:flex;align-items:center;gap:6px;backdrop-filter:blur(20px);box-shadow:0 4px 10px rgba(0,0,0,0.1)"><span class="ms" id="theme-ic" style="font-size:14px">light_mode</span><span id="theme-lbl">LIGHT</span></button>
 <script>
 function toggleTheme(){const isL=document.body.getAttribute('data-theme')==='light';if(isL){document.body.removeAttribute('data-theme');localStorage.setItem('theme','dark');document.getElementById('theme-lbl').textContent='LIGHT';document.getElementById('theme-ic').textContent='light_mode';}else{document.body.setAttribute('data-theme','light');localStorage.setItem('theme','light');document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';}}
 if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-theme','light');document.addEventListener('DOMContentLoaded',()=>{document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';});}
@@ -625,6 +625,9 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       </button>
       <button class="nav-item" id="nav-colaboradores" onclick="go('colaboradores')">
         <span class="ms">badge</span><span class="nav-lbl">Equipe</span>
+      </button>
+      <button class="nav-item" id="nav-assinatura" onclick="go('assinatura')">
+        <span class="ms">credit_card</span><span class="nav-lbl">Plano</span>
       </button>
       <button class="nav-item" id="nav-perfil" onclick="go('perfil')">
         <span class="ms">person</span><span class="nav-lbl">Perfil</span>
@@ -1039,16 +1042,41 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
         </div>
       </div>
 
-      <!-- ADS -->
+      <!-- ADS (Etapa 5) -->
       <div id="tab-ads" class="tab">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-          <span style="font-size:22px">🎯</span>
-          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Ads</h2>
-          <span style="font-size:11px;color:var(--text3)" id="ads-period-lbl">hoje</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">🎯</span>
+            <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Ads</h2>
+          </div>
+          <button onclick="renderAds()" style="background:var(--bg3);border:none;border-radius:10px;padding:7px 12px;font-size:11px;font-weight:700;font-family:var(--hl);cursor:pointer;color:var(--text2)"><span class="ms" style="font-size:14px;vertical-align:middle">refresh</span></button>
         </div>
-        <div id="ads-full-content">
-          <div style="text-align:center;padding:40px"><div class="spin"></div></div>
+        <!-- Banner de configuração (quando sem token) -->
+        <div id="ads-setup-banner" style="display:none">
+          <div class="card" style="text-align:center;padding:40px 24px;border:1.5px dashed var(--border)">
+            <span class="ms" style="font-size:48px;color:var(--text3);display:block;margin-bottom:12px">ads_click</span>
+            <div class="hl" style="font-size:16px;font-weight:800;margin-bottom:8px">Configure suas integrações</div>
+            <p style="font-size:12px;color:var(--text3);margin-bottom:20px">Conecte Meta Ads ou Google Ads para ver seus dados reais aqui.</p>
+            <button onclick="go('perfil')" class="btn-p" style="width:auto;padding:10px 24px;font-size:12px">
+              <span class="ms" style="font-size:16px;vertical-align:middle">settings</span> Ir para Integrações
+            </button>
+          </div>
         </div>
+        <!-- Dados reais (quando token configurado) -->
+        <div id="ads-real-content" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+            <div class="card" style="padding:14px"><div class="section-lbl">Investimento</div><div class="hl" id="ads-spend" style="font-size:20px;font-weight:800">R$ —</div></div>
+            <div class="card" style="padding:14px"><div class="section-lbl">ROAS</div><div class="hl" id="ads-roas" style="font-size:20px;font-weight:800">—x</div></div>
+            <div class="card" style="padding:14px"><div class="section-lbl">Cliques</div><div class="hl" id="ads-clicks" style="font-size:20px;font-weight:800">—</div></div>
+            <div class="card" style="padding:14px"><div class="section-lbl">Leads</div><div class="hl" id="ads-leads" style="font-size:20px;font-weight:800">—</div></div>
+          </div>
+          <div class="card" style="padding:14px">
+            <div class="section-lbl" style="margin-bottom:10px">Por plataforma</div>
+            <div id="ads-by-source"></div>
+          </div>
+        </div>
+        <!-- Loading padrão -->
+        <div id="ads-loading"><div style="text-align:center;padding:40px"><div class="spin"></div></div></div>
       </div>
 
       <!-- CLIENTES -->
@@ -1295,31 +1323,43 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
                 </div>
                 </div>
 
-              <!-- ── INTEGRAÇÕES ── -->
+              <!-- ── INTEGRAÇÕES (Etapa 5) ── -->
               <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
                 <div class="hl" style="font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span class="ms" style="color:var(--amber)">hub</span> Integrações Externas</div>
-                
-                <div class="card" style="padding:16px;background:rgba(211,47,47,0.04);border:1px solid rgba(211,47,47,0.1);margin-bottom:10px">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-                    <div style="display:flex;align-items:center;gap:10px">
-                      <div style="width:32px;height:32px;background:#D32F2F;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">i</div>
-                      <div class="hl" style="font-size:14px;font-weight:800">iFood Nativo</div>
-                    </div>
-                    <button class="tog off" id="tog-ifood" onclick="this.classList.toggle('on');this.classList.toggle('off');toast('iFood Sync: '+ (this.classList.contains('on')?'Ativado':'Desativado'))"><div class="tog-dot"></div></button>
+
+                <!-- iFood -->
+                <div class="card" style="padding:16px;margin-bottom:10px">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                    <div style="width:32px;height:32px;background:#D32F2F;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">i</div>
+                    <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:800">iFood</div></div>
+                    <span id="int-status-ifood" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--text3)">inativo</span>
                   </div>
-                  <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.4">Conecte sua loja diretamente ao iFood para sincronizar cardápio, estoque e pedidos em tempo real.</div>
-                  <button class="btn-s" style="width:100%;font-size:12px;padding:8px" onclick="toast('Em breve: Configuração da API iFood')"><span class="ms" style="font-size:16px">settings</span> Configurar Manualmente</button>
+                  <div><label style="font-size:11px;color:var(--text3)">TOKEN MERCHANT API</label><input type="text" id="int-ifood-token" placeholder="Cole o token do iFood aqui" style="font-size:12px"/></div>
+                  <button onclick="salvarIntegracao('ifood')" class="btn-s" style="width:100%;margin-top:8px;font-size:12px">Conectar iFood</button>
                 </div>
 
-                <div class="card" style="padding:16px;background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.1)">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-                    <div style="display:flex;align-items:center;gap:10px">
-                      <div style="width:32px;height:32px;background:#2563EB;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px"><span class="ms" style="font-size:18px">smart_toy</span></div>
-                      <div class="hl" style="font-size:14px;font-weight:800">WhatsApp Bot (Eli)</div>
-                    </div>
-                    <button class="tog on" id="tog-wp-bot"><div class="tog-dot"></div></button>
+                <!-- Meta Ads -->
+                <div class="card" style="padding:16px;margin-bottom:10px">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                    <div style="width:32px;height:32px;background:#1877F2;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px">f</div>
+                    <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:800">Meta Ads</div></div>
+                    <span id="int-status-meta_ads" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--text3)">inativo</span>
                   </div>
-                  <div style="font-size:11px;color:var(--text3);line-height:1.4">Atendimento automático via WhatsApp para recebimento de pedidos sem intervenção humana.</div>
+                  <div style="margin-bottom:8px"><label style="font-size:11px;color:var(--text3)">ACCESS TOKEN</label><input type="text" id="int-meta-token" placeholder="EAAxxxx..." style="font-size:12px"/></div>
+                  <div><label style="font-size:11px;color:var(--text3)">AD ACCOUNT ID</label><input type="text" id="int-meta-account" placeholder="act_123456..." style="font-size:12px"/></div>
+                  <button onclick="salvarIntegracao('meta_ads')" class="btn-s" style="width:100%;margin-top:8px;font-size:12px">Conectar Meta Ads</button>
+                </div>
+
+                <!-- Google Ads -->
+                <div class="card" style="padding:16px">
+                  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                    <div style="width:32px;height:32px;background:#4285F4;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px">G</div>
+                    <div style="flex:1"><div class="hl" style="font-size:14px;font-weight:800">Google Ads</div></div>
+                    <span id="int-status-google_ads" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--text3)">inativo</span>
+                  </div>
+                  <div style="margin-bottom:8px"><label style="font-size:11px;color:var(--text3)">CUSTOMER ID</label><input type="text" id="int-google-account" placeholder="123-456-7890" style="font-size:12px"/></div>
+                  <div><label style="font-size:11px;color:var(--text3)">OAUTH TOKEN</label><input type="text" id="int-google-token" placeholder="ya29.xxx..." style="font-size:12px"/></div>
+                  <button onclick="salvarIntegracao('google_ads')" class="btn-s" style="width:100%;margin-top:8px;font-size:12px">Conectar Google Ads</button>
                 </div>
               </div>
 
@@ -1345,6 +1385,79 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
         </div>
         </div><!-- /perfil-restaurante-section -->
       </div>
+
+      <!-- ASSINATURA (Etapa 6) -->
+      <div id="tab-assinatura" class="tab">
+        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px">Minha Assinatura</h2>
+
+        <!-- Banner inadimplência -->
+        <div id="inad-banner" style="display:none;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.3);border-radius:16px;padding:16px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span class="ms" style="color:#EF4444;font-size:24px">warning</span>
+            <div class="hl" style="font-size:14px;font-weight:800;color:#EF4444">Pagamento em atraso</div>
+          </div>
+          <div id="inad-motivo" style="font-size:12px;color:var(--text2);margin-bottom:12px"></div>
+          <a href="https://wa.me/5547999999999" target="_blank" class="btn-p" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:10px 16px;font-size:12px;background:#EF4444">
+            <span class="ms" style="font-size:16px;color:#fff">chat</span>Falar com suporte
+          </a>
+        </div>
+
+        <!-- Plano atual -->
+        <div class="card" style="margin-bottom:12px;padding:20px">
+          <div class="section-lbl" style="margin-bottom:10px">Plano atual</div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div class="hl" id="assin-plan" style="font-size:22px;font-weight:800;text-transform:uppercase">—</div>
+              <div id="assin-status" style="font-size:11px;color:var(--text3);margin-top:2px">—</div>
+            </div>
+            <div style="text-align:right">
+              <div class="hl" id="assin-price" style="font-size:20px;font-weight:800">—</div>
+              <div style="font-size:11px;color:var(--text3)">por mês</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
+            <div style="font-size:11px;color:var(--text3)">Próxima cobrança</div>
+            <div id="assin-next" style="font-size:11px;font-weight:600">—</div>
+          </div>
+          <div style="margin-top:8px;display:flex;justify-content:space-between">
+            <div style="font-size:11px;color:var(--text3)">Comissão Flüxa</div>
+            <div id="assin-commission" style="font-size:11px;font-weight:600">—%</div>
+          </div>
+        </div>
+
+        <!-- Comissões do mês -->
+        <div class="card" style="margin-bottom:12px;padding:16px">
+          <div class="section-lbl" style="margin-bottom:10px">Comissões pagas à Flüxa</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="font-size:12px;color:var(--text3)">Este mês</div>
+            <div class="hl" id="assin-comm-mes" style="font-size:16px;font-weight:800">R$ —</div>
+          </div>
+          <div style="height:6px;background:var(--bg3);border-radius:4px;overflow:hidden">
+            <div id="assin-comm-bar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 1s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <div style="font-size:10px;color:var(--text3)">Total acumulado</div>
+            <div id="assin-comm-total" style="font-size:10px;color:var(--text3)">R$ —</div>
+          </div>
+        </div>
+
+        <!-- Faturas -->
+        <div class="card" style="margin-bottom:12px;padding:16px">
+          <div class="section-lbl" style="margin-bottom:10px">Histórico de faturas</div>
+          <div id="assin-invoices"><div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Nenhuma fatura registrada</div></div>
+        </div>
+
+        <!-- Ações -->
+        <div style="display:flex;gap:8px">
+          <button onclick="toast('Em breve: upgrade de plano')" class="btn-p" style="flex:1;font-size:12px">
+            <span class="ms" style="font-size:16px;vertical-align:middle">upgrade</span> Upgrade
+          </button>
+          <a href="https://wa.me/5547999999999?text=Suporte+Assinatura" target="_blank" class="btn-s" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:12px">
+            <span class="ms" style="font-size:16px">support_agent</span> Suporte
+          </a>
+        </div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -1970,6 +2083,18 @@ async function bootApp(data){
   }
   preencherPerfil(data);
   await loadOrders();await loadMenu();await renderStats();renderHist();startRT();startTick();
+  // Etapa 5: carregar integrações
+  loadIntegracoes();
+  // Etapa 6: inadimplência
+  if(data.inadimplente||['past_due','unpaid'].includes(data.stripe_status)){showInadimplenciaBanner(data);}
+  // Etapa 7: carregar preferência de tema do staff
+  if(currentStaff?.preferences?.theme){
+    const t=currentStaff.preferences.theme;
+    if(t==='light'){document.body.setAttribute('data-theme','light');localStorage.setItem('theme','light');const lbl=document.getElementById('theme-lbl');const ic=document.getElementById('theme-ic');if(lbl)lbl.textContent='DARK';if(ic)ic.textContent='dark_mode';}
+    else{document.body.removeAttribute('data-theme');localStorage.removeItem('theme');}
+  }
+  // Etapa 7: registrar push notifications
+  registerPushNotifications();
 }
 
 function doLogout(){
@@ -2014,7 +2139,7 @@ function setupRoleBasedAccess(role){
 
   // Feature flags: abas opcionais só aparecem se company tiver flag ativa
   const ff=co?.feature_flags||{};
-  const donoNav=['nav-dashboard','nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-estoque','nav-caixa','nav-historico','nav-ads','nav-elistats','nav-colaboradores','nav-perfil'];
+  const donoNav=['nav-dashboard','nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-estoque','nav-caixa','nav-historico','nav-ads','nav-elistats','nav-colaboradores','nav-assinatura','nav-perfil'];
   if(ff.ifood)donoNav.push('nav-ifood');
   if(ff.logistica)donoNav.push('nav-logistica');
   if(ff.fiscal)donoNav.push('nav-fiscal');
@@ -2026,7 +2151,7 @@ function setupRoleBasedAccess(role){
     'motoboy':     ['nav-pedidos','nav-logistica','nav-perfil']
   };
 
-  const donoScreens=['dashboard','pedidos','cardapio','pdv','mesas','estoque','fechamento','historico','ads','elistats','colaboradores','perfil','clientes'];
+  const donoScreens=['dashboard','pedidos','cardapio','pdv','mesas','estoque','fechamento','historico','ads','elistats','colaboradores','assinatura','perfil','clientes'];
   if(ff.ifood)donoScreens.push('ifood');
   if(ff.logistica)donoScreens.push('logistica');
   if(ff.fiscal)donoScreens.push('fiscal');
@@ -2057,6 +2182,177 @@ function setupRoleBasedAccess(role){
   // 5. Navega para tela inicial do role
   const homeScreen={dono:'pedidos',funcionario:'pedidos',motoboy:'pedidos'};
   go(homeScreen[role]||'pedidos');
+}
+
+// ══════════════════════════════════════════════════════════
+// ETAPA 5: Integrações + Ads
+// ══════════════════════════════════════════════════════════
+let _integracoes={};
+
+async function loadIntegracoes(){
+  if(!co)return;
+  const{data}=await db.from('food_integrations').select('*').eq('company_id',co.id);
+  _integracoes={};
+  (data||[]).forEach(r=>{_integracoes[r.tipo]=r;});
+
+  // Preenche campos + status badges
+  const tipos=['ifood','meta_ads','google_ads'];
+  tipos.forEach(tipo=>{
+    const r=_integracoes[tipo];
+    const badge=document.getElementById('int-status-'+tipo);
+    if(badge){
+      badge.textContent=r?.status||'inativo';
+      badge.style.background=r?.status==='ativo'?'var(--green-l)':r?.status==='erro'?'var(--red-l)':'var(--bg3)';
+      badge.style.color=r?.status==='ativo'?'var(--green)':r?.status==='erro'?'var(--red)':'var(--text3)';
+    }
+  });
+  // Preenche tokens salvos nos inputs
+  if(_integracoes.ifood?.token){const el=document.getElementById('int-ifood-token');if(el)el.value=_integracoes.ifood.token;}
+  if(_integracoes.meta_ads?.token){const el=document.getElementById('int-meta-token');if(el)el.value=_integracoes.meta_ads.token;}
+  if(_integracoes.meta_ads?.account_id){const el=document.getElementById('int-meta-account');if(el)el.value=_integracoes.meta_ads.account_id;}
+  if(_integracoes.google_ads?.token){const el=document.getElementById('int-google-token');if(el)el.value=_integracoes.google_ads.token;}
+  if(_integracoes.google_ads?.account_id){const el=document.getElementById('int-google-account');if(el)el.value=_integracoes.google_ads.account_id;}
+}
+
+async function salvarIntegracao(tipo){
+  if(!co)return;
+  let token='',account_id='';
+  if(tipo==='ifood'){token=(document.getElementById('int-ifood-token')?.value||'').trim();}
+  else if(tipo==='meta_ads'){token=(document.getElementById('int-meta-token')?.value||'').trim();account_id=(document.getElementById('int-meta-account')?.value||'').trim();}
+  else if(tipo==='google_ads'){token=(document.getElementById('int-google-token')?.value||'').trim();account_id=(document.getElementById('int-google-account')?.value||'').trim();}
+  if(!token){toast('Informe o token');return;}
+  const{error}=await db.from('food_integrations').upsert({
+    company_id:co.id,tipo,token,account_id:account_id||null,status:'ativo',updated_at:new Date().toISOString()
+  },{onConflict:'company_id,tipo'});
+  if(error){toast('Erro: '+error.message);return;}
+  toast('✅ '+tipo+' conectado!');
+  await loadIntegracoes();
+  renderAds();
+}
+
+async function renderAds(){
+  const loading=document.getElementById('ads-loading');
+  const banner=document.getElementById('ads-setup-banner');
+  const real=document.getElementById('ads-real-content');
+  if(loading)loading.style.display='block';
+  if(banner)banner.style.display='none';
+  if(real)real.style.display='none';
+
+  if(!co)return;
+  // Verifica se tem alguma integração de ads ativa
+  await loadIntegracoes();
+  const temAds=_integracoes.meta_ads?.status==='ativo'||_integracoes.google_ads?.status==='ativo';
+  if(loading)loading.style.display='none';
+  if(!temAds){if(banner)banner.style.display='block';return;}
+
+  // Busca métricas dos últimos 30 dias
+  const d30=new Date();d30.setDate(d30.getDate()-30);
+  const{data:metrics}=await db.from('food_ads_metrics').select('*').eq('company_id',co.id).gte('date',d30.toISOString().split('T')[0]);
+  if(real)real.style.display='block';
+  const m=metrics||[];
+  const totalSpend=m.reduce((a,x)=>a+Number(x.spend||0),0);
+  const totalClicks=m.reduce((a,x)=>a+Number(x.clicks||0),0);
+  const totalLeads=m.reduce((a,x)=>a+Number(x.leads||0),0);
+  const totalConv=m.reduce((a,x)=>a+Number(x.conversions||0),0);
+  const avgRoas=totalSpend>0?(m.reduce((a,x)=>a+Number(x.roas||0),0)/m.length).toFixed(1):0;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('ads-spend','R$ '+totalSpend.toFixed(2));el('ads-roas',avgRoas+'x');el('ads-clicks',totalClicks.toLocaleString('pt-BR'));el('ads-leads',totalLeads);
+  // Por plataforma
+  const bySource={};m.forEach(x=>{if(!bySource[x.source])bySource[x.source]={spend:0,clicks:0,leads:0};bySource[x.source].spend+=Number(x.spend||0);bySource[x.source].clicks+=Number(x.clicks||0);bySource[x.source].leads+=Number(x.leads||0);});
+  const bs=document.getElementById('ads-by-source');
+  if(bs)bs.innerHTML=Object.entries(bySource).map(([src,d])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600;text-transform:capitalize">${src}</span><span style="font-size:12px;color:var(--text3)">R$ ${d.spend.toFixed(2)} · ${d.clicks} cliques</span></div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:8px 0">Nenhum dado ainda</div>';
+}
+
+// ══════════════════════════════════════════════════════════
+// ETAPA 6: Assinatura Stripe + Inadimplência
+// ══════════════════════════════════════════════════════════
+async function loadAssinatura(){
+  if(!co)return;
+  const planLabels={start:'Start',growth:'Growth',proof:'Proof',elite:'Elite',empire:'Empire'};
+  const statusLabels={active:'✅ Ativo',trial:'🔔 Trial',past_due:'⚠️ Pagamento pendente',unpaid:'❌ Inadimplente',canceled:'Cancelado'};
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('assin-plan',planLabels[co.stripe_plan]||co.stripe_plan||'Start');
+  el('assin-status',statusLabels[co.stripe_status]||co.stripe_status||'Trial');
+  el('assin-price','R$ '+(co.stripe_price_monthly||1500).toLocaleString('pt-BR'));
+  el('assin-commission',(co.stripe_commission_pct||10)+'');
+  el('assin-next',co.stripe_next_billing?new Date(co.stripe_next_billing).toLocaleDateString('pt-BR'):'—');
+
+  // Inadimplência
+  const inadBanner=document.getElementById('inad-banner');
+  if(inadBanner)inadBanner.style.display=(co.inadimplente||['past_due','unpaid'].includes(co.stripe_status))?'block':'none';
+  const motivoEl=document.getElementById('inad-motivo');
+  if(motivoEl)motivoEl.textContent=co.inadimplente_motivo||'Regularize o pagamento para continuar recebendo pedidos.';
+
+  // Comissões
+  const hoje=new Date();const ini=new Date(hoje.getFullYear(),hoje.getMonth(),1).toISOString();
+  const{data:commMes}=await db.from('food_commission_log').select('commission_pct,order_total').eq('company_id',co.id).gte('created_at',ini);
+  const{data:commAll}=await db.from('food_commission_log').select('commission_pct,order_total').eq('company_id',co.id);
+  const calc=rows=>(rows||[]).reduce((a,r)=>a+(r.order_total*(r.commission_pct||10)/100),0);
+  const mesTot=calc(commMes),allTot=calc(commAll);
+  el('assin-comm-mes','R$ '+mesTot.toFixed(2));el('assin-comm-total','R$ '+allTot.toFixed(2));
+  const bar=document.getElementById('assin-comm-bar');
+  if(bar&&allTot>0)setTimeout(()=>{bar.style.width=Math.min(100,mesTot/allTot*100).toFixed(0)+'%';},100);
+
+  // Faturas
+  const{data:invs}=await db.from('food_stripe_invoices').select('*').eq('company_id',co.id).order('created_at',{ascending:false}).limit(10);
+  const inv=document.getElementById('assin-invoices');
+  if(inv){
+    if(!(invs||[]).length){inv.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">Nenhuma fatura registrada</div>';}
+    else{inv.innerHTML=(invs||[]).map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:12px;font-weight:600">R$ ${(i.amount||0).toFixed(2)}</div><div style="font-size:10px;color:var(--text3)">${i.period_start?new Date(i.period_start).toLocaleDateString('pt-BR'):''}</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;padding:3px 8px;border-radius:20px;background:${i.status==='paid'?'var(--green-l)':'var(--amber-l)'};color:${i.status==='paid'?'var(--green)':'var(--amber)'}">${i.status==='paid'?'Pago':'Pendente'}</span>${i.invoice_pdf?`<a href="${i.invoice_pdf}" target="_blank" style="color:var(--blue);font-size:10px">PDF</a>`:''}</div></div>`).join('');}
+  }
+}
+
+function showInadimplenciaBanner(company){
+  // Overlay no topo do Kitchen
+  let overlay=document.getElementById('inad-overlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='inad-overlay';
+    overlay.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:#EF4444;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-family:var(--hl);font-size:12px;font-weight:700';
+    overlay.innerHTML=`<div style="display:flex;align-items:center;gap:8px"><span class="ms" style="font-size:18px">warning</span>Pagamento em atraso — pedidos pausados</div><button onclick="go('assinatura')" style="background:rgba(255,255,255,0.2);border:none;color:#fff;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--hl)">Ver detalhes</button>`;
+    document.body.prepend(overlay);
+  }
+  // Eli badge: ELI PAUSADO
+  const eliTxt=document.getElementById('eli-txt');const eliDot=document.getElementById('eli-dot');const eliBadge=document.getElementById('eli-badge');
+  if(eliTxt)eliTxt.textContent='ELI PAUSADO';if(eliTxt)eliTxt.style.color='#EF4444';
+  if(eliDot)eliDot.style.background='#EF4444';
+  if(eliBadge)eliBadge.style.background='var(--red-l)';
+  // Desconecta Realtime
+  if(rtSub){db.removeChannel(rtSub);rtSub=null;console.log('[INADIMPLENTE] Realtime desconectado');}
+}
+
+// ══════════════════════════════════════════════════════════
+// ETAPA 7: Tema — salvar em food_staff.preferences
+// ══════════════════════════════════════════════════════════
+async function toggleThemeAndSave(){
+  const isLight=document.body.getAttribute('data-theme')==='light';
+  const newTheme=isLight?'dark':'light';
+  if(newTheme==='light'){document.body.setAttribute('data-theme','light');localStorage.setItem('theme','light');document.getElementById('theme-lbl').textContent='DARK';document.getElementById('theme-ic').textContent='dark_mode';}
+  else{document.body.removeAttribute('data-theme');localStorage.setItem('theme','dark');document.getElementById('theme-lbl').textContent='LIGHT';document.getElementById('theme-ic').textContent='light_mode';}
+  // Salvar em food_staff.preferences JSONB
+  if(currentStaff?.id){
+    const prefs=(currentStaff.preferences||{});prefs.theme=newTheme;
+    await db.from('food_staff').update({preferences:prefs}).eq('id',currentStaff.id);
+    currentStaff.preferences=prefs;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ETAPA 7: Push Notifications (Web Push API)
+// ══════════════════════════════════════════════════════════
+async function registerPushNotifications(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return;
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){console.log('[PUSH] Permissão negada');return;}
+    // VAPID key pública deve ser configurada aqui quando disponível
+    const VAPID_PUBLIC_KEY='';
+    if(!VAPID_PUBLIC_KEY){console.log('[PUSH] VAPID key não configurada — skip');return;}
+    const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:VAPID_PUBLIC_KEY});
+    console.log('[PUSH] Inscrito:',sub.endpoint);
+    toast('🔔 Notificações ativadas!');
+  }catch(e){console.warn('[PUSH]',e);}
 }
 
 // ── REALTIME ──
@@ -2113,6 +2409,9 @@ function go(tab){
   const navEl=document.getElementById('nav-'+tab);if(navEl){navEl.classList.add('active');navEl.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
   document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
   if(tab==='logistica')renderLogistica();
+  if(tab==='ads')renderAds();
+  if(tab==='assinatura')loadAssinatura();
+  if(tab==='perfil')loadIntegracoes();
   const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display='none';
   // Scroll ao topo ao trocar aba
   const mainEl=document.querySelector('main');if(mainEl)mainEl.scrollTop=0;
