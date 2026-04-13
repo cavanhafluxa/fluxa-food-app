@@ -52,8 +52,9 @@ html,body{height:100%;background:var(--bg);font-family:var(--bd);color:var(--tex
   border:1px solid rgba(255,255,255,0.08);border-radius:32px;
   display:flex;align-items:center;padding:6px;gap:6px;
   box-shadow:0 15px 30px rgba(0,0,0,0.6);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);
-  width:max-content;max-width:96vw;overflow:hidden;
+  width:calc(100vw - 32px);max-width:96vw;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;
 }
+.sidenav::-webkit-scrollbar{display:none}
 .sidenav.shrunk{padding:6px;border-radius:32px;background:rgba(20,20,22,0.95);box-shadow:0 10px 30px rgba(0,0,0,0.8)}
 .sidenav.shrunk .nav-item:not(.active){width:0;height:0;padding:0;opacity:0;pointer-events:none;margin:0;overflow:hidden}
 .sidenav.shrunk .nav-item.active{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%;background:var(--blue)}
@@ -72,7 +73,7 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
 .tab.active{display:block;animation:appleFadeInBlur 0.5s cubic-bezier(0.16,1,0.3,1) forwards}
 
 /* NAV */
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:20px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;overflow:hidden}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:20px;background:none;border:none;cursor:pointer;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;overflow:hidden;scroll-snap-align:start;flex-shrink:0}
 .nav-item .ms{font-size:20px;color:rgba(255,255,255,0.6);transition:color 0.3s;flex-shrink:0}
 .nav-item .nav-lbl{font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:rgba(255,255,255,0.6);font-family:var(--hl);height:11px;margin-top:0;transition:all 0.3s;opacity:1}
 .nav-item.active{background:rgba(255,255,255,0.08)}
@@ -100,6 +101,7 @@ main{flex:1;overflow-y:auto;padding-bottom:120px;scroll-behavior:smooth}
     border-right: 1px solid var(--border);
     box-shadow: none;
     background:rgba(20,20,22,0.95) !important;
+    overflow-x:hidden !important;scroll-snap-type:none !important;
   }
   #sidenav-logo{display:flex;align-items:center;padding:0 12px 24px 12px;gap:8px}
   .sidenav.shrunk{padding: 24px 12px; border-radius: 0; background: rgba(20,20,22,0.95); box-shadow: none}
@@ -771,25 +773,18 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
       </div>
 
       <!-- LOGÍSTICA -->
-      <div id="tab-logistica" class="tab">
-        <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:20px">Despacho & Roteirização</h2>
-        <div class="card" style="padding:0;overflow:hidden;border:1px dashed var(--blue);margin-bottom:12px">
-           <div style="height:200px;background:rgba(59, 130, 246, 0.05);display:flex;flex-direction:column;align-items:center;justify-content:center">
-             <span class="ms" style="font-size:40px;color:var(--blue);margin-bottom:10px">map</span>
-             <div class="hl" style="font-size:16px;font-weight:700">Mapa Visual (Em breve)</div>
-             <p style="font-size:12px;color:var(--blue);margin-top:5px">Agrupamento inteligente de entregas</p>
-           </div>
-           <div style="padding:16px">
-             <div class="section-lbl">Entregadores Ativos</div>
-             <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:12px">
-               <div style="width:40px;height:40px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center"><span class="ms">motorcycle</span></div>
-               <div style="flex:1">
-                 <div class="hl" style="font-size:14px;font-weight:700">João Silva</div>
-                 <div style="font-size:11px;color:var(--blue)">3 entregas em rota</div>
-               </div>
-               <button class="btn-s" style="padding:8px 12px;width:auto;font-size:11px">Localizar</button>
-             </div>
-           </div>
+      <div id="tab-logistica" class="tab" onload="renderLogistica()">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <h2 class="hl" style="font-size:20px;font-weight:800;letter-spacing:-0.02em">Despacho & Motoboys</h2>
+          <button onclick="renderLogistica()" style="background:var(--blue-l);color:var(--blue);border:none;border-radius:10px;padding:8px 12px;font-size:11px;font-weight:700;font-family:var(--hl);cursor:pointer"><span class="ms" style="font-size:14px;vertical-align:middle">refresh</span> Atualizar</button>
+        </div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="section-lbl" style="margin-bottom:12px">Pedidos prontos para entrega</div>
+          <div id="log-prontos-count" style="font-size:13px;color:var(--text3)">Carregando...</div>
+        </div>
+        <div class="card">
+          <div class="section-lbl" style="margin-bottom:12px">Entregadores</div>
+          <div id="log-motoboys">Carregando...</div>
         </div>
       </div>
 
@@ -1849,6 +1844,7 @@ function openCliente(c){
 })();
 
 function initFoodCascade(){
+  if(window.innerWidth>768)return;
   const c=document.getElementById('food-cascade');
   if(!c)return;
   const f=['🍔','🍕','🍟','🌭','🍿','🍩','🍪','🌮','🍣','🍦','🥞','🥓','🥐','🥨','🧇','🧀','🥩'];
@@ -1924,6 +1920,15 @@ async function doLogin(){
     if(staffError||!staff) throw new Error('Email não encontrado');
     if(staff.password_hash!==pass) throw new Error('Senha incorreta');
     if(!staff.ativo||staff.bloqueado) throw new Error(staff.bloqueado_motivo||'Acesso bloqueado');
+    // Etapa 3: Empresa bloqueada — tela específica
+    if(staff.company?.blocked){
+      show('s-login');
+      errEl.innerHTML='<b>Conta suspensa</b><br><span style="font-size:11px">'+(staff.company.blocked_reason||'Entre em contato com o suporte Flüxa.')+'</span>';
+      errEl.style.display='block';
+      btn.innerHTML='ENTRAR <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>';
+      btn.disabled=false;
+      return;
+    }
 
     const session={staffId:staff.id,email:staff.email,name:staff.nome_completo,role:staff.food_roles?.name||'funcionario',companyId:staff.company_id,lastLogin:new Date().toISOString()};
     localStorage.setItem('kiosque_session',JSON.stringify(session));
@@ -1955,7 +1960,8 @@ async function doLogin(){
 async function bootApp(data){
   document.getElementById('tp-name').textContent=data.name;
   document.getElementById('sn-name').textContent=data.name;
-  document.getElementById('demo-btn').style.display='block';
+  const devMode=new URLSearchParams(location.search).get('dev')==='1';
+  document.getElementById('demo-btn').style.display=(isFounder||devMode)?'block':'none';
   if(data.logo_url){
     document.getElementById('logo-avatar').innerHTML=`<img src="${data.logo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
     document.getElementById('perfil-avatar-img').src=data.logo_url;
@@ -2006,16 +2012,30 @@ function setupRoleBasedAccess(role){
   if(!role){console.error('[NAV] Role undefined');return;}
   console.log('[NAV SETUP] Role:',role);
 
+  // Feature flags: abas opcionais só aparecem se company tiver flag ativa
+  const ff=co?.feature_flags||{};
+  const donoNav=['nav-dashboard','nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-estoque','nav-caixa','nav-historico','nav-ads','nav-elistats','nav-colaboradores','nav-perfil'];
+  if(ff.ifood)donoNav.push('nav-ifood');
+  if(ff.logistica)donoNav.push('nav-logistica');
+  if(ff.fiscal)donoNav.push('nav-fiscal');
+  if(ff.rede)donoNav.push('nav-rede');
+
   const navVisibility={
-    'dono':        ['nav-dashboard','nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-estoque','nav-caixa','nav-historico','nav-fiscal','nav-ads','nav-elistats','nav-rede','nav-colaboradores','nav-perfil'],
+    'dono':        donoNav,
     'funcionario': ['nav-pedidos','nav-cardapio','nav-pdv','nav-mesas','nav-caixa','nav-historico','nav-perfil'],
-    'motoboy':     ['nav-pedidos','nav-caixa','nav-perfil']
+    'motoboy':     ['nav-pedidos','nav-logistica','nav-perfil']
   };
 
+  const donoScreens=['dashboard','pedidos','cardapio','pdv','mesas','estoque','fechamento','historico','ads','elistats','colaboradores','perfil','clientes'];
+  if(ff.ifood)donoScreens.push('ifood');
+  if(ff.logistica)donoScreens.push('logistica');
+  if(ff.fiscal)donoScreens.push('fiscal');
+  if(ff.rede)donoScreens.push('rede');
+
   const screenAccess={
-    'dono':        ['dashboard','pedidos','cardapio','pdv','mesas','estoque','fechamento','historico','fiscal','ads','elistats','rede','colaboradores','perfil','clientes','logistica','ifood'],
+    'dono':        donoScreens,
     'funcionario': ['pedidos','cardapio','pdv','mesas','fechamento','historico','perfil'],
-    'motoboy':     ['pedidos','fechamento','perfil']
+    'motoboy':     ['pedidos','logistica','perfil']
   };
 
   // 1. Esconde todos os nav items
@@ -2090,8 +2110,9 @@ function go(tab){
   const tabEl=document.getElementById('tab-'+tab);
   if(!tabEl){console.warn('Tab não encontrada:',tab);return;}
   tabEl.classList.add('active');
-  const navEl=document.getElementById('nav-'+tab);if(navEl)navEl.classList.add('active');
+  const navEl=document.getElementById('nav-'+tab);if(navEl){navEl.classList.add('active');navEl.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
   document.getElementById('fab').style.display=tab==='cardapio'?'flex':'none';
+  if(tab==='logistica')renderLogistica();
   const faqW=document.getElementById('faq-widget');if(faqW)faqW.style.display='none';
   // Scroll ao topo ao trocar aba
   const mainEl=document.querySelector('main');if(mainEl)mainEl.scrollTop=0;
@@ -2156,8 +2177,126 @@ function setOrderTab(tab){
   renderOrders();
 }
 
+// ── ETAPA 4: Motoboy view ──
+function renderOrdersMotoboy(){
+  const prontos=orders.filter(o=>o.status==='pronto');
+  const wrap=document.getElementById('orders-wrap');
+  document.getElementById('p-count').textContent=prontos.length;
+  const badge=document.getElementById('nav-badge');
+  badge.textContent=prontos.length;badge.classList.toggle('show',prontos.length>0);
+  if(!prontos.length){
+    wrap.innerHTML=`<div style="text-align:center;padding:48px 20px"><span class="ms" style="font-size:40px;color:var(--green);display:block;margin-bottom:12px">check_circle</span><div class="hl" style="font-size:15px;font-weight:700">Nenhum pedido pronto</div><div style="font-size:12px;color:var(--text3);margin-top:4px">Aguardando pedidos para entrega</div></div>`;
+    return;
+  }
+  wrap.innerHTML=prontos.map(o=>{
+    const tot=getTotal(o),tim=getOrderAge(o);
+    const addr=o.cliente_endereco||'Endereço não informado';
+    return `<div class="order-card" style="margin-bottom:12px;border-left:3px solid var(--green)">
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span class="hl" style="font-size:14px;font-weight:700">${o.cliente_nome}</span>
+          <span class="hl" style="font-size:14px;font-weight:800;color:var(--green)">${fmtP(tot)}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">📍 ${addr}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:12px">${o.order_number} · ${tim}m atrás</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="motoboyPegar('${o.id}')" class="btn-p" style="flex:1;padding:10px">
+            <span class="ms" style="font-size:16px;vertical-align:middle">two_wheeler</span> Peguei
+          </button>
+          <button onclick="motoboyEntregar('${o.id}')" style="flex:1;padding:10px;background:var(--green);color:#fff;border:none;border-radius:14px;font-family:var(--hl);font-size:12px;font-weight:700;cursor:pointer">
+            <span class="ms" style="font-size:16px;vertical-align:middle">done_all</span> Entregui
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function motoboyPegar(orderId){
+  const o=orders.find(x=>x.id===orderId);if(!o)return;
+  orders.find(x=>x.id===orderId).status='saiu';
+  await db.from('food_orders').update({status:'saiu',updated_at:new Date().toISOString()}).eq('id',orderId);
+  // Registra entrega
+  await db.from('food_deliveries').insert({
+    company_id:co.id,order_id:orderId,staff_id:currentStaff.id,
+    status:'em_rota',saiu_at:new Date().toISOString(),
+    endereco:o.cliente_endereco||null
+  });
+  sendEliNotification(o,'saiu');
+  toast('Entrega iniciada!');
+  renderOrdersMotoboy();
+}
+
+async function motoboyEntregar(orderId){
+  const obs=prompt('Observação da entrega (opcional):');
+  const o=orders.find(x=>x.id===orderId);if(!o)return;
+  orders.find(x=>x.id===orderId).status='entregue';
+  await db.from('food_orders').update({status:'entregue',updated_at:new Date().toISOString()}).eq('id',orderId);
+  await db.from('food_deliveries').update({status:'entregue',chegou_at:new Date().toISOString(),observacao:obs||null}).eq('order_id',orderId).eq('staff_id',currentStaff.id);
+  sendEliNotification(o,'entregue');
+  const tot=getTotal(o);
+  const{count}=await db.from('food_commission_log').select('id',{count:'exact',head:true}).eq('order_id',orderId);
+  if(!count||count===0)await db.from('food_commission_log').insert({company_id:co.id,order_id:orderId,order_total:tot,commission_pct:10});
+  const idx=orders.findIndex(x=>x.id===orderId);
+  if(idx!==-1){const removed=orders.splice(idx,1)[0];removed.completed_at=new Date().toISOString();history.unshift(removed);}
+  toast('Entrega confirmada!');
+  renderOrdersMotoboy();
+  renderHist();
+}
+
+async function renderLogistica(){
+  const wrap=document.getElementById('log-motoboys');
+  if(!wrap)return;
+  const{data:motoboys}=await db.from('food_staff').select('*,food_roles(name)').eq('company_id',co.id);
+  const motoboyList=(motoboys||[]).filter(s=>s.food_roles?.name==='motoboy'&&s.ativo);
+  const{data:entregas}=await db.from('food_deliveries').select('*').eq('company_id',co.id).eq('status','em_rota');
+  const prontos=orders.filter(o=>o.status==='pronto');
+
+  if(!motoboyList.length){wrap.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Nenhum motoboy cadastrado</div>';return;}
+
+  wrap.innerHTML=motoboyList.map(m=>{
+    const emRota=(entregas||[]).filter(e=>e.staff_id===m.id).length;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:12px;margin-bottom:8px">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="ms">two_wheeler</span></div>
+      <div style="flex:1">
+        <div class="hl" style="font-size:14px;font-weight:700">${m.nome_completo}</div>
+        <div style="font-size:11px;color:${emRota?'var(--amber)':'var(--green)'}">● ${emRota?emRota+' em rota':'Disponível'}</div>
+      </div>
+      ${prontos.length?`<select id="despacho-${m.id}" style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:4px 8px;font-size:11px">
+        <option value="">Selecionar pedido</option>
+        ${prontos.map(o=>`<option value="${o.id}">#${o.order_number} — ${o.cliente_nome}</option>`).join('')}
+      </select>
+      <button onclick="despacharMotoboy('${m.id}')" class="btn-s" style="padding:6px 10px;width:auto;font-size:11px">Despachar</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function despacharMotoboy(staffId){
+  const sel=document.getElementById('despacho-'+staffId);
+  if(!sel||!sel.value){toast('Selecione um pedido');return;}
+  const orderId=sel.value;
+  const o=orders.find(x=>x.id===orderId);if(!o)return;
+  await db.from('food_deliveries').insert({
+    company_id:co.id,order_id:orderId,staff_id:staffId,
+    status:'em_rota',saiu_at:new Date().toISOString(),
+    endereco:o.cliente_endereco||null
+  });
+  await db.from('food_orders').update({status:'saiu',updated_at:new Date().toISOString()}).eq('id',orderId);
+  orders.find(x=>x.id===orderId).status='saiu';
+  // Notifica motoboy via webhook (se configurado)
+  const{data:mb}=await db.from('food_staff').select('telefone').eq('id',staffId).single();
+  if(mb?.telefone&&(co.n8n_webhook||N8N_NOTIFICATIONS_WEBHOOK)){
+    try{await fetch(co.n8n_webhook||N8N_NOTIFICATIONS_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'despacho_motoboy',motoboy_telefone:mb.telefone,pedido:o.order_number,cliente:o.cliente_nome,endereco:o.cliente_endereco})});}catch(e){}
+  }
+  toast('Motoboy despachado!');
+  renderLogistica();
+  renderOrders();
+}
+
 function renderOrders(){
   if(!co)return;
+  // Etapa 4: Motoboy vê só pedidos prontos
+  if(currentStaff?.role==='motoboy'){renderOrdersMotoboy();return;}
   const active=orders.filter(o=>!['entregue','cancelado'].includes(o.status));
 
   // Contagens por tipo para as abas
@@ -2296,6 +2435,12 @@ async function advOrder(id){
   await db.from('food_orders').update({status:ns,updated_at:new Date().toISOString()}).eq('id',id);
   // Fase 2: dispara notificação Eli
   sendEliNotification(orderSnap,ns);
+  // Etapa 4: Notificar motoboys disponíveis quando pedido fica pronto para delivery
+  if(ns==='pronto'&&(orderSnap.tipo_pedido||'').toLowerCase()==='delivery'){
+    renderLogistica();
+    const el=document.getElementById('log-prontos-count');
+    if(el)el.textContent=orders.filter(o=>o.status==='pronto').length+' pedido(s) aguardando entregador';
+  }
   if(ns==='entregue'){
     const o=orders.splice(idx,1)[0];o.completed_at=new Date().toISOString();history.unshift(o);renderHist();
     const tot=getTotal(o);
@@ -3169,9 +3314,29 @@ async function saveRestaurant(){
   if(!name||!slug||!pass){toast('Preencha nome, slug e senha');return;}
   const btn=document.getElementById('rest-save');btn.textContent='Salvando...';btn.disabled=true;
   const payload={name,slug,password_hash:pass,phone:document.getElementById('rest-phone').value.trim()||null,city:document.getElementById('rest-city').value.trim()||null,whatsapp_number:document.getElementById('rest-wp').value.trim()||null,notes:document.getElementById('rest-notes').value.trim()||null,plan:document.getElementById('rest-plan').value,active:document.getElementById('rest-active-tog').classList.contains('on'),is_founder:false};
-  let error;
+  let error,newCompanyId=id;
   if(id){({error}=await db.from('food_companies').update(payload).eq('id',id));}
-  else{({error}=await db.from('food_companies').insert(payload));}
+  else{
+    const{data:inserted,error:insErr}=await db.from('food_companies').insert(payload).select('id').single();
+    error=insErr;
+    if(!insErr&&inserted){
+      newCompanyId=inserted.id;
+      // Etapa 3: Auto-criar staff dono
+      const senhaGerada=Math.random().toString(36).slice(-8);
+      const{data:roleData}=await db.from('food_roles').select('id').eq('name','dono').single();
+      if(roleData){
+        await db.from('food_staff').insert({
+          company_id:newCompanyId,
+          email:'dono@'+slug,
+          nome_completo:'Gestor '+name,
+          password_hash:senhaGerada,
+          role_id:roleData.id,
+          ativo:true
+        });
+        alert('✅ Acesso criado!\nEmail: dono@'+slug+'\nSenha: '+senhaGerada+'\n\nAnote a senha — ela não será mostrada novamente.');
+      }
+    }
+  }
   btn.textContent='Salvar';btn.disabled=false;
   if(error){toast('Erro: '+(error.message.includes('unique')?'Slug já existe':error.message));return;}
   closeMod('mod-restaurant');
