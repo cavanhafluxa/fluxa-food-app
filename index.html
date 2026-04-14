@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
 :root{
@@ -1225,6 +1226,11 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
               <div><label>Cidade</label><input type="text" id="perfil-city" placeholder="Blumenau, SC"/></div>
             </div>
             <div><label>WhatsApp (instância Eli)</label><input type="text" id="perfil-wp" placeholder="5547999999999"/></div>
+            <div>
+              <label style="display:flex;align-items:center;gap:4px">Webhook N8N <span style="color:var(--red);font-size:10px;font-weight:700">OBRIGATÓRIO</span></label>
+              <input type="url" id="perfil-n8n-webhook" placeholder="https://n8n.seudominio.com/webhook/xxx"/>
+              <div id="perfil-n8n-aviso" style="display:none;margin-top:4px;padding:6px 10px;background:var(--amber-l);border:1px solid var(--amber);border-radius:8px;font-size:11px;color:var(--amber);font-weight:600">⚠️ Configure para que o Eli envie notificações via WhatsApp</div>
+            </div>
             <div><label>Nova senha (deixe em branco para não alterar)</label><input type="password" id="perfil-senha" placeholder="••••••"/></div>
             <div>
               <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px 0">
@@ -1438,6 +1444,21 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
           <div style="display:flex;justify-content:space-between;margin-top:4px">
             <div style="font-size:10px;color:var(--text3)">Total acumulado</div>
             <div id="assin-comm-total" style="font-size:10px;color:var(--text3)">R$ —</div>
+          </div>
+        </div>
+
+        <!-- Fatura do mês atual -->
+        <div class="card" style="margin-bottom:12px;padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="section-lbl">Fatura do mês atual</div>
+            <span id="assin-fatura-mes" style="font-size:11px;color:var(--text3)"></span>
+          </div>
+          <div id="assin-fatura-breakdown" style="font-size:12px">
+            <div style="text-align:center;padding:16px;color:var(--text3)">Carregando...</div>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div class="hl" style="font-size:14px;font-weight:800">Total a pagar</div>
+            <div class="hl" id="assin-fatura-total" style="font-size:18px;font-weight:800;color:var(--accent)">R$ —</div>
           </div>
         </div>
 
@@ -1674,6 +1695,14 @@ let orderTypeFil='todos'; // V2: filtro por tipo de pedido
 let clientesFil='todos';  // Fase 2: filtro de clientes
 // Fase 2: N8N webhook URL (configurar no Perfil ou via co.n8n_webhook)
 const N8N_NOTIFICATIONS_WEBHOOK='https://n8n-n8n.uhcnbw.easypanel.host/webhook/6eec0901-63fe-4c4f-a583-ede7a698386c';
+
+// Converte VAPID public key base64url → Uint8Array para Web Push API
+function urlBase64ToUint8Array(b64u){
+  const pad='='.repeat((4-b64u.length%4)%4);
+  const b64=(b64u+pad).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=atob(b64);
+  return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+}
 
 // V2 — Cores de status conforme spec Fluxa
 const SL={
@@ -2031,7 +2060,17 @@ async function doLogin(){
       .single();
 
     if(staffError||!staff) throw new Error('Email não encontrado');
-    if(staff.password_hash!==pass) throw new Error('Senha incorreta');
+    // Suporte a bcrypt e plain text (migração gradual)
+    let passOk=false;
+    const isHashed=staff.password_hash&&staff.password_hash.startsWith('$2');
+    if(isHashed){
+      passOk=await bcrypt.compare(pass,staff.password_hash);
+    } else {
+      passOk=(staff.password_hash===pass);
+      // Auto-migra para bcrypt na próxima vez
+      if(passOk){const newHash=await bcrypt.hash(pass,10);db.from('food_staff').update({password_hash:newHash}).eq('id',staff.id);}
+    }
+    if(!passOk) throw new Error('Senha incorreta');
     if(!staff.ativo||staff.bloqueado) throw new Error(staff.bloqueado_motivo||'Acesso bloqueado');
     // Etapa 3: Empresa bloqueada — tela específica
     if(staff.company?.blocked){
@@ -2221,6 +2260,29 @@ async function salvarIntegracao(tipo){
   else if(tipo==='meta_ads'){token=(document.getElementById('int-meta-token')?.value||'').trim();account_id=(document.getElementById('int-meta-account')?.value||'').trim();}
   else if(tipo==='google_ads'){token=(document.getElementById('int-google-token')?.value||'').trim();account_id=(document.getElementById('int-google-account')?.value||'').trim();}
   if(!token){toast('Informe o token');return;}
+
+  // Validação de token antes de salvar
+  const statusEl=document.getElementById('int-status-'+tipo);
+  if(statusEl){statusEl.textContent='Validando...';statusEl.style.background='var(--amber-l)';statusEl.style.color='var(--amber)';}
+  let tokenValido=true;
+  try{
+    if(tipo==='meta_ads'){
+      const r=await fetch(`https://graph.facebook.com/v18.0/me?access_token=${encodeURIComponent(token)}`);
+      const j=await r.json();
+      if(j.error){tokenValido=false;toast('Token Meta inválido: '+j.error.message);}
+    } else if(tipo==='google_ads'){
+      // Validação básica de formato (ya29.* = access token OAuth)
+      tokenValido=token.length>10;
+      if(!tokenValido)toast('Token Google Ads parece inválido');
+    }
+    // iFood: sem endpoint público de validação — aceita direto
+  }catch(e){console.warn('[INT] Validação falhou (CORS ou rede):',e);/* continua — pode ser CORS */}
+
+  if(!tokenValido){
+    if(statusEl){statusEl.textContent='inativo';statusEl.style.background='var(--bg3)';statusEl.style.color='var(--text3)';}
+    return;
+  }
+
   const{error}=await db.from('food_integrations').upsert({
     company_id:co.id,tipo,token,account_id:account_id||null,status:'ativo',updated_at:new Date().toISOString()
   },{onConflict:'company_id,tipo'});
@@ -2293,6 +2355,41 @@ async function loadAssinatura(){
   const bar=document.getElementById('assin-comm-bar');
   if(bar&&allTot>0)setTimeout(()=>{bar.style.width=Math.min(100,mesTot/allTot*100).toFixed(0)+'%';},100);
 
+  // ── Fatura do mês atual (breakdown detalhado) ──
+  const mesLabel=hoje.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const iniDate=new Date(hoje.getFullYear(),hoje.getMonth(),1);
+  const fimDate=new Date(hoje.getFullYear(),hoje.getMonth()+1,0,23,59,59);
+  const mesEl=document.getElementById('assin-fatura-mes');
+  if(mesEl)mesEl.textContent=mesLabel.charAt(0).toUpperCase()+mesLabel.slice(1);
+  const{data:pedidosMes}=await db.from('food_orders')
+    .select('id,order_number,total,created_at,status')
+    .eq('company_id',co.id)
+    .eq('status','entregue')
+    .gte('created_at',iniDate.toISOString())
+    .lte('created_at',fimDate.toISOString())
+    .order('created_at',{ascending:false});
+  const mensalidade=co.stripe_price_monthly||1500;
+  const pctF=co.stripe_commission_pct||10;
+  const commMensal=(pedidosMes||[]).reduce((a,p)=>a+Number(p.total||0)*pctF/100,0);
+  const totalFatura=mensalidade+commMensal;
+  const fbd=document.getElementById('assin-fatura-breakdown');
+  const ftot=document.getElementById('assin-fatura-total');
+  if(fbd){
+    const linhas=(pedidosMes||[]).slice(0,8).map(p=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">#${p.order_number} · ${new Date(p.created_at).toLocaleDateString('pt-BR')}</span><span>${fmtP(Number(p.total||0)*pctF/100)}</span></div>`).join('');
+    const mais=(pedidosMes||[]).length>8?`<div style="font-size:10px;color:var(--text3);text-align:center;padding:4px">+ ${(pedidosMes||[]).length-8} pedidos</div>`:'';
+    fbd.innerHTML=`
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:600">Mensalidade plano ${planLabels[co.stripe_plan]||co.stripe_plan||'Start'}</span>
+        <span style="font-weight:600">${fmtP(mensalidade)}</span>
+      </div>
+      <div style="padding:4px 0 2px;font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.04em">Comissão ${pctF}% — ${(pedidosMes||[]).length} pedido(s)</div>
+      ${linhas}${mais}
+      <div style="display:flex;justify-content:space-between;padding:6px 0 2px;font-weight:600">
+        <span>Subtotal comissão</span><span style="color:var(--amber)">${fmtP(commMensal)}</span>
+      </div>`;
+  }
+  if(ftot)ftot.textContent=fmtP(totalFatura);
+
   // Faturas
   const{data:invs}=await db.from('food_stripe_invoices').select('*').eq('company_id',co.id).order('created_at',{ascending:false}).limit(10);
   const inv=document.getElementById('assin-invoices');
@@ -2346,12 +2443,26 @@ async function registerPushNotifications(){
     const reg=await navigator.serviceWorker.ready;
     const perm=await Notification.requestPermission();
     if(perm!=='granted'){console.log('[PUSH] Permissão negada');return;}
-    // VAPID key pública deve ser configurada aqui quando disponível
-    const VAPID_PUBLIC_KEY='';
-    if(!VAPID_PUBLIC_KEY){console.log('[PUSH] VAPID key não configurada — skip');return;}
-    const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:VAPID_PUBLIC_KEY});
+    const VAPID_PUBLIC_KEY='BO0MNhPJHveGMcaT8aIzVM_3gnFrr4fhN5whwRfq4YNNEe98_wri2OFqD7AwYa4Q969Ihq1rYNvZmmYjhvCFVj0';
+    // Verifica se já existe subscription ativa
+    const existingSub=await reg.pushManager.getSubscription();
+    const sub=existingSub||await reg.pushManager.subscribe({
+      userVisibleOnly:true,
+      applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    // Salva subscription no Supabase para disparo server-side
+    if(co&&currentStaff){
+      await db.from('food_push_subscriptions').upsert({
+        company_id:co.id,
+        staff_id:currentStaff.id,
+        endpoint:sub.endpoint,
+        p256dh:btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))),
+        auth:btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth')))),
+        updated_at:new Date().toISOString()
+      },{onConflict:'staff_id'});
+    }
     console.log('[PUSH] Inscrito:',sub.endpoint);
-    toast('🔔 Notificações ativadas!');
+    if(!existingSub)toast('🔔 Notificações push ativadas!');
   }catch(e){console.warn('[PUSH]',e);}
 }
 
@@ -2535,7 +2646,7 @@ async function motoboyEntregar(orderId){
   sendEliNotification(o,'entregue');
   const tot=getTotal(o);
   const{count}=await db.from('food_commission_log').select('id',{count:'exact',head:true}).eq('order_id',orderId);
-  if(!count||count===0)await db.from('food_commission_log').insert({company_id:co.id,order_id:orderId,order_total:tot,commission_pct:10});
+  if(!count||count===0){const pct=co.stripe_commission_pct||10;await db.from('food_commission_log').insert({company_id:co.id,order_id:orderId,order_total:tot,commission_pct:pct,commission_value:parseFloat((tot*pct/100).toFixed(2))});}
   const idx=orders.findIndex(x=>x.id===orderId);
   if(idx!==-1){const removed=orders.splice(idx,1)[0];removed.completed_at=new Date().toISOString();history.unshift(removed);}
   toast('Entrega confirmada!');
@@ -2699,9 +2810,10 @@ async function sendEliNotification(order,newStatus){
   // Marca como enviada primeiro (evita duplicatas)
   const updatedSent={...sent,[msgInfo.key]:true};
   await db.from('food_orders').update({notifications_sent:updatedSent}).eq('id',order.id);
-  // Dispara webhook N8N (se configurado)
+  // Dispara webhook N8N — usa URL do restaurante ou fallback compartilhado
   const webhook=co.n8n_webhook||N8N_NOTIFICATIONS_WEBHOOK;
   if(!webhook)return;
+  if(!co.n8n_webhook){console.warn('[ELI] Usando webhook N8N compartilhado. Configure co.n8n_webhook no Perfil para produção multi-tenant.');}
   try{
     await fetch(webhook,{
       method:'POST',
@@ -2744,7 +2856,7 @@ async function advOrder(id){
     const o=orders.splice(idx,1)[0];o.completed_at=new Date().toISOString();history.unshift(o);renderHist();
     const tot=getTotal(o);
     const{count}=await db.from('food_commission_log').select('id',{count:'exact',head:true}).eq('order_id',o.id);
-    if(!count||count===0)await db.from('food_commission_log').insert({company_id:co.id,order_id:o.id,order_total:tot,commission_pct:10});
+    if(!count||count===0){const pct=co.stripe_commission_pct||10;await db.from('food_commission_log').insert({company_id:co.id,order_id:o.id,order_total:tot,commission_pct:pct,commission_value:parseFloat((tot*pct/100).toFixed(2))});}
   }
   renderOrders();
 }
@@ -3028,7 +3140,11 @@ function preencherPerfil(data){
   document.getElementById('perfil-tel').value=data.phone||'';
   document.getElementById('perfil-city').value=data.city||'';
   document.getElementById('perfil-wp').value=data.whatsapp_number||'';
-  
+  const n8nField=document.getElementById('perfil-n8n-webhook');
+  if(n8nField)n8nField.value=data.n8n_webhook||'';
+  const n8nAviso=document.getElementById('perfil-n8n-aviso');
+  if(n8nAviso)n8nAviso.style.display=data.n8n_webhook?'none':'block';
+
   document.getElementById('perfil-is-open').className=data.is_open!==false?'tog on':'tog off';
   initTemplatePills(data.theme_template||'light');
   const togPC=document.getElementById('tog-promo-card');
@@ -3081,6 +3197,7 @@ async function salvarTudo(){
       phone:document.getElementById('perfil-tel').value.trim(),
       city:document.getElementById('perfil-city').value.trim(),
       whatsapp_number:document.getElementById('perfil-wp').value.trim(),
+      n8n_webhook:document.getElementById('perfil-n8n-webhook')?.value.trim()||null,
       theme_template:selectedTemplate,
       is_open:document.getElementById('perfil-is-open').classList.contains('on')
     };
@@ -3319,7 +3436,7 @@ async function salvarColaborador(){
   if(!roleData){toast('Role não encontrado');return;}
 
   const payload={nome_completo:nome,email,telefone:tel||null,role_id:roleData.id,ativo,bloqueado:false,updated_at:new Date().toISOString()};
-  if(senha)payload.password_hash=senha;
+  if(senha)payload.password_hash=await bcrypt.hash(senha,10);
 
   let error;
   if(editId){
@@ -4266,6 +4383,29 @@ async function emitirNFeManual(){
     toast('NF-e criada — webhook falhou: '+e.message);
   }
   await loadFiscal();
+  // Inicia polling de status para feedback em tempo real
+  pollNFeStatus(doc.id);
+}
+
+// Polling de status NF-e — verifica a cada 5s por até 2 minutos
+async function pollNFeStatus(nfId){
+  const maxTentativas=24; // 24 × 5s = 2 min
+  let tentativa=0;
+  const STATUS_LABELS={pendente:'⏳ Pendente',autorizada:'✅ Autorizada',cancelada:'⚠️ Cancelada',rejeitada:'❌ Rejeitada'};
+  const interval=setInterval(async()=>{
+    tentativa++;
+    if(tentativa>maxTentativas){clearInterval(interval);return;}
+    const{data:doc}=await db.from('food_fiscal_docs').select('status,protocolo,ultimo_erro').eq('id',nfId).single();
+    if(!doc)return;
+    if(doc.status!=='pendente'){
+      clearInterval(interval);
+      const msg=STATUS_LABELS[doc.status]||doc.status;
+      if(doc.status==='autorizada'){toast('NF-e '+msg+' — Protocolo: '+(doc.protocolo||''));}
+      else if(doc.status==='rejeitada'){toast('NF-e '+msg+': '+(doc.ultimo_erro||'Verifique os dados'));}
+      else{toast('NF-e '+msg);}
+      await loadFiscal(); // atualiza a tabela
+    }
+  },5000);
 }
 
 // Etapa 8: Emissão automática ao entregar pedido
