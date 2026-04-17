@@ -1,5 +1,5 @@
-// Flüxa Kitchen SW — Etapa 7 (PWA Polimento)
-const CACHE = 'fluxa-kitchen-v7';
+// Flüxa Kitchen SW — Etapa 8 (Resiliência)
+const CACHE = 'fluxa-kitchen-v8';
 const ASSETS = [
   '/',
   '/index.html',
@@ -12,7 +12,7 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS.filter(a => !a.startsWith('http'))))
+    caches.open(CACHE).then(c => c.addAll(ASSETS.filter(a => a.startsWith('http'))))
   );
   self.skipWaiting();
 });
@@ -29,10 +29,10 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = e.request.url;
 
-  // Ignora esquemas não suportados (ex: extensões chrome)
-  if (!url.startsWith('http')) return;
+  // Ignora ABSOLUTAMENTE tudo que não for http/https (extensões, data:, chrome-extension:, etc)
+  if (!url || !url.startsWith('http')) return;
 
-  // Supabase: sempre rede, sem cache
+  // Supabase: sempre rede, nunca cacheia (evita 406 e problemas de cabeçalho)
   if (url.includes('supabase.co')) return;
 
   // Navegação (HTML): network-first com fallback
@@ -40,8 +40,12 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => {
+               try { c.put(e.request, clone); } catch(err) {} 
+            });
+          }
           return res;
         })
         .catch(() => caches.match('/index.html'))
@@ -49,29 +53,21 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Fontes: cache-first
-  if (url.includes('fonts.googleapis') || url.includes('fonts.gstatic')) {
+  // Assets estáticos (Fontes, CDNs): cache-first
+  if (url.includes('fonts.googleapis') || url.includes('fonts.gstatic') || url.includes('jsdelivr') || url.includes('unpkg')) {
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached;
         return fetch(e.request).then(res => {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => {
+               try { c.put(e.request, clone); } catch(err) {}
+            });
+          }
           return res;
         });
       })
-    );
-    return;
-  }
-
-  // CDN scripts críticos (supabase, bcrypt): network-first com fallback no cache
-  if (url.includes('jsdelivr') || url.includes('unpkg')) {
-    e.respondWith(
-      fetch(e.request).then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return res;
-      }).catch(() => caches.match(e.request))
     );
     return;
   }
@@ -80,30 +76,34 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => {
       const fresh = fetch(e.request).then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => {
+             try { c.put(e.request, clone); } catch(err) {}
+          });
+        }
         return res;
-      });
+      }).catch(() => null);
       return cached || fresh;
     })
   );
 });
 
-// Push Notifications (Etapa 7)
+// Mensagens em background
 self.addEventListener('push', e => {
-  const data = e.data ? e.data.json() : { title: 'Flüxa Kitchen', body: 'Novo pedido recebido!' };
+  const data = e.data ? e.data.json() : { title: 'Flüxa Kitchen', body: 'Novo pedido!' };
   e.waitUntil(
-    self.registration.showNotification(data.title || 'Flüxa Kitchen', {
-      body: data.body || 'Novo pedido!',
+    self.registration.showNotification(data.title, {
+      body: data.body,
       icon: '/icon-192.png',
       badge: '/icon-192.png',
-      vibrate: [200, 100, 200],
-      data: { url: data.url || '/' }
+      vibrate: [200, 100, 200]
     })
   );
 });
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(clients.openWindow(e.notification.data?.url || '/'));
+  e.waitUntil(clients.openWindow('/'));
 });
+

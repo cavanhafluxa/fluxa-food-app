@@ -2049,27 +2049,28 @@ function initFoodCascade(){
 }
 initFoodCascade(); // começa a animação em background suavemente
 
-// ── LOGIN ──
+// ── UI HELPERS ──
 function show(id){
   console.log('[UI] Mostrando tela:', id);
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('on');
-    s.style.display = 'none';
+  const screens = ['s-loading', 's-login', 'app', 'app-founder'];
+  screens.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) {
+      el.classList.remove('on');
+      el.style.display = 'none';
+    }
   });
-  document.getElementById('app').classList.remove('on');
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('app-founder').classList.remove('on');
-  document.getElementById('app-founder').style.display = 'none';
 
-  const target = (id === 'app') ? document.getElementById('app') : 
-                 (id === 'founder') ? document.getElementById('app-founder') : 
-                 document.getElementById(id);
-
+  const target = document.getElementById(id);
   if (target) {
     target.classList.add('on');
-    target.style.display = (id === 'app' || id === 'founder') ? 'flex' : 'flex';
-    // Se for o app, garante a estrutura de flex-column
+    // Flex para garantir centralização ou layout sidenav
+    target.style.display = 'flex';
     if(id === 'app') target.style.flexDirection = 'column';
+  } else {
+    console.warn('[UI] Tela não encontrada:', id);
+    // Fallback para login se a tela alvo sumiu
+    if(id !== 's-login') show('s-login');
   }
 }
 
@@ -2087,25 +2088,30 @@ async function doLogin(){
   show('s-loading');
 
   try{
-    const { data: staff, error: staffError } = await db
+    console.log('[LOGIN] Tentando:', email);
+    const { data: staff, error: staffError, status } = await db
       .from('food_users')
       .select('*, company:company_id(*)')
       .eq('email', email)
       .single();
 
-    if (staffError || !staff) throw new Error('Email não encontrado');
+    if (staffError) {
+       console.error('[LOGIN] Erro Supabase:', staffError, 'Status:', status);
+       if (status === 406) throw new Error('Erro de sincronização (406). Tente novamente em instantes.');
+       throw new Error('Email não encontrado ou erro de conexão');
+    }
+    
+    if (!staff) throw new Error('Usuário não localizado');
     
     const passOk = (staff.password === pass);
     if (!passOk) throw new Error('Senha incorreta');
     if (!staff.active) throw new Error('Acesso bloqueado');
 
-    // Etapa 3: Empresa bloqueada — tela específica
+    // Etapa 3: Empresa bloqueada
     if(staff.company?.blocked){
       show('s-login');
       errEl.innerHTML='<b>Conta suspensa</b><br><span style="font-size:11px">'+(staff.company.blocked_reason||'Entre em contato com o suporte Flüxa.')+'</span>';
       errEl.style.display='block';
-      btn.innerHTML='ENTRAR <span class="ms" style="font-size:18px;margin-left:8px;color:#000">arrow_forward</span>';
-      btn.disabled=false;
       return;
     }
 
@@ -2119,7 +2125,6 @@ async function doLogin(){
     };
     localStorage.setItem('kiosque_session', JSON.stringify(session));
 
-    // fire-and-forget: last_login + audit log
     db.from('food_users').update({ last_login: new Date().toISOString() }).eq('id', staff.id);
     db.from('food_activity_logs').insert({ 
       company_id: staff.company_id, 
@@ -2138,7 +2143,7 @@ async function doLogin(){
     setupRoleBasedAccess(currentStaff.role);
 
   }catch(err){
-    console.error('[LOGIN]',err);
+    console.error('[LOGIN] Falha:', err);
     show('s-login');
     errEl.textContent=err.message||'Credenciais inválidas';
     errEl.style.display='block';
@@ -2148,7 +2153,9 @@ async function doLogin(){
   }
 }
 
+
 async function bootApp(data){
+  co = data; // Garante que a variável global co (company) está setada
   document.getElementById('tp-name').textContent=data.name;
   document.getElementById('sn-name').textContent=data.name;
   const devMode=new URLSearchParams(location.search).get('dev')==='1';
@@ -2160,17 +2167,40 @@ async function bootApp(data){
     document.getElementById('perfil-avatar-icon').style.display='none';
   }
   preencherPerfil(data);
-  await loadOrders();await loadMenu();await renderStats();renderHist();startRT();startTick();
-  // Etapa 5: carregar integrações
-  loadIntegracoes();
+
+  // BOOT PARALELO (Otimização de Performance)
+  console.log('[BOOT] Carregando dados iniciais em paralelo...');
+  const tasks = [
+    loadOrders().catch(e => console.warn('[BOOT] Erro loadOrders:', e)),
+    loadMenu().catch(e => console.warn('[BOOT] Erro loadMenu:', e)),
+    renderStats().catch(e => console.warn('[BOOT] Erro renderStats:', e)),
+    loadIntegracoes().catch(e => console.warn('[BOOT] Erro loadIntegracoes:', e))
+  ];
+
+  await Promise.all(tasks);
+
+  renderHist();
+  startRT();
+  startTick();
+  
   // Etapa 6: inadimplência
   if(data.inadimplente||['past_due','unpaid'].includes(data.stripe_status)){showInadimplenciaBanner(data);}
+  
   // Etapa 7: carregar preferência de tema do staff
   if(currentStaff?.preferences?.theme){
     const t=currentStaff.preferences.theme;
-    if(t==='light'){document.body.setAttribute('data-theme','light');localStorage.setItem('theme','light');const lbl=document.getElementById('theme-lbl');const ic=document.getElementById('theme-ic');if(lbl)lbl.textContent='DARK';if(ic)ic.textContent='dark_mode';}
-    else{document.body.removeAttribute('data-theme');localStorage.removeItem('theme');}
+    if(t==='light'){
+      document.body.setAttribute('data-theme','light');
+      localStorage.setItem('theme','light');
+      const lbl=document.getElementById('theme-lbl');
+      const ic=document.getElementById('theme-ic');
+      if(lbl)lbl.textContent='DARK';if(ic)ic.textContent='dark_mode';
+    } else {
+      document.body.removeAttribute('data-theme');
+      localStorage.removeItem('theme');
+    }
   }
+  
   // Etapa 7: registrar push notifications
   registerPushNotifications();
 }
@@ -3479,11 +3509,21 @@ async function salvarColaborador(){
   if(senha)payload.password_hash=await bcrypt.hash(senha,10);
 
   let error;
+  const userPayload = {
+    name: nome,
+    email,
+    phone: tel || null,
+    role: roleNome === 'dono' ? 'gestor' : roleNome,
+    active: ativo,
+    updated_at: new Date().toISOString()
+  };
+  if(senha) userPayload.password = senha; // Nota: o app parece usar 'password' ou 'password_hash' variando. food_users usa 'password'.
+
   if(editId){
-    ({error}=await db.from('food_staff').update(payload).eq('id',editId));
+    ({error}=await db.from('food_users').update(userPayload).eq('id',editId));
   }else{
-    payload.company_id=co.id;
-    ({error}=await db.from('food_staff').insert(payload));
+    userPayload.company_id=co.id;
+    ({error}=await db.from('food_users').insert(userPayload));
   }
   if(error){toast('Erro: '+error.message);return;}
   closeMod('mod-colab');
@@ -4881,5 +4921,6 @@ async function deletePromo(){
     <button class="btn-d" id="pm-del" style="width:100%;margin-top:8px;display:none" onclick="deletePromo()">Excluir promoção</button>
   </div>
 </div>
+<div style="position:fixed;bottom:10px;right:10px;font-size:10px;color:rgba(255,255,255,0.2);pointer-events:none;z-index:9999">v1.0.8-debug</div>
 </body>
 </html>
