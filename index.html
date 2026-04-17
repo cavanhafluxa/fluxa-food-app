@@ -1952,11 +1952,22 @@ function openCliente(c){
 
 // BOOT ÚNICO — offline-first: usa cache local imediatamente, valida em background
 (async () => {
+  const safetyTimeout = setTimeout(() => {
+    console.warn('[BOOT] Limite de tempo excedido. Forçando interface.');
+    const loader = document.getElementById('s-loading');
+    if (loader && loader.classList.contains('on')) {
+      loader.innerHTML += '<div style="position:fixed;bottom:80px;color:rgba(255,255,255,0.4);font-size:10px">Conexão instável... Redirecionando...</div>';
+      setTimeout(() => show('s-login'), 2000);
+    }
+  }, 12000);
+
   try {
     console.log('[BOOT] Verificando sessão...');
     const saved = localStorage.getItem('kiosque_session');
+    
     if (!saved) {
-      console.log('[BOOT] Nenhuma sessão encontrada, redirecionando para login');
+      console.log('[BOOT] Sem sessão, indo para login');
+      clearTimeout(safetyTimeout);
       show('s-login');
       return;
     }
@@ -1964,7 +1975,7 @@ function openCliente(c){
     const session = JSON.parse(saved);
     show('s-loading');
 
-    console.log('[BOOT] Carregando dados do usuário e empresa...');
+    console.log('[BOOT] Validando sessão no Supabase...');
     const { data: staff, error } = await db
       .from('food_users')
       .select('*, company:company_id(*)')
@@ -1972,19 +1983,24 @@ function openCliente(c){
       .single();
 
     if (error || !staff || !staff.active) {
-      console.error('[BOOT] Falha na sessão:', error || 'Usuário inativo ou não encontrado');
+      console.error('[BOOT] Sessão expirada ou usuário inativo');
       throw new Error('Sessão inválida');
     }
 
-    console.log('[BOOT] Sessão válida, iniciando aplicativo...');
+    console.log('[BOOT] Sessão OK! Iniciando app...');
     currentStaff = staff;
     currentStaff.role = (staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario');
-    bootApp(staff.company);
+    
+    await bootApp(staff.company);
+    setupRoleBasedAccess(currentStaff.role);
+    show('app');
 
   } catch(err) {
-    console.error('[BOOT] Erro Fatal:', err);
+    console.error('[BOOT] Erro:', err);
     localStorage.removeItem('kiosque_session');
     show('s-login');
+  } finally {
+    clearTimeout(safetyTimeout);
   }
 })();
 

@@ -1,5 +1,5 @@
 // Flüxa Kitchen SW — Etapa 7 (PWA Polimento)
-const CACHE = 'fluxa-kitchen-v5';
+const CACHE = 'fluxa-kitchen-v6';
 const ASSETS = [
   '/',
   '/index.html',
@@ -77,7 +77,8 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => {
       const fresh = fetch(e.request).then(res => {
-        caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
         return res;
       });
       return cached || fresh;
