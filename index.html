@@ -1961,6 +1961,14 @@ function openCliente(c){
 
   // Revalidar staff no backend
   show('s-loading');
+
+  // Timeout de segurança: se Supabase não responder em 12s, vai para login
+  const bootTimer = setTimeout(() => {
+    localStorage.removeItem('kiosque_session');
+    show('s-login');
+    toast('Sem conexão. Faça login novamente.');
+  }, 12000);
+
   try {
     const { data: staff, error } = await db
       .from('food_staff')
@@ -1968,6 +1976,7 @@ function openCliente(c){
       .eq('id', session.staffId)
       .single();
 
+    clearTimeout(bootTimer);
     if (error || !staff || !staff.ativo || staff.bloqueado) throw new Error('Sessão inválida');
 
     currentStaff = staff;
@@ -1979,6 +1988,7 @@ function openCliente(c){
     setupRoleBasedAccess(currentStaff.role);
 
   } catch(err) {
+    clearTimeout(bootTimer);
     console.error('[BOOT]', err);
     localStorage.removeItem('kiosque_session');
     show('s-login');
