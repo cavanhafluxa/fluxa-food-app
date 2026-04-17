@@ -1684,6 +1684,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
 <script>
 const SB_URL='https://uzttjedryajsmngvpaqu.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6dHRqZWRyeWFqc21uZ3ZwYXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5OTIwMDIsImV4cCI6MjA4ODU2ODAwMn0.Z965K_V6FRceBL1jP7zMls4QVYbpjPP9JcoRHUkAwUg';
+if(typeof supabase==='undefined'){document.getElementById('s-loading').innerHTML='<div style="text-align:center;padding:24px"><p style="color:#fff;font-size:14px;margin-bottom:16px">Erro ao carregar recursos.<br>Recarregue a página.</p><button onclick="location.reload(true)" style="background:#C41C3B;color:#fff;border:none;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer">Recarregar</button></div>';throw new Error('supabase CDN não carregou');}
 const db=supabase.createClient(SB_URL,SB_KEY);
 
 let co=null,isFounder=false,eliOn=true,menuFil='todos',histFil='todos',editId=null;
