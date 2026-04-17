@@ -1,5 +1,5 @@
 // Flüxa Kitchen SW — Etapa 7 (PWA Polimento)
-const CACHE = 'fluxa-kitchen-v6';
+const CACHE = 'fluxa-kitchen-v7';
 const ASSETS = [
   '/',
   '/index.html',
@@ -28,6 +28,9 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = e.request.url;
+
+  // Ignora esquemas não suportados (ex: extensões chrome)
+  if (!url.startsWith('http')) return;
 
   // Supabase: sempre rede, sem cache
   if (url.includes('supabase.co')) return;

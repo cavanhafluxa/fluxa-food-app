@@ -532,6 +532,7 @@ if(localStorage.getItem('theme')==='light'){document.body.setAttribute('data-the
     <span class="hl" style="font-size:22px;font-weight:800;letter-spacing:-0.03em">Flüxa Kitchen</span>
   </div>
   <div class="spin"></div>
+  <div style="font-size:8px;color:rgba(255,255,255,0.1);position:fixed;bottom:12px;font-family:monospace">v1.0.7-debug</div>
 </div>
 
 <!-- LOGIN -->
@@ -2050,12 +2051,26 @@ initFoodCascade(); // começa a animação em background suavemente
 
 // ── LOGIN ──
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  console.log('[UI] Mostrando tela:', id);
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('on');
+    s.style.display = 'none';
+  });
   document.getElementById('app').classList.remove('on');
+  document.getElementById('app').style.display = 'none';
   document.getElementById('app-founder').classList.remove('on');
-  if(id==='app')document.getElementById('app').classList.add('on');
-  else if(id==='founder')document.getElementById('app-founder').classList.add('on');
-  else{const el=document.getElementById(id);if(el)el.classList.add('on');}
+  document.getElementById('app-founder').style.display = 'none';
+
+  const target = (id === 'app') ? document.getElementById('app') : 
+                 (id === 'founder') ? document.getElementById('app-founder') : 
+                 document.getElementById(id);
+
+  if (target) {
+    target.classList.add('on');
+    target.style.display = (id === 'app' || id === 'founder') ? 'flex' : 'flex';
+    // Se for o app, garante a estrutura de flex-column
+    if(id === 'app') target.style.flexDirection = 'column';
+  }
 }
 
 // ── LOGIN (Etapa 2: email + role) ──
