@@ -1952,45 +1952,37 @@ function openCliente(c){
 
 // BOOT ÚNICO — offline-first: usa cache local imediatamente, valida em background
 (async () => {
-  // Etapa 2: Checar sessão de staff (kiosque_session)
-  const saved = localStorage.getItem('kiosque_session');
-  if (!saved) { show('s-login'); return; }
-
-  let session;
-  try { session = JSON.parse(saved); } catch(e) { localStorage.removeItem('kiosque_session'); show('s-login'); return; }
-  if (!session.staffId || !session.companyId) { localStorage.removeItem('kiosque_session'); show('s-login'); return; }
-
-  // Revalidar staff no backend
-  show('s-loading');
-
-  // Timeout de segurança: se Supabase não responder em 12s, vai para login
-  const bootTimer = setTimeout(() => {
-    localStorage.removeItem('kiosque_session');
-    show('s-login');
-    toast('Sem conexão. Faça login novamente.');
-  }, 12000);
-
   try {
+    console.log('[BOOT] Verificando sessão...');
+    const saved = localStorage.getItem('kiosque_session');
+    if (!saved) {
+      console.log('[BOOT] Nenhuma sessão encontrada, redirecionando para login');
+      show('s-login');
+      return;
+    }
+
+    const session = JSON.parse(saved);
+    show('s-loading');
+
+    console.log('[BOOT] Carregando dados do usuário e empresa...');
     const { data: staff, error } = await db
-      .from('food_staff')
-      .select('*, food_roles(name), company:company_id(*)')
+      .from('food_users')
+      .select('*, company:company_id(*)')
       .eq('id', session.staffId)
       .single();
 
-    clearTimeout(bootTimer);
-    if (error || !staff || !staff.ativo || staff.bloqueado) throw new Error('Sessão inválida');
+    if (error || !staff || !staff.active) {
+      console.error('[BOOT] Falha na sessão:', error || 'Usuário inativo ou não encontrado');
+      throw new Error('Sessão inválida');
+    }
 
+    console.log('[BOOT] Sessão válida, iniciando aplicativo...');
     currentStaff = staff;
-    currentStaff.role = staff.food_roles?.name || 'funcionario';
-    co = staff.company;
-
-    show('app');
-    await bootApp(staff.company);
-    setupRoleBasedAccess(currentStaff.role);
+    currentStaff.role = (staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario');
+    bootApp(staff.company);
 
   } catch(err) {
-    clearTimeout(bootTimer);
-    console.error('[BOOT]', err);
+    console.error('[BOOT] Erro Fatal:', err);
     localStorage.removeItem('kiosque_session');
     show('s-login');
   }
@@ -2064,25 +2056,18 @@ async function doLogin(){
   show('s-loading');
 
   try{
-    const{data:staff,error:staffError}=await db
-      .from('food_staff')
-      .select('*, food_roles(name), company:company_id(*)')
-      .eq('email',email)
+    const { data: staff, error: staffError } = await db
+      .from('food_users')
+      .select('*, company:company_id(*)')
+      .eq('email', email)
       .single();
 
-    if(staffError||!staff) throw new Error('Email não encontrado');
-    // Suporte a bcrypt e plain text (migração gradual)
-    let passOk=false;
-    const isHashed=staff.password_hash&&staff.password_hash.startsWith('$2');
-    if(isHashed){
-      passOk=await bcrypt.compare(pass,staff.password_hash);
-    } else {
-      passOk=(staff.password_hash===pass);
-      // Auto-migra para bcrypt na próxima vez
-      if(passOk){const newHash=await bcrypt.hash(pass,10);db.from('food_staff').update({password_hash:newHash}).eq('id',staff.id);}
-    }
-    if(!passOk) throw new Error('Senha incorreta');
-    if(!staff.ativo||staff.bloqueado) throw new Error(staff.bloqueado_motivo||'Acesso bloqueado');
+    if (staffError || !staff) throw new Error('Email não encontrado');
+    
+    const passOk = (staff.password === pass);
+    if (!passOk) throw new Error('Senha incorreta');
+    if (!staff.active) throw new Error('Acesso bloqueado');
+
     // Etapa 3: Empresa bloqueada — tela específica
     if(staff.company?.blocked){
       show('s-login');
@@ -2093,15 +2078,27 @@ async function doLogin(){
       return;
     }
 
-    const session={staffId:staff.id,email:staff.email,name:staff.nome_completo,role:staff.food_roles?.name||'funcionario',companyId:staff.company_id,lastLogin:new Date().toISOString()};
-    localStorage.setItem('kiosque_session',JSON.stringify(session));
+    const session = { 
+      staffId: staff.id, 
+      email: staff.email, 
+      name: staff.name, 
+      role: (staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario'), 
+      companyId: staff.company_id, 
+      lastLogin: new Date().toISOString() 
+    };
+    localStorage.setItem('kiosque_session', JSON.stringify(session));
 
     // fire-and-forget: last_login + audit log
-    db.from('food_staff').update({last_login:new Date().toISOString()}).eq('id',staff.id);
-    db.from('food_staff_activity_log').insert({company_id:staff.company_id,staff_id:staff.id,action:'login',ip_address:'browser',user_agent:navigator.userAgent});
+    db.from('food_users').update({ last_login: new Date().toISOString() }).eq('id', staff.id);
+    db.from('food_activity_logs').insert({ 
+      company_id: staff.company_id, 
+      user_id: staff.id, 
+      action: 'login', 
+      details: { ip: 'browser', ua: navigator.userAgent } 
+    });
 
     currentStaff=staff;
-    currentStaff.role=staff.food_roles?.name||'funcionario';
+    currentStaff.role=(staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario');
     co=staff.company;
 
     errEl.style.display='none';
@@ -2150,7 +2147,12 @@ async function bootApp(data){
 function doLogout(){
   // Log de auditoria antes de limpar
   if(currentStaff){
-    db.from('food_staff_activity_log').insert({company_id:currentStaff.company_id,staff_id:currentStaff.id,action:'logout',ip_address:'browser',user_agent:navigator.userAgent});
+    db.from('food_activity_logs').insert({ 
+      company_id: currentStaff.company_id, 
+      user_id: currentStaff.id, 
+      action: 'logout', 
+      details: { ip: 'browser', ua: navigator.userAgent } 
+    });
   }
   localStorage.removeItem('kiosque_session');
   if(rtSub){db.removeChannel(rtSub);rtSub=null;}
@@ -3308,11 +3310,11 @@ const ROLE_ICONS={dono:'admin_panel_settings',funcionario:'person',motoboy:'two_
 function preencherPerfilStaff(){
   if(!currentStaff)return;
   const role=currentStaff.role||'funcionario';
-  document.getElementById('staff-nome-display').textContent=currentStaff.nome_completo||'—';
+  document.getElementById('staff-nome-display').textContent=currentStaff.name||'—';
   document.getElementById('staff-email-display').textContent=currentStaff.email||'—';
   document.getElementById('staff-role-display').textContent=ROLE_LABELS[role]||role;
   document.getElementById('staff-role-icon').textContent=ROLE_ICONS[role]||'badge';
-  document.getElementById('staff-nome-inp').value=currentStaff.nome_completo||'';
+  document.getElementById('staff-nome-inp').value=currentStaff.name||'';
   if(currentStaff.avatar_url){
     document.getElementById('staff-avatar-img').src=currentStaff.avatar_url;
     document.getElementById('staff-avatar-img').style.display='block';
@@ -3333,11 +3335,11 @@ async function salvarPerfilStaff(){
   const nome=document.getElementById('staff-nome-inp').value.trim();
   const senha=document.getElementById('staff-senha-inp').value.trim();
   if(!nome){toast('Nome obrigatório');return;}
-  const payload={nome_completo:nome,updated_at:new Date().toISOString()};
-  if(senha)payload.password_hash=senha;
-  const{error}=await db.from('food_staff').update(payload).eq('id',currentStaff.id);
+  const payload={name:nome,updated_at:new Date().toISOString()};
+  if(senha)payload.password=senha;
+  const{error}=await db.from('food_users').update(payload).eq('id',currentStaff.id);
   if(error){toast('Erro: '+error.message);return;}
-  currentStaff.nome_completo=nome;
+  currentStaff.name=nome;
   document.getElementById('staff-nome-display').textContent=nome;
   document.getElementById('staff-senha-inp').value='';
   toast('Perfil atualizado!');
@@ -3354,7 +3356,7 @@ async function uploadAvatarStaff(inp){
     if(!error&&up){const{data:ud}=db.storage.from(bucket).getPublicUrl(fname);url=ud.publicUrl+'?t='+Date.now();break;}
   }
   if(!url){toast('Erro ao enviar foto');return;}
-  await db.from('food_staff').update({avatar_url:url}).eq('id',currentStaff.id);
+  await db.from('food_users').update({avatar_url:url}).eq('id',currentStaff.id);
   currentStaff.avatar_url=url;
   document.getElementById('staff-avatar-img').src=url;
   document.getElementById('staff-avatar-img').style.display='block';
@@ -3372,7 +3374,7 @@ async function loadColaboradores(){
   if(!co)return;
   const list=document.getElementById('colab-list');
   list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3)">Carregando...</div>';
-  const{data,error}=await db.from('food_staff').select('*,food_roles(name)').eq('company_id',co.id).order('nome_completo');
+  const{data,error}=await db.from('food_users').select('*').eq('company_id',co.id).order('name');
   if(error||!data){list.innerHTML='<div style="text-align:center;padding:20px;color:#EF4444">Erro ao carregar</div>';return;}
   staffList=data;
   if(!data.length){
@@ -3380,14 +3382,14 @@ async function loadColaboradores(){
     return;
   }
   list.innerHTML=data.map(s=>{
-    const role=s.food_roles?.name||'funcionario';
-    const ativo=s.ativo&&!s.bloqueado;
+    const role=(s.role === 'gestor') ? 'dono' : (s.role || 'funcionario');
+    const ativo=s.active;
     return `<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="editarColaborador('${s.id}')">
       <div style="width:42px;height:42px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
         ${s.avatar_url?`<img src="${s.avatar_url}" style="width:100%;height:100%;object-fit:cover"/>`:`<span class="ms" style="font-size:22px;color:var(--blue)">${ROLE_ICONS[role]||'person'}</span>`}
       </div>
       <div style="flex:1;min-width:0">
-        <div class="hl" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.nome_completo}</div>
+        <div class="hl" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
         <div style="font-size:11px;color:var(--text3)">${s.email}</div>
         <div style="display:inline-flex;align-items:center;gap:3px;margin-top:4px;padding:2px 8px;border-radius:20px;background:var(--blue-l)">
           <span class="ms" style="font-size:12px;color:var(--blue)">${ROLE_ICONS[role]||'badge'}</span>
