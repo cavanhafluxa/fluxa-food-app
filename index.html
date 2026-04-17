@@ -1963,9 +1963,8 @@ function openCliente(c){
   }, 12000);
 
   try {
-    console.log('[BOOT] Verificando sessão...');
-    const saved = localStorage.getItem('kiosque_session');
-    
+    console.log('[BOOT] Verificando sessão local...');
+    const saved = localStorage.getItem('kiosque_session_v2');
     if (!saved) {
       console.log('[BOOT] Sem sessão, indo para login');
       clearTimeout(safetyTimeout);
@@ -1973,20 +1972,36 @@ function openCliente(c){
       return;
     }
 
-    const session = JSON.parse(saved);
-    show('s-loading');
+    const { staff, company } = JSON.parse(saved);
+    
+    // RENDERIZAÇÃO INSTANTÂNEA DO CACHE
+    console.log('[BOOT] Hot-loading do cache...');
+    currentStaff = staff;
+    co = company;
+    setupRoleBasedAccess(staff.role);
+    show('app');
+    bootApp(company); // Chama sem await para não travar a UI
 
-    console.log('[BOOT] Validando sessão no Supabase...');
-    const { data: staff, error } = await db
-      .from('food_users')
-      .select('*, company:company_id(*)')
-      .eq('id', session.staffId)
-      .single();
+    // VALIDAÇÃO EM BACKGROUND
+    (async () => {
+      console.log('[BOOT] Validando sessão em background...');
+      const { data: freshStaff, error } = await db
+        .from('food_users')
+        .select('*, company:company_id(*)')
+        .eq('id', staff.id)
+        .single();
 
-    if (error || !staff || !staff.active) {
-      console.error('[BOOT] Sessão expirada ou usuário inativo');
-      throw new Error('Sessão inválida');
-    }
+      if (!error && freshStaff && freshStaff.active) {
+        console.log('[BOOT] Sessão validada e atualizada.');
+        currentStaff = freshStaff;
+        currentStaff.role = (freshStaff.role === 'gestor') ? 'dono' : (freshStaff.role || 'funcionario');
+        co = freshStaff.company;
+        localStorage.setItem('kiosque_session_v2', JSON.stringify({ staff: freshStaff, company: freshStaff.company }));
+        // Não resetamos o bootApp aqui para não causar flicker, as atualizações normais seguem via RT
+      } else if (error && error.code !== 'PGRST116') {
+        console.warn('[BOOT] Erro na validação background, mas mantendo cache por enquanto.');
+      }
+    })();
 
     console.log('[BOOT] Sessão OK! Iniciando app...');
     currentStaff = staff;
@@ -2115,15 +2130,24 @@ async function doLogin(){
       return;
     }
 
-    const session = { 
-      staffId: staff.id, 
-      email: staff.email, 
-      name: staff.name, 
-      role: (staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario'), 
-      companyId: staff.company_id, 
-      lastLogin: new Date().toISOString() 
-    };
-    localStorage.setItem('kiosque_session', JSON.stringify(session));
+    const staffRole = (staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario');
+    
+    // Salva sessão completa para boot instantâneo na próxima vez
+    localStorage.setItem('kiosque_session_v2', JSON.stringify({
+      staff: staff,
+      company: staff.company
+    }));
+
+    currentStaff = staff;
+    currentStaff.role = staffRole;
+    co = staff.company;
+
+    // TRANSICÃO INSTANTÂNEA
+    setupRoleBasedAccess(staffRole);
+    show('app');
+    
+    // Boot em background (não aguardamos mais para mostrar a tela)
+    bootApp(staff.company);
 
     db.from('food_users').update({ last_login: new Date().toISOString() }).eq('id', staff.id);
     db.from('food_activity_logs').insert({ 
@@ -2133,15 +2157,8 @@ async function doLogin(){
       details: { ip: 'browser', ua: navigator.userAgent } 
     });
 
-    currentStaff=staff;
-    currentStaff.role=(staff.role === 'gestor') ? 'dono' : (staff.role || 'funcionario');
-    co=staff.company;
-
+    toast('Bem-vindo, ' + (staff.nome_completo || 'Colaborador'));
     errEl.style.display='none';
-    show('app');
-    await bootApp(staff.company);
-    setupRoleBasedAccess(currentStaff.role);
-
   }catch(err){
     console.error('[LOGIN] Falha:', err);
     show('s-login');

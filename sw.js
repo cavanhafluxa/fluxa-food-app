@@ -43,7 +43,7 @@ self.addEventListener('fetch', e => {
           if (res && res.status === 200) {
             const clone = res.clone();
             caches.open(CACHE).then(c => {
-               try { c.put(e.request, clone); } catch(err) {} 
+              try { c.put(e.request, clone); } catch (err) { }
             });
           }
           return res;
@@ -62,7 +62,7 @@ self.addEventListener('fetch', e => {
           if (res && res.status === 200) {
             const clone = res.clone();
             caches.open(CACHE).then(c => {
-               try { c.put(e.request, clone); } catch(err) {}
+              try { c.put(e.request, clone); } catch (err) { }
             });
           }
           return res;
@@ -79,7 +79,7 @@ self.addEventListener('fetch', e => {
         if (res && res.status === 200) {
           const clone = res.clone();
           caches.open(CACHE).then(c => {
-             try { c.put(e.request, clone); } catch(err) {}
+            try { c.put(e.request, clone); } catch (err) { }
           });
         }
         return res;
